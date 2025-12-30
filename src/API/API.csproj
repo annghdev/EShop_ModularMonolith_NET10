@@ -18,17 +18,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\Auth\Auth.csproj" />
     <ProjectReference Include="..\Catalog\Catalog.csproj" />
     <ProjectReference Include="..\Inventory\Inventory.csproj" />
-    <ProjectReference Include="..\Ordering\Ordering.csproj" />
-    <ProjectReference Include="..\Payment\Payment.csproj" />
     <ProjectReference Include="..\Pricing\Pricing.csproj" />
-    <ProjectReference Include="..\Product\Product.csproj" />
-    <ProjectReference Include="..\Promotion\Promotion.csproj" />
     <ProjectReference Include="..\Report\Report.csproj" />
-    <ProjectReference Include="..\Shipping\Shipping.csproj" />
-    <ProjectReference Include="..\User\User.csproj" />
   </ItemGroup>
 
   <ItemGroup>

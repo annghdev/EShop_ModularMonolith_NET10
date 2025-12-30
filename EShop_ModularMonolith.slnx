@@ -8,24 +8,25 @@
     <Project Path="src/API/API.csproj" />
     <Project Path="src/Aspire/Aspire.AppHost/Aspire.AppHost.csproj" />
     <Project Path="src/Aspire/Aspire.Web/Aspire.Web.csproj" />
-    <Project Path="src/Auth/Auth.csproj" />
     <Project Path="src/Catalog/Catalog.csproj" />
+    <Project Path="src/Identity/Identity.csproj" Id="8b0f6414-e940-4d5f-8770-24864bef047e" />
     <Project Path="src/Inventory/Inventory.csproj" />
-    <Project Path="src/Ordering/Ordering.csproj" />
-    <Project Path="src/Payment/Payment.csproj" />
     <Project Path="src/Pricing/Pricing.csproj" />
-    <Project Path="src/Product/Product.csproj" Id="25187e29-4b80-40f7-adef-0ad8c085bda4" />
-    <Project Path="src/Promotion/Promotion.csproj" />
     <Project Path="src/Report/Report.csproj" />
-    <Project Path="src/Shipping/Shipping.csproj" />
-    <Project Path="src/User/User.csproj" />
+    <Project Path="src/Sales/Sales.csproj" Id="38588c90-ae06-4b4a-8fba-6ab189c94f9c" />
   </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Aspire/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj" />
-    <Project Path="src/Common/Common.csproj" />
     <Project Path="src/Contracts/Contracts.csproj" />
+    <Project Path="src/Kernel/Kernel.csproj" Id="b9fad5df-3313-4521-8eba-5e7403aff333" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Product.Test/Product.Test.csproj" Id="67cc114f-16c6-4fd8-bfd0-b802f4772fd3" />
+    <Project Path="tests/Catalog.Tests/Catalog.Tests.csproj" Id="50bd5907-b557-4320-bb24-05f4ddd8f620" />
+    <Project Path="tests/Identity.Tests/Identity.Tests.csproj" Id="44c0c1da-11be-4f3a-be2d-985c1b7fdaec" />
+    <Project Path="tests/IntegrationTests/IntegrationTests.csproj" Id="709ebfb2-aa90-459b-8497-fe292f531cf0" />
+    <Project Path="tests/Inventory.Tests/Inventory.Tests.csproj" Id="0aace836-31be-4c96-8338-64fb05239ac7" />
+    <Project Path="tests/Pricing.Tests/Pricing.Tests.csproj" Id="0348a07f-7400-4216-8ebf-a3a605510487" />
+    <Project Path="tests/Sales.Tests/Sales.Tests.csproj" Id="f89a474e-88ce-4c87-8262-bca24ea988a0" />
+    <Project Path="tests/SharedLibsForTests/SharedLibsForTests.csproj" Id="73f36a68-96b5-4989-ada5-5c906e1b5532" />
   </Folder>
 </Solution>

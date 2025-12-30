@@ -7,13 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\" />
-    <Folder Include="Infrastructure\" />
+    <Folder Include="Application\Features\" />
+    <Folder Include="Application\EventHandlers\" />
+    <Folder Include="Infrastructure\EFCore\Configurations\" />
+    <Folder Include="Infrastructure\EFCore\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Kernel\Kernel.csproj" />
   </ItemGroup>
 
 </Project>

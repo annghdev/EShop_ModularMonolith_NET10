@@ -14,8 +14,15 @@
   <ItemGroup>
     <Folder Include="Application\EventHandlers\" />
     <Folder Include="Application\Features\" />
-    <Folder Include="Domain\" />
-    <Folder Include="Infrastructure\" />
+    <Folder Include="Auth\Authentication\" />
+    <Folder Include="Auth\Authorization\" />
+    <Folder Include="Domain\Customers\" />
+    <Folder Include="Domain\Guests\" />
+    <Folder Include="Domain\Employees\" />
+    <Folder Include="Domain\Accounts\" />
+    <Folder Include="Domain\Roles\" />
+    <Folder Include="Infrastructure\EFCore\Configurations\" />
+    <Folder Include="Infrastructure\EFCore\Repositories\" />
   </ItemGroup>
 
 </Project>

@@ -7,15 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\ProductStocks\" />
+    <Folder Include="Domain\Stocks\" />
     <Folder Include="Domain\Warehouses\" />
     <Folder Include="Features\" />
     <Folder Include="Infrastructure\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Kernel\Kernel.csproj" />
   </ItemGroup>
 
 </Project>
