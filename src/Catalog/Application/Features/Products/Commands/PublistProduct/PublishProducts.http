@@ -1,0 +1,29 @@
+### Create Product - Shirt (Fashion)
+PUT http://localhost:5000/api/products/publish/dddddddd-dddd-dddd-dddd-dddddddddd13
+Content-Type: application/json
+{
+
+}
+###
+
+### Publish Product - Smartphone (Device)
+PUT http://localhost:5000/api/products/publish/dddddddd-dddd-dddd-dddd-dddddddddd14
+Content-Type: application/json
+
+{}
+
+###
+
+### Publish Product - Laptop (Device)
+PUT http://localhost:5000/api/products/publish/dddddddd-dddd-dddd-dddd-dddddddddd15
+Content-Type: application/json
+
+{}
+
+###
+
+### Publish Product - Headphones (Electronics)
+PUT http://localhost:5000/api/products/publish/dddddddd-dddd-dddd-dddd-dddddddddd16
+Content-Type: application/json
+
+{}

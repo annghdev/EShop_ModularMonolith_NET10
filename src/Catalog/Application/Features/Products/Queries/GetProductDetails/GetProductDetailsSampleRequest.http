@@ -1,0 +1,29 @@
+### Get Product Details - Shirt (Fashion)
+GET http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13
+Accept: application/json
+
+###
+
+### Get Product Details - Smartphone (Device)
+GET http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14
+Accept: application/json
+
+###
+
+### Get Product Details - Laptop (Device)
+GET http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd15
+Accept: application/json
+
+###
+
+### Get Product Details - Headphones (Electronics)
+GET http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd16
+Accept: application/json
+
+###
+
+### Get Product Details - Non-existent Product (Should return 404)
+GET http://localhost:5000/api/products/ffffffff-ffff-ffff-ffff-ffffffffffff
+Accept: application/json
+
+###

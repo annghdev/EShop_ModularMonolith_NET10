@@ -2,8 +2,14 @@
 
 namespace Kernel.Application;
 
-public interface IQuery : IRequest
+public interface IQuery
 {
-    public string CacheKey { get; set; }
-    public TimeSpan? ExpirationSliding { get; set; }
+    public string CacheKey { get; }
+    public TimeSpan? ExpirationSliding { get; }
+}
+
+
+public interface IQuery<T> : IQuery, IRequest<T>
+{
+
 }

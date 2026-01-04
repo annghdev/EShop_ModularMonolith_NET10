@@ -6,16 +6,17 @@ public class Product : AggregateRoot
 {
     public string Name { get; private set; }
     public string? Description { get; private set; }
-    public Slug? Slug { get; private set; }
+    public Slug Slug { get; private set; }
     public Sku Sku { get; private set; }
     public Money Cost { get; private set; } = new(0);
     public Money Price { get; private set; }
-    public Dimensions Dimensions { get; private set; } = new(0, 0, 0, 0);
+    public Dimensions Dimensions { get; private set; } = new(1, 1, 1, 1);
     public ImageUrl? Thumbnail { get; private set; }
     public Guid CategoryId { get; private set; }
     public Category? Category { get; private set; }
     public Guid BrandId { get; private set; }
     public Brand? Brand { get; private set; }
+    public bool HastockQuantity { get; private set; } = true;
     public int DisplayPriority { get; private set; } = 1; // 0 = Is Featured
     public ProductStatus Status { get; private set; }
 
@@ -33,7 +34,7 @@ public class Product : AggregateRoot
 
     public static Product CreateDraft(
         Guid Id, string name, string? description, Sku sku,
-        Money cost, Money price, Dimensions dimensions,
+        Money cost, Money price, Dimensions dimensions, bool hasStockQuantity,
         Category category, Guid brandId)
     {
         var draft = new Product
@@ -45,6 +46,7 @@ public class Product : AggregateRoot
             Cost = cost ?? throw new DomainException("Cost cannot be null"),
             Price = price ?? throw new DomainException("Price cannot be null"),
             Dimensions = dimensions ?? throw new DomainException("Dimensions cannot be null"),
+            HastockQuantity = hasStockQuantity,
             Category = category,
             BrandId = brandId,
             Slug = new(name),
@@ -109,7 +111,7 @@ public class Product : AggregateRoot
 
         Status = ProductStatus.Published;
 
-        AddEvent(new ProductPublishedEvent(Id));
+        AddEvent(new ProductPublishedEvent(this));
         IncreaseVersion();
     }
 

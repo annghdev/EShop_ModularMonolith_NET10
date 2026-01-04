@@ -1,11 +1,14 @@
 using API;
 using Catalog;
+using Catalog.Infrastructure;
+using Catalog.Infrastructure.EFCore;
 using Kernel.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
+builder.AddElasticsearchClient(connectionName: "elasticsearch");
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -16,6 +19,7 @@ builder.Services.AddServices(builder.Configuration);
 
 //builder.Services.AddInfrasDB(builder.Configuration);
 builder.Services.AddCatalogContainer(builder.Configuration);
+builder.Services.AddElasticsearch(builder.Configuration);
 
 var app = builder.Build();
 
@@ -42,5 +46,23 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapEndpoints(typeof(Catalog.DependencyInjection).Assembly);
+
+// Apply migrations and seed data
+using var scope = app.Services.CreateScope();
+try
+{
+    var catalogContext = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+    await catalogContext.Database.MigrateAsync();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
+    await seeder.SeedAsync();
+
+    Console.WriteLine("Catalog database migrations applied and data seeded successfully.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error during database migration or seeding: {ex.Message}");
+    throw;
+}
 
 app.Run();

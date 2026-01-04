@@ -23,9 +23,7 @@ public static class ServiceCollectionExtensions
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
         });
-
         services.AddAutoMapper(assembly);
-
         services.AddValidatorsFromAssembly(assembly);
 
         // use UnitOfWork instead, because we can't delete draft entities in background tasks if using this interceptor
@@ -39,6 +37,15 @@ public static class ServiceCollectionExtensions
         {
             options.UseNpgsql(configuration.GetConnectionString("infrasdb"));
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddInfrasServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<ICacheService, MemoryCacheService>();
+        //services.AddScoped<IEmailService, MailkitService>();
+        //services.AddScoped<IImageStorageService, CloudinaryService>();
 
         return services;
     }

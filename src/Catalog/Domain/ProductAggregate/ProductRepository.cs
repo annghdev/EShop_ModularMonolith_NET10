@@ -1,11 +1,6 @@
 ﻿namespace Catalog.Domain;
 
-public interface IProductRepository
+public interface IProductRepository : IRepository<Product>
 {
-    void Add(Product product);
-    void Update(Product product);
-    void Delete(Guid id);
-    Task<Product?> FindAsync(Guid id);
-    Task<bool> CheckExistsAsync(Guid id);
-    Task<IEnumerable<Product>> GetAllAsync();
+    Task<Product> GetAggregateBySlug(string slug);
 }

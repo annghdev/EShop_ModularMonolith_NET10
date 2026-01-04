@@ -7,10 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Application\Features\Products\Commands\AddVariant\" />
     <Folder Include="Application\IntegrationEventHandlers\" />
-    <Folder Include="Application\Features\Products\EventHandlers\" />
-    <Folder Include="Application\Features\Products\Queries\" />
-    <Folder Include="Infrastructure\EFCore\Repositories\" />
+    <Folder Include="Infrastructure\EFCore\Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

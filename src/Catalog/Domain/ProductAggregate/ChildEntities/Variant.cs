@@ -21,13 +21,15 @@ public class Variant : AuditableEntity
     private Variant() { } // EF Core
 
     public Variant(
-       Sku sku,
-       Money? overrideCost,
-       Money? overridePrice,
-       ImageUrl? mainImage,
-       Dimensions? overrideDimension,
-       IEnumerable<(ProductAttribute, Guid)> attributeValues)
+        string name,
+        Sku sku,
+        Money? overrideCost,
+        Money? overridePrice,
+        ImageUrl? mainImage,
+        Dimensions? overrideDimension,
+        IEnumerable<(ProductAttribute, Guid)> attributeValues)
     {
+        Name = name;
         Sku = sku ?? throw new DomainException("sku cannot be null");
         OverrideCost = overrideCost;
         OverridePrice = overridePrice;

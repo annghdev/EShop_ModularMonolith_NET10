@@ -17,11 +17,12 @@ public sealed class ProductBuilder
         Money cost,
         Money price,
         Dimensions dimensions,
+        bool hasStockQuantity,
         Category category,
         Guid brandId)
     {
         var product = Product.CreateDraft(
-            id, name, description, sku, cost, price, dimensions, category, brandId
+            id, name, description, sku, cost, price, dimensions, hasStockQuantity, category, brandId
         );
 
         return new ProductBuilder(product);
@@ -82,7 +83,7 @@ public sealed class ProductBuilder
             mainImage = new ImageUrl(mainImageUrl);
         }
 
-        var variant = new Variant(sku, overrideCost, overridePrice, mainImage, overrideDimensions, attrs);
+        var variant = new Variant(name, sku, overrideCost, overridePrice, mainImage, overrideDimensions, attrs);
 
         foreach (var image in images)
         {

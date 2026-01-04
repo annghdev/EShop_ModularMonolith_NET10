@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Catalog.Infrastructure.EFCore.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20260102185156_InitCatalogDb")]
+    [Migration("20260104143952_InitCatalogDb")]
     partial class InitCatalogDb
     {
         /// <inheritdoc />
@@ -311,6 +311,9 @@ namespace Catalog.Infrastructure.EFCore.Migrations
 
                     b.Property<int>("DisplayPriority")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("HastockQuantity")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -702,7 +705,8 @@ namespace Catalog.Infrastructure.EFCore.Migrations
                     b.Navigation("Sku")
                         .IsRequired();
 
-                    b.Navigation("Slug");
+                    b.Navigation("Slug")
+                        .IsRequired();
 
                     b.Navigation("Thumbnail");
                 });

@@ -1,5 +1,7 @@
 ﻿using Catalog.Application;
+using Catalog.Domain;
 using Catalog.Infrastructure;
+using Catalog.Infrastructure.EFCore.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -21,6 +23,20 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ICatalogUnitOfWork, CatalogUnitOfWork>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<CatalogSeeder>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddElasticsearch(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        // Register Elasticsearch services
+        services.AddScoped<ElasticSearchDemoService>();
+        // TODO: Fix ElasticsearchIndexService API compatibility
+        // services.AddScoped<ElasticsearchIndexService>();
 
         return services;
     }

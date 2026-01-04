@@ -1,0 +1,65 @@
+### Search Products - Basic search
+GET http://localhost:5000/api/products/search/?keyword=coton
+Accept: application/json
+
+###
+
+### Search Products - Category filter
+GET http://localhost:5000/api/products/search?keyword=phone&categoryId=bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+Accept: application/json
+
+###
+
+### Search Products - Brand filter
+GET http://localhost:5000/api/products/search?keyword=apple&brandId=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaac
+Accept: application/json
+
+###
+
+### Search Products - Price range
+GET http://localhost:5000/api/products/search?keyword=laptop&minPrice=500&maxPrice=2000
+Accept: application/json
+
+###
+
+### Search Products - Pagination
+GET http://localhost:5000/api/products/search?page=2&pageSize=10
+Accept: application/json
+
+###
+
+### Search Products - Sort by price (ascending)
+GET http://localhost:5000/api/products/search?keyword=phone&sortBy=price&sortOrder=asc&pageSize=5
+Accept: application/json
+
+###
+
+### Search Products - Sort by price (descending)
+GET http://localhost:5000/api/products/search?keyword=phone&sortBy=price&sortOrder=desc&pageSize=5
+Accept: application/json
+
+###
+
+### Search Products - Empty search (all published products, default asc order)
+GET http://localhost:5000/api/products/search?page=1&pageSize=5
+Accept: application/json
+
+###
+
+### Search Products - No results
+GET http://localhost:5000/api/products/search?keyword=nonexistentproduct12345
+Accept: application/json
+
+###
+
+### Debug: Get ALL products in Elasticsearch (no filters)
+GET http://localhost:5000/api/products/search/all
+Accept: application/json
+
+###
+
+### Debug: Search with keyword (no status filter)
+GET http://localhost:5000/api/products/search/debug2?keyword=shirt
+Accept: application/json
+
+###

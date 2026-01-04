@@ -2,12 +2,13 @@
   <Folder Name="/Solution Items/">
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
+    <File Path="EF_CLI.md" />
     <File Path="README.md" />
+    <File Path="README_VIETNAMESE.md" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/API/API.csproj" />
     <Project Path="src/Aspire/Aspire.AppHost/Aspire.AppHost.csproj" />
-    <Project Path="src/Aspire/Aspire.Web/Aspire.Web.csproj" />
     <Project Path="src/BlazorAdmin/BlazorAdmin.csproj" />
     <Project Path="src/Catalog/Catalog.csproj" />
     <Project Path="src/Identity/Identity.csproj" Id="8b0f6414-e940-4d5f-8770-24864bef047e" />
