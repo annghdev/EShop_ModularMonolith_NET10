@@ -117,7 +117,7 @@ Each module follows **Clean Architecture** principles:
 |--------|----------------|----------|
 | **Identity** | User Management<br/>Authentication<br/>Role-based Access | IdentityDb |
 | **Catalog** | Product Management<br/>Categories & Brands | CatalogDb |
-| **Inventory** | Warehouse Management<br/>Stock Management | OrderingDb |
+| **Inventory** | Warehouse Management<br/>Stock Management | InventoryDb |
 | **Sales** | Cart Management<br/>Order Process<br/>Delivery<br/>Payment transaction | SalesDb |
 | **Pricing** | Price&Cost History<br/>Promotion Campaigns<br/>Coupon | PricingDb |
 | **Report** | Revenue report <br/> Analysis | - |
@@ -134,7 +134,7 @@ Each module follows **Clean Architecture** principles:
 ### Prerequisites
 
 - [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- Visual Studio 2022+
+- **Visual Studio 2022+**
 
 ### 1. Clone Repository
 
