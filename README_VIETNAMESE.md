@@ -115,26 +115,26 @@ Mỗi module tuân theo nguyên tắc **Clean Architecture**:
 
 | Module | Trách nhiệm | Database |
 |--------|-------------|----------|
-| **Identity** | User Management<br/>Authentication<br/>Role-based Access | IdentityDb |
-| **Catalog** | Product Management<br/>Categories & Brands| CatalogDb |
-| **Inventory** | Warehouse Management<br/>Stock Management | OrderingDb |
-| **Sales** | Cart Mangement<br/>Order Process<br/>Delivery<br/>Payment transaction | SalesDb |
-| **Pricing** | Price&Cost History<br/>Promotion Campaigns<br/>Coupon | PricingDb |
-| **Report** | Revenue report <br/> Analys | - |
+| **Identity** | Quản lý người dùng, chứng thực và phân quyền | IdentityDb |
+| **Catalog** | Quản lý sản phẩm, danh mục, thương hiệu và bộ sưu tập| CatalogDb |
+| **Inventory** | Quản lý kho và số lượng tồn sản phẩm | InventoryDb |
+| **Sales** | Quản lý giỏ hàng, đơn hàng, thanh toán và giao hàng | SalesDb |
+| **Pricing** | Quản lý chi phí, giá, phiếu ưu đãi và chương trình khuyến mãi | PricingDb |
+| **Report** | Thống kê và báo cáo doanh thu | - |
 
 ### Shared Components
 
 | Component | Mục đích |
 |-----------|----------|
-| **Kernel** | Base classes, abstractions, shared infrastructure, utilities |
-| **Contracts** | DTOs, Integration Events, Queries |
+| **Kernel** | Chia sẽ cốt lõi, dịch vụ chung, tiện ích và cấu hình chung |
+| **Contracts** | Chia sẻ DTOs, Integration Events, Queries công khai giữa các module |
 
 ## Hướng dẫn cài đặt và chạy dự án
 
 ### Prerequisites
 
 - [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- Visual studio 2022+
+- **Visual studio 2022+**
 
 ### 1. Clone Repository
 
