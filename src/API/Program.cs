@@ -19,7 +19,6 @@ builder.Services.AddServices(builder.Configuration);
 
 //builder.Services.AddInfrasDB(builder.Configuration);
 builder.Services.AddCatalogContainer(builder.Configuration);
-builder.Services.AddElasticsearch(builder.Configuration);
 
 var app = builder.Build();
 

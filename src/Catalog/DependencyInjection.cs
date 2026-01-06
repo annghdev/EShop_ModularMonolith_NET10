@@ -33,10 +33,6 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Register Elasticsearch services
-        services.AddScoped<ElasticSearchDemoService>();
-        // TODO: Fix ElasticsearchIndexService API compatibility
-        // services.AddScoped<ElasticsearchIndexService>();
 
         return services;
     }
