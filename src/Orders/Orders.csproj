@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\EventHandlers\" />
+    <Folder Include="Application\Features\" />
+    <Folder Include="Domain\Carts\" />
+    <Folder Include="Domain\Orders\" />
+    <Folder Include="Domain\Payments\" />
+    <Folder Include="Domain\Shippings\" />
+    <Folder Include="Infrastructure\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Kernel\Kernel.csproj" />
+  </ItemGroup>
+
+</Project>

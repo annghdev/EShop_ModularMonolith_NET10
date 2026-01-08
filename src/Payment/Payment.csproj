@@ -11,14 +11,4 @@
     <ProjectReference Include="..\Kernel\Kernel.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\EventHandlers\" />
-    <Folder Include="Application\Features\" />
-    <Folder Include="Domain\Carts\" />
-    <Folder Include="Domain\Shippings\" />
-    <Folder Include="Domain\Payments\" />
-    <Folder Include="Domain\Orders\" />
-    <Folder Include="Infrastructure\" />
-  </ItemGroup>
-
 </Project>

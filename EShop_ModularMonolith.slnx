@@ -13,9 +13,12 @@
     <Project Path="src/Catalog/Catalog.csproj" />
     <Project Path="src/Identity/Identity.csproj" Id="8b0f6414-e940-4d5f-8770-24864bef047e" />
     <Project Path="src/Inventory/Inventory.csproj" />
+    <Project Path="src/Orders/Orders.csproj" Id="99d36a76-da45-420f-8af2-abfbdeff7905" />
+    <Project Path="src/Payment/Payment.csproj" Id="1fdb2f4e-da9a-40c4-8cbf-7e203efcbe8b" />
     <Project Path="src/Pricing/Pricing.csproj" />
     <Project Path="src/Report/Report.csproj" />
-    <Project Path="src/Sales/Sales.csproj" Id="38588c90-ae06-4b4a-8fba-6ab189c94f9c" />
+    <Project Path="src/Shipping/Shipping.csproj" Id="1507c079-a667-4f85-bb47-5a9cbeb1fc68" />
+    <Project Path="src/ShoppingCart/ShoppingCart.csproj" Id="ac4b1e67-22b7-4957-8625-6577339484c9" />
   </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Aspire/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj" />
@@ -27,8 +30,11 @@
     <Project Path="tests/Identity.Tests/Identity.Tests.csproj" Id="44c0c1da-11be-4f3a-be2d-985c1b7fdaec" />
     <Project Path="tests/IntegrationTests/IntegrationTests.csproj" Id="709ebfb2-aa90-459b-8497-fe292f531cf0" />
     <Project Path="tests/Inventory.Tests/Inventory.Tests.csproj" Id="0aace836-31be-4c96-8338-64fb05239ac7" />
+    <Project Path="tests/Orders.Tests/Orders.Tests.csproj" Id="2b2e088c-0a25-47e8-9292-b66ff6ba8d9b" />
+    <Project Path="tests/Payment.Tests/Payment.Tests.csproj" Id="5ad200f9-2058-491c-aeb4-8460b9b6486f" />
     <Project Path="tests/Pricing.Tests/Pricing.Tests.csproj" Id="0348a07f-7400-4216-8ebf-a3a605510487" />
-    <Project Path="tests/Sales.Tests/Sales.Tests.csproj" Id="f89a474e-88ce-4c87-8262-bca24ea988a0" />
     <Project Path="tests/SharedLibsForTests/SharedLibsForTests.csproj" Id="73f36a68-96b5-4989-ada5-5c906e1b5532" />
+    <Project Path="tests/Shipping.Tests/Shipping.Tests.csproj" Id="b44db429-afce-4003-a206-e5e5cf379eb2" />
+    <Project Path="tests/ShoppingCart.Tests/ShoppingCart.Tests.csproj" Id="89661a00-78f8-4e81-95c8-abe37a4ccc81" />
   </Folder>
 </Solution>
