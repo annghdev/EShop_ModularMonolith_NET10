@@ -7,7 +7,6 @@ public class ProductMappingProfile : Profile
     public ProductMappingProfile()
     {
         CreateMap<Product, ProductDto>()
-            .ForMember(dest => dest.Sku, opt => opt.MapFrom(src => src.Sku.Value))
             .ForMember(dest => dest.Slug, opt => opt.MapFrom(src => src.Slug!.Value))
             .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost.ToMoneyDto()))
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price.ToMoneyDto()))
@@ -24,8 +23,6 @@ public class ProductMappingProfile : Profile
         CreateMap<ProductAttribute, ProductAttributeDto>()
             .ForMember(dest => dest.AttributeId, opt => opt.MapFrom(src => src.AttributeId))
             .ForMember(dest => dest.AttributeName, opt => opt.MapFrom(src => src.Attribute!.Name))
-            .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.DefaultValueId))
-            .ForMember(dest => dest.ValueName, opt => opt.MapFrom(src => src.DefaultValue!.Name))
             .ForMember(dest => dest.HasVariant, opt => opt.MapFrom(src => src.HasVariant));
 
         CreateMap<Variant, VariantDto>()

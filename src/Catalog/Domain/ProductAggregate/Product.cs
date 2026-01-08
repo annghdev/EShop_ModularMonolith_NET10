@@ -7,7 +7,6 @@ public class Product : AggregateRoot
     public string Name { get; private set; }
     public string? Description { get; private set; }
     public Slug Slug { get; private set; }
-    public Sku Sku { get; private set; }
     public Money Cost { get; private set; } = new(0);
     public Money Price { get; private set; }
     public Dimensions Dimensions { get; private set; } = new(1, 1, 1, 1);
@@ -42,7 +41,6 @@ public class Product : AggregateRoot
             Id = Id,
             Name = name ?? throw new DomainException("Name cannot be null"),
             Description = description,
-            Sku = sku ?? throw new DomainException("Sku cannot be null"),
             Cost = cost ?? throw new DomainException("Cost cannot be null"),
             Price = price ?? throw new DomainException("Price cannot be null"),
             Dimensions = dimensions ?? throw new DomainException("Dimensions cannot be null"),
@@ -50,7 +48,7 @@ public class Product : AggregateRoot
             Category = category,
             BrandId = brandId,
             Slug = new(name),
-            Status = ProductStatus.Drafting,
+            Status = ProductStatus.Draft,
         };
 
         return draft;
@@ -107,7 +105,10 @@ public class Product : AggregateRoot
 
     public void Publish()
     {
-        if (Status == ProductStatus.Discarded) return;
+        if (Status == ProductStatus.Discarded)
+            throw new DomainException("Draft was discarded");
+
+        ValidateProduct();
 
         Status = ProductStatus.Published;
 
@@ -155,7 +156,7 @@ public class Product : AggregateRoot
         if (_attributes.Any(a => a.AttributeId == attributeId))
             throw new DomainException("Attribute already exists in product");
 
-        var productAttribute = new ProductAttribute(attributeId, defaultValueId, displayOrder);
+        var productAttribute = new ProductAttribute(attributeId, displayOrder);
         _attributes.Add(productAttribute);
 
         if(raiseEvent)
@@ -217,7 +218,7 @@ public class Product : AggregateRoot
 
     public void ValidateCategoryDefaultAttributes()
     {
-        foreach (var defaultAttr in Category?.DefaultAttributes)
+        foreach (var defaultAttr in Category!.DefaultAttributes)
         {
             if (!_attributes.Any(a => a.AttributeId == defaultAttr.AttributeId))
                 throw new DomainException("Product not contains attribute not defined in category");
@@ -235,6 +236,12 @@ public class Product : AggregateRoot
         // add event here
 
         IncreaseVersion();
+    }
+
+    private void ValidateProduct()
+    {
+        if (!_variants.Any())
+            throw new DomainException("Product must has at least 1 variant");
     }
 
     public void UpdateDisplayPriority(int priority)
@@ -259,7 +266,7 @@ public class Product : AggregateRoot
 
 public enum ProductStatus
 {
-    Drafting,
+    Draft,
     Discarded,
     Published,
     Discontinued

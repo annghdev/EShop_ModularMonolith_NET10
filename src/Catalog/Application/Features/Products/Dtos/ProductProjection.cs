@@ -6,7 +6,6 @@ public sealed class ProductProjection
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string Slug { get; set; } = string.Empty;
-    public string Sku { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public string Currency { get; set; } = "VND";
     public string CategoryId { get; set; } = string.Empty;
@@ -24,8 +23,6 @@ public sealed class ProductAttributeProjection
 {
     public string AttributeId { get; set; } = string.Empty;
     public string AttributeName { get; set; } = string.Empty;
-    public string ValueId { get; set; } = string.Empty;
-    public string ValueName { get; set; } = string.Empty;
 }
 
 public sealed class ProductVariantProjection
@@ -35,4 +32,14 @@ public sealed class ProductVariantProjection
     public string Sku { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public string Currency { get; set; } = "VND";
+
+    public List<VariantAttributeProjection> Attributes { get; set; } = new();
+}
+
+public sealed class VariantAttributeProjection
+{
+    public string AttributeId { get; set; } = string.Empty;
+    public string AttributeName { get; set; } = string.Empty;
+    public string ValueId { get; set; } = string.Empty;
+    public string ValueName { get; set; } = string.Empty;
 }

@@ -19,11 +19,6 @@ public class ProductAttributeConfiguration : IEntityTypeConfiguration<ProductAtt
             .HasForeignKey(pa => pa.AttributeId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(pa => pa.DefaultValue)
-            .WithMany()
-            .HasForeignKey(pa => pa.DefaultValueId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         #endregion
 
         builder.HasIndex(pa => new { pa.ProductId, pa.AttributeId })

@@ -8,9 +8,6 @@ public class ProductAttribute : BaseEntity
     public Guid AttributeId { get; private set; }
     public Attribute? Attribute { get; private set; }
 
-    public Guid DefaultValueId { get; private set; }
-    public AttributeValue? DefaultValue { get; private set; }
-
     public int DisplayOrder { get; private set; }
     public bool HasVariant { get; set; }
 
@@ -18,17 +15,10 @@ public class ProductAttribute : BaseEntity
 
     public ProductAttribute(
         Guid attributeId,
-        Guid defaultValueId,
         int displayOrder)
     {
         AttributeId = attributeId;
-        DefaultValueId = defaultValueId;
         DisplayOrder = displayOrder;
-    }
-
-    public void UpdateDefaultValue(Guid valueId)
-    {
-        DefaultValueId = valueId;
     }
 
     public void UpdateDisplayOrder(int order)

@@ -35,7 +35,6 @@ public class ProductPublishedEventHandler(ElasticsearchClient elasticsearchClien
             Name = product.Name,
             Description = product.Description,
             Slug = product.Slug?.Value ?? string.Empty,
-            Sku = product.Sku.Value,
             Price = product.Price.Amount,
             Currency = product.Price.Currency,
             CategoryName = product.Category?.Name ?? string.Empty,
@@ -43,8 +42,7 @@ public class ProductPublishedEventHandler(ElasticsearchClient elasticsearchClien
             Status = product.Status.ToString(),
             Attributes = product.Attributes.Select(pa => new ProductAttributeProjection
             {
-                AttributeName = pa.Attribute?.Name ?? string.Empty,
-                ValueName = pa.DefaultValue?.Name ?? string.Empty
+                AttributeName = pa.Attribute?.Name ?? string.Empty
             }).ToList(),
             Variants = product.Variants.Select(v => new ProductVariantProjection
             {

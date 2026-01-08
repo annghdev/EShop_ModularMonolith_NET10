@@ -20,13 +20,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                  .HasMaxLength(200);
         });
 
-        builder.OwnsOne(p => p.Sku, sku =>
-        {
-            sku.Property(m => m.Value)
-                 .HasColumnName("Sku")
-                 .HasMaxLength(20);
-        });
-
         builder.OwnsOne(p => p.Price, money =>
         {
             money.Property(m => m.Amount)
