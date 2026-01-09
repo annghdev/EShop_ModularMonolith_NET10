@@ -71,9 +71,9 @@ namespace Inventory.Infrastructure.EFCore.Migrations
 
                     b.ToTable("StockItems", t =>
                         {
-                            t.HasCheckConstraint("CK_StockItem_Quantity", "Quantity >= 0");
+                            t.HasCheckConstraint("CK_StockItem_Quantity", "\"Quantity\" >= 0");
 
-                            t.HasCheckConstraint("CK_StockItem_ThresholdWarning", "ThresholdWarning >= 0");
+                            t.HasCheckConstraint("CK_StockItem_ThresholdWarning", "\"ThresholdWarning\" >= 0");
                         });
                 });
 
@@ -106,7 +106,7 @@ namespace Inventory.Infrastructure.EFCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId")
-                        .HasFilter("OrderId IS NOT NULL");
+                        .HasFilter("\"OrderId\" IS NOT NULL");
 
                     b.HasIndex("StockItemId");
 
@@ -114,16 +114,16 @@ namespace Inventory.Infrastructure.EFCore.Migrations
 
                     b.HasIndex("OrderId", "CreatedAt")
                         .HasDatabaseName("IX_StockLog_OrderId_CreatedAt")
-                        .HasFilter("OrderId IS NOT NULL");
+                        .HasFilter("\"OrderId\" IS NOT NULL");
 
                     b.HasIndex("StockItemId", "CreatedAt")
                         .HasDatabaseName("IX_StockLog_StockItemId_CreatedAt");
 
                     b.ToTable("StockLogs", null, t =>
                         {
-                            t.HasCheckConstraint("CK_StockLog_Quantity", "Quantity > 0");
+                            t.HasCheckConstraint("CK_StockLog_Quantity", "\"Quantity\" > 0");
 
-                            t.HasCheckConstraint("CK_StockLog_SnapshotTotalQuantity", "SnapshotTotalQuantity >= 0");
+                            t.HasCheckConstraint("CK_StockLog_SnapshotTotalQuantity", "\"SnapshotTotalQuantity\" >= 0");
                         });
                 });
 
@@ -159,7 +159,7 @@ namespace Inventory.Infrastructure.EFCore.Migrations
 
                     b.ToTable("StockReservations", t =>
                         {
-                            t.HasCheckConstraint("CK_StockReservation_Quantity", "Quantity > 0");
+                            t.HasCheckConstraint("CK_StockReservation_Quantity", "\"Quantity\" > 0");
                         });
                 });
 

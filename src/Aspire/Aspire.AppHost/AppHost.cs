@@ -7,6 +7,7 @@ var elasticSearch = builder.AddElasticsearch("elasticsearch")
     //.WithDataVolume(isReadOnly: false)
     //.WithLifetime(ContainerLifetime.Persistent)
     .WithContainerRuntimeArgs("--memory=512m");
+
 var pgUsername = builder.AddParameter("db-username", secret: true);
 var pgPassword = builder.AddParameter("db-password", secret: true);
 
@@ -21,6 +22,8 @@ var api = builder.AddProject<Projects.API>("api")
     .WithHttpHealthCheck("/health")
     .WithReference(catalogDb)
         .WaitFor(catalogDb)
+    .WithReference(inventoryDb)
+        .WaitFor(inventoryDb)
     .WithReference(elasticSearch)
         .WaitFor(elasticSearch);
 

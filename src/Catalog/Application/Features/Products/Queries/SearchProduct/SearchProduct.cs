@@ -124,12 +124,12 @@ public class SearchProduct
                                     {
                                         b.Filter(f => f
                                             .Nested(n => n
-                                                .Path("attributes")
+                                                .Path("variants.attributes")
                                                 .Query(nq => nq
                                                     .Bool(nb => nb
                                                         .Must(
-                                                            m1 => m1.Term(t => t.Field("attributes.attributeName").Value(attr.Key)),
-                                                            m2 => m2.Term(t => t.Field("attributes.valueName").Value(attr.Value))
+                                                            m1 => m1.Term(t => t.Field("variants.attributes.attributeName").Value(attr.Key)),
+                                                            m2 => m2.Term(t => t.Field("variants.attributes.valueName").Value(attr.Value))
                                                         )
                                                     )
                                                 )

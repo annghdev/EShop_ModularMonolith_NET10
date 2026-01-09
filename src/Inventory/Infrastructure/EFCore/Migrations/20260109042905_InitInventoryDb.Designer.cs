@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventory.Infrastructure.EFCore.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20260108163049_InitInventoryDb")]
+    [Migration("20260109042905_InitInventoryDb")]
     partial class InitInventoryDb
     {
         /// <inheritdoc />
@@ -74,9 +74,9 @@ namespace Inventory.Infrastructure.EFCore.Migrations
 
                     b.ToTable("StockItems", t =>
                         {
-                            t.HasCheckConstraint("CK_StockItem_Quantity", "Quantity >= 0");
+                            t.HasCheckConstraint("CK_StockItem_Quantity", "\"Quantity\" >= 0");
 
-                            t.HasCheckConstraint("CK_StockItem_ThresholdWarning", "ThresholdWarning >= 0");
+                            t.HasCheckConstraint("CK_StockItem_ThresholdWarning", "\"ThresholdWarning\" >= 0");
                         });
                 });
 
@@ -109,7 +109,7 @@ namespace Inventory.Infrastructure.EFCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId")
-                        .HasFilter("OrderId IS NOT NULL");
+                        .HasFilter("\"OrderId\" IS NOT NULL");
 
                     b.HasIndex("StockItemId");
 
@@ -117,16 +117,16 @@ namespace Inventory.Infrastructure.EFCore.Migrations
 
                     b.HasIndex("OrderId", "CreatedAt")
                         .HasDatabaseName("IX_StockLog_OrderId_CreatedAt")
-                        .HasFilter("OrderId IS NOT NULL");
+                        .HasFilter("\"OrderId\" IS NOT NULL");
 
                     b.HasIndex("StockItemId", "CreatedAt")
                         .HasDatabaseName("IX_StockLog_StockItemId_CreatedAt");
 
                     b.ToTable("StockLogs", null, t =>
                         {
-                            t.HasCheckConstraint("CK_StockLog_Quantity", "Quantity > 0");
+                            t.HasCheckConstraint("CK_StockLog_Quantity", "\"Quantity\" > 0");
 
-                            t.HasCheckConstraint("CK_StockLog_SnapshotTotalQuantity", "SnapshotTotalQuantity >= 0");
+                            t.HasCheckConstraint("CK_StockLog_SnapshotTotalQuantity", "\"SnapshotTotalQuantity\" >= 0");
                         });
                 });
 
@@ -162,7 +162,7 @@ namespace Inventory.Infrastructure.EFCore.Migrations
 
                     b.ToTable("StockReservations", t =>
                         {
-                            t.HasCheckConstraint("CK_StockReservation_Quantity", "Quantity > 0");
+                            t.HasCheckConstraint("CK_StockReservation_Quantity", "\"Quantity\" > 0");
                         });
                 });
 

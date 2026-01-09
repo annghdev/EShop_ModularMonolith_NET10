@@ -3,7 +3,7 @@
 public class StockItem : AggregateRoot
 {
     public string Name { get; private set; } = string.Empty;
-    public Sku Sku { get; private set; } = new Sku(string.Empty);
+    public Sku Sku { get; private set; }
     public int Quantity { get; private set; }
     public int ThresholdWarning { get; private set; }
 

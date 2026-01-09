@@ -218,10 +218,10 @@ public class Product : AggregateRoot
 
     public void ValidateCategoryDefaultAttributes()
     {
-        foreach (var defaultAttr in Category!.DefaultAttributes)
+        foreach (var defaultAttr in Category!.GetAllDefaultAttributesFromHierarchy())
         {
             if (!_attributes.Any(a => a.AttributeId == defaultAttr.AttributeId))
-                throw new DomainException("Product not contains attribute not defined in category");
+                throw new DomainException($"Product missing required attribute '{defaultAttr.Attribute.Name}' from category hierarchy");
         }
     }
 
@@ -258,6 +258,9 @@ public class Product : AggregateRoot
 
     public void Discard()
     {
+        if (Status != ProductStatus.Draft)
+            throw new DomainException("Cannot discard product after publish");
+
         Status = ProductStatus.Discarded;
 
         // add event here

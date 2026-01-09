@@ -1,9 +1,11 @@
-﻿using FluentValidation;
+using Contracts;
+using Contracts.IntegrationEvents.CatalogEvents;
+using FluentValidation;
 using Kernel.Application;
 using Kernel.Infrastructure;
+using Kernel.Infrastructure.EventBus;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -43,6 +45,12 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddInfrasServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+
+        // Add IntegrationEventHandlers here
+
+
+
         services.AddSingleton<ICacheService, MemoryCacheService>();
         //services.AddScoped<IEmailService, MailkitService>();
         //services.AddScoped<IImageStorageService, CloudinaryService>();
@@ -50,3 +58,6 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
+
+
+

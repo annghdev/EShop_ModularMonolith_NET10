@@ -15,7 +15,7 @@ Content-Type: application/json
 ###
 
 ### Publish Product - Laptop (Device)
-PUT http://localhost:5000/api/products/publish/dddddddd-dddd-dddd-dddd-dddddddddd15
+PUT http://localhost:5000/api/products/publish/dddddddd-dddd-dddd-dddd-dddddddddd03
 Content-Type: application/json
 
 {}
@@ -23,7 +23,7 @@ Content-Type: application/json
 ###
 
 ### Publish Product - Headphones (Electronics)
-PUT http://localhost:5000/api/products/publish/dddddddd-dddd-dddd-dddd-dddddddddd16
+PUT http://localhost:5000/api/products/publish/dddddddd-dddd-dddd-dddd-dddddddddd04
 Content-Type: application/json
 
 {}

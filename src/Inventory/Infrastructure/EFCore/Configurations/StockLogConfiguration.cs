@@ -36,20 +36,20 @@ public class StockLogConfiguration : IEntityTypeConfiguration<StockLog>
 
         // Constraints
         builder.ToTable(t => {
-            t.HasCheckConstraint("CK_StockLog_Quantity", "Quantity > 0");
-            t.HasCheckConstraint("CK_StockLog_SnapshotTotalQuantity", "SnapshotTotalQuantity >= 0");
+            t.HasCheckConstraint("CK_StockLog_Quantity", "\"Quantity\" > 0");
+            t.HasCheckConstraint("CK_StockLog_SnapshotTotalQuantity", "\"SnapshotTotalQuantity\" >= 0");
         });
 
         // Indexes for performance
         builder.HasIndex(l => l.StockItemId);
         builder.HasIndex(l => l.OrderId)
-            .HasFilter("OrderId IS NOT NULL"); // Partial index for non-null OrderId
+            .HasFilter("\"OrderId\" IS NOT NULL"); // Partial index for non-null OrderId
         builder.HasIndex(l => l.Type);
         builder.HasIndex(l => new { l.StockItemId, l.CreatedAt })
             .HasDatabaseName("IX_StockLog_StockItemId_CreatedAt");
         builder.HasIndex(l => new { l.OrderId, l.CreatedAt })
             .HasDatabaseName("IX_StockLog_OrderId_CreatedAt")
-            .HasFilter("OrderId IS NOT NULL");
+            .HasFilter("\"OrderId\" IS NOT NULL");
 
         // Table configuration
         builder.ToTable("StockLogs");

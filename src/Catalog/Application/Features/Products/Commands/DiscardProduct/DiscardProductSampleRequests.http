@@ -1,0 +1,4 @@
+### Discard Product - Shirt (Fashion)
+DELETE http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/discard
+Content-Type: application/json
+###

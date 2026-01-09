@@ -30,8 +30,8 @@ namespace Inventory.Infrastructure.EFCore.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StockItems", x => x.Id);
-                    table.CheckConstraint("CK_StockItem_Quantity", "Quantity >= 0");
-                    table.CheckConstraint("CK_StockItem_ThresholdWarning", "ThresholdWarning >= 0");
+                    table.CheckConstraint("CK_StockItem_Quantity", "\"Quantity\" >= 0");
+                    table.CheckConstraint("CK_StockItem_ThresholdWarning", "\"ThresholdWarning\" >= 0");
                 });
 
             migrationBuilder.CreateTable(
@@ -49,8 +49,8 @@ namespace Inventory.Infrastructure.EFCore.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StockLogs", x => x.Id);
-                    table.CheckConstraint("CK_StockLog_Quantity", "Quantity > 0");
-                    table.CheckConstraint("CK_StockLog_SnapshotTotalQuantity", "SnapshotTotalQuantity >= 0");
+                    table.CheckConstraint("CK_StockLog_Quantity", "\"Quantity\" > 0");
+                    table.CheckConstraint("CK_StockLog_SnapshotTotalQuantity", "\"SnapshotTotalQuantity\" >= 0");
                     table.ForeignKey(
                         name: "FK_StockLogs_StockItems_StockItemId",
                         column: x => x.StockItemId,
@@ -72,7 +72,7 @@ namespace Inventory.Infrastructure.EFCore.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StockReservations", x => x.Id);
-                    table.CheckConstraint("CK_StockReservation_Quantity", "Quantity > 0");
+                    table.CheckConstraint("CK_StockReservation_Quantity", "\"Quantity\" > 0");
                     table.ForeignKey(
                         name: "FK_StockReservations_StockItems_StockItemId",
                         column: x => x.StockItemId,
@@ -101,7 +101,7 @@ namespace Inventory.Infrastructure.EFCore.Migrations
                 name: "IX_StockLog_OrderId_CreatedAt",
                 table: "StockLogs",
                 columns: new[] { "OrderId", "CreatedAt" },
-                filter: "OrderId IS NOT NULL");
+                filter: "\"OrderId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockLog_StockItemId_CreatedAt",
@@ -112,7 +112,7 @@ namespace Inventory.Infrastructure.EFCore.Migrations
                 name: "IX_StockLogs_OrderId",
                 table: "StockLogs",
                 column: "OrderId",
-                filter: "OrderId IS NOT NULL");
+                filter: "\"OrderId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockLogs_StockItemId",

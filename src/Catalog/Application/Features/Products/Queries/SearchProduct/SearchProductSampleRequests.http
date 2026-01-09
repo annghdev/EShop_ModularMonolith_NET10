@@ -4,8 +4,26 @@ Accept: application/json
 
 ###
 
-### Search Products - Category filter
-GET http://localhost:5000/api/products/search?keyword=phone&categoryId=bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+### Search Products - Category filter (Smartphone)
+GET http://localhost:5000/api/products/search?keyword=phone&categoryId=cccccccc-cccc-cccc-cccc-cccccccccccd
+Accept: application/json
+
+###
+
+### Search Products - Category filter (Shirt)
+GET http://localhost:5000/api/products/search?keyword=shirt&categoryId=bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbc
+Accept: application/json
+
+###
+
+### Search Products - Category filter (Laptop)
+GET http://localhost:5000/api/products/search?keyword=laptop&categoryId=cccccccc-cccc-cccc-cccc-cccccccccccb
+Accept: application/json
+
+###
+
+### Search Products - Category filter (Headphones)
+GET http://localhost:5000/api/products/search?keyword=headphone&categoryId=dddddddd-dddd-dddd-dddd-ddddddddddde
 Accept: application/json
 
 ###
@@ -46,6 +64,18 @@ Accept: application/json
 
 ###
 
+### Search Products - Attribute filter (Color: Blue)
+GET http://localhost:5000/api/products/search?keyword=&attributeFilters={"Color":"Blue"}
+Accept: application/json
+
+###
+
+### Search Products - Attribute filter (Storage: 256GB)
+GET http://localhost:5000/api/products/search?keyword=&attributeFilters={"Storage":"256GB"}
+Accept: application/json
+
+###
+
 ### Search Products - No results
 GET http://localhost:5000/api/products/search?keyword=nonexistentproduct12345
 Accept: application/json
@@ -59,7 +89,13 @@ Accept: application/json
 ###
 
 ### Debug: Search with keyword (no status filter)
-GET http://localhost:5000/api/products/search/debug2?keyword=shirt
+GET http://localhost:5000/api/products/search?keyword=shirt
+Accept: application/json
+
+###
+
+### Debug: Search all products with pagination
+GET http://localhost:5000/api/products/search?page=1&pageSize=10
 Accept: application/json
 
 ###

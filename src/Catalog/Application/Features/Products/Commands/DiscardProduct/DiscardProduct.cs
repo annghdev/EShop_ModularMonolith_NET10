@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Catalog.Application;
 
-public class PublishProduct
+public class DiscardProduct
 {
     public record Command(Guid Id) : ICommand
     {
@@ -18,9 +18,7 @@ public class PublishProduct
         {
             var product = await uow.Products.LoadFullAggregate(command.Id);
 
-            product.Publish();
-
-            //uow.Products.Update(product);
+            product.Discard();
 
             await uow.CommitAsync(cancellationToken);
         }
@@ -30,11 +28,12 @@ public class PublishProduct
     {
         public void Map(IEndpointRouteBuilder app)
         {
-            app.MapPut("api/products/publish/{id:guid}", async (Guid id, ISender sender) =>
+            app.MapDelete("api/products/{id:guid}/discard", async (Guid id, ISender sender) =>
             {
                 await sender.Send(new Command(id));
-                return Results.Ok();
-            });
+            })
+                .WithName("DiscardProduct")
+                .WithTags("Products");
         }
     }
 }

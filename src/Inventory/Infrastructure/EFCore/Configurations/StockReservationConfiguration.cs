@@ -27,7 +27,7 @@ public class StockReservationConfiguration : IEntityTypeConfiguration<StockReser
 
         // Constraints
         builder.ToTable(t => {
-            t.HasCheckConstraint("CK_StockReservation_Quantity", "Quantity > 0");
+            t.HasCheckConstraint("CK_StockReservation_Quantity", "\"Quantity\" > 0");
         });
 
         // Unique constraint: One reservation per order per stock item

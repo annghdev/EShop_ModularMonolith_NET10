@@ -11,4 +11,8 @@
     <ProjectReference Include="..\Kernel\Kernel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\EFCore\Migrations\" />
+  </ItemGroup>
+
 </Project>

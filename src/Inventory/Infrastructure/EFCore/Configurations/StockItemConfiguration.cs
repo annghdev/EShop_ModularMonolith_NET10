@@ -44,8 +44,8 @@ public class StockItemConfiguration : IEntityTypeConfiguration<StockItem>
 
         // Constraints
         builder.ToTable(t => {
-            t.HasCheckConstraint("CK_StockItem_Quantity", "Quantity >= 0");
-            t.HasCheckConstraint("CK_StockItem_ThresholdWarning", "ThresholdWarning >= 0");
+            t.HasCheckConstraint("CK_StockItem_Quantity", "\"Quantity\" >= 0");
+            t.HasCheckConstraint("CK_StockItem_ThresholdWarning", "\"ThresholdWarning\" >= 0");
         });
 
         // Indexes for performance
