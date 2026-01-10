@@ -1,6 +1,4 @@
-﻿using Catalog.Domain.Products.Events;
-
-namespace Catalog.Domain;
+﻿namespace Catalog.Domain;
 
 public class Product : AggregateRoot
 {

@@ -97,6 +97,7 @@ public class VariantConfiguration : IEntityTypeConfiguration<Variant>
             .HasForeignKey(v => v.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
 
+
         builder.HasMany(v => v.AttributeValues)
             .WithOne(vav => vav.Variant)
             .HasForeignKey(vav => vav.VariantId)

@@ -1,0 +1,167 @@
+### Update Variant - Change Blue Medium to Navy Blue Medium (Shirt)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/variants/019ba6f5-abde-7276-b477-04ebdbb03266
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd13",
+  "variantId": "019ba6f5-abde-7276-b477-04ebdbb03266",
+  "name": "Navy Blue Medium",
+  "sku": "SHIRT001-NAVY-M",
+  "overrideCost": null,
+  "overridePrice": null,
+  "dimensions": null,
+  "mainImage": "https://example.com/shirt-navy-m.jpg",
+  "images": [
+    "https://example.com/shirt-navy-m.jpg",
+    "https://example.com/shirt-navy-m-back.jpg",
+    "https://example.com/shirt-navy-m-side.jpg"
+  ],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111118",
+    "22222222-2222-2222-2222-222222222222": "22222222-2222-2222-2222-222222222225"
+  }
+}
+
+###
+
+### Update Variant - Change price and add dimensions (Smartphone)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14/variants/019ba6f9-c4e3-7b31-b9c9-0ff8667efaf0
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd14",
+  "variantId": "019ba6f9-c4e3-7b31-b9c9-0ff8667efaf0",
+  "name": "Black 512GB Premium",
+  "sku": "PHONE001-BLACK-512GB",
+  "overrideCost": {
+    "amount": 450.00,
+    "currency": "USD"
+  },
+  "overridePrice": {
+    "amount": 1099.99,
+    "currency": "USD"
+  },
+  "dimensions": {
+    "width": 7.5,
+    "height": 15.8,
+    "depth": 0.9,
+    "weight": 0.22
+  },
+  "mainImage": "https://example.com/phone-black-512gb-premium.jpg",
+  "images": [
+    "https://example.com/phone-black-512gb-premium.jpg",
+    "https://example.com/phone-black-512gb-premium-side.jpg"
+  ],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111115",
+    "66666666-6666-6666-6666-666666666666": "66666666-6666-6666-6666-666666666670",
+    "33333333-3333-3333-3333-333333333333": "33333333-3333-3333-3333-333333333335",
+    "55555555-5555-5555-5555-555555555555": "55555555-5555-5555-5555-555555555559",
+    "77777777-7777-7777-7777-777777777777": "77777777-7777-7777-7777-777777777781"
+  }
+}
+
+###
+
+### Update Variant - Change specifications and price (Laptop)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd03/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv03
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd03",
+  "variantId": "vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv03",
+  "name": "i7 32GB 1TB SSD 17inch",
+  "sku": "LT001-I732-1TB-17",
+  "overrideCost": null,
+  "overridePrice": null,
+  "dimensions": null,
+  "mainImage": "https://example.com/laptop-i7-32gb-1tb.jpg",
+  "images": [
+    "https://example.com/laptop-i7-32gb-1tb.jpg",
+    "https://example.com/laptop-i7-32gb-1tb-open.jpg"
+  ],
+  "attributeValues": {
+    "44444444-4444-4444-4444-444444444444": "44444444-4444-4444-4444-444444444447",
+    "33333333-3333-3333-3333-333333333333": "33333333-3333-3333-3333-333333333337",
+    "66666666-6666-6666-6666-666666666666": "66666666-6666-6666-6666-666666666671",
+    "77777777-7777-7777-7777-777777777777": "77777777-7777-7777-7777-777777777784",
+    "55555555-5555-5555-5555-555555555555": "55555555-5555-5555-5555-555555555560"
+  }
+}
+
+###
+
+### Update Variant - Change color and battery (Headphones)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd04/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv04
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd04",
+  "variantId": "vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv04",
+  "name": "Blue 4000mAh Premium",
+  "sku": "HEAD001-BLU-4000MAH-PREM",
+  "overrideCost": null,
+  "overridePrice": {
+    "amount": 349.99,
+    "currency": "USD"
+  },
+  "dimensions": null,
+  "mainImage": "https://example.com/headphones-blue-premium.jpg",
+  "images": [
+    "https://example.com/headphones-blue-premium.jpg",
+    "https://example.com/headphones-blue-premium-folded.jpg"
+  ],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111113",
+    "55555555-5555-5555-5555-555555555555": "55555555-5555-5555-5555-555555555560"
+  }
+}
+
+###
+
+### Update Variant - Clear main image and change to basic variant (Shirt)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv05
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd13",
+  "variantId": "vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv05",
+  "name": "Red Large Basic",
+  "sku": "SHIRT001-RED-L-BASIC",
+  "overrideCost": null,
+  "overridePrice": null,
+  "dimensions": null,
+  "mainImage": null,
+  "images": [],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111112",
+    "22222222-2222-2222-2222-222222222222": "22222222-2222-2222-2222-222222222226"
+  }
+}
+
+###
+
+### Update Variant - Change SKU and name only (Smartphone)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv06
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd14",
+  "variantId": "vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv06",
+  "name": "Blue 256GB - Special Edition",
+  "sku": "PHONE001-BLUE-256GB-SE",
+  "overrideCost": null,
+  "overridePrice": null,
+  "dimensions": null,
+  "mainImage": "https://example.com/phone-blue-256gb.jpg",
+  "images": ["https://example.com/phone-blue-256gb.jpg"],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111113",
+    "66666666-6666-6666-6666-666666666666": "66666666-6666-6666-6666-666666666669",
+    "33333333-3333-3333-3333-333333333333": "33333333-3333-3333-3333-333333333335",
+    "55555555-5555-5555-5555-555555555555": "55555555-5555-5555-5555-555555555559",
+    "77777777-7777-7777-7777-777777777777": "77777777-7777-7777-7777-777777777781"
+  }
+}
+
+###

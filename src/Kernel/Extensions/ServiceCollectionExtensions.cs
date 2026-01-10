@@ -1,5 +1,3 @@
-using Contracts;
-using Contracts.IntegrationEvents.CatalogEvents;
 using FluentValidation;
 using Kernel.Application;
 using Kernel.Infrastructure;
@@ -28,8 +26,6 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(assembly);
         services.AddValidatorsFromAssembly(assembly);
 
-        // use UnitOfWork instead, because we can't delete draft entities in background tasks if using this interceptor
-        //services.AddScoped<ISaveChangesInterceptor, AuditSaveChangesInterceptor>();
         return services;
     }
 

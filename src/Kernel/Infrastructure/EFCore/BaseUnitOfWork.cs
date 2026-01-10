@@ -1,4 +1,4 @@
-﻿using Kernel.Application;
+using Kernel.Application;
 using Kernel.Application.Interfaces;
 using Kernel.Domain;
 using MediatR;

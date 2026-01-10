@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Application\Features\Products\Commands\AddVariant\" />
-    <Folder Include="Application\Features\Products\Commands\RemoveVariant\" />
     <Folder Include="Application\IntegrationEventHandlers\" />
     <Folder Include="Infrastructure\EFCore\Migrations\" />
   </ItemGroup>

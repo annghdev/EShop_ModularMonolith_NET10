@@ -1,0 +1,155 @@
+### Add Variant - Blue Small (to existing Shirt product)
+POST http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/variants
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd13",
+  "name": "Blue Small",
+  "sku": "SHIRT001-BLUE-S",
+  "overrideCost": {
+    "amount": 20.00,
+    "currency": "USD"
+  },
+  "overridePrice": {
+    "amount": 39.99,
+    "currency": "USD"
+  },
+  "dimensions": null,
+  "mainImage": "https://example.com/shirt-blue-s.jpg",
+  "images": [
+    "https://example.com/shirt-blue-s.jpg",
+    "https://example.com/shirt-blue-s-back.jpg"
+  ],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111113",
+    "22222222-2222-2222-2222-222222222222": "22222222-2222-2222-2222-222222222224"
+  }
+}
+
+###
+
+### Add Variant - White Medium (to existing Shirt product)
+POST http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/variants
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd13",
+  "name": "White Medium",
+  "sku": "SHIRT001-WHITE-M",
+  "overrideCost": null,
+  "overridePrice": null,
+  "dimensions": null,
+  "mainImage": "https://example.com/shirt-white-m.jpg",
+  "images": ["https://example.com/shirt-white-m.jpg"],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111114",
+    "22222222-2222-2222-2222-222222222222": "22222222-2222-2222-2222-222222222225"
+  }
+}
+
+###
+
+### Add Variant - Green Large (to existing Smartphone product)
+POST http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14/variants
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd14",
+  "name": "Green 128GB",
+  "sku": "PHONE001-GREEN-128GB",
+  "overrideCost": null,
+  "overridePrice": null,
+  "dimensions": null,
+  "mainImage": "https://example.com/phone-green-128gb.jpg",
+  "images": ["https://example.com/phone-green-128gb.jpg"],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111116",
+    "66666666-6666-6666-6666-666666666666": "66666666-6666-6666-6666-666666666668",
+    "33333333-3333-3333-3333-333333333333": "33333333-3333-3333-3333-333333333335",
+    "55555555-5555-5555-5555-555555555555": "55555555-5555-5555-5555-555555555558",
+    "77777777-7777-7777-7777-777777777777": "77777777-7777-7777-7777-777777777781"
+  }
+}
+
+###
+
+### Add Variant - Silver 256GB (to existing Smartphone product)
+POST http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14/variants
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd14",
+  "name": "Silver 256GB",
+  "sku": "PHONE001-SILVER-256GB",
+  "overrideCost": {
+    "amount": 350.00,
+    "currency": "USD"
+  },
+  "overridePrice": {
+    "amount": 799.99,
+    "currency": "USD"
+  },
+  "dimensions": null,
+  "mainImage": "https://example.com/phone-silver-256gb.jpg",
+  "images": [
+    "https://example.com/phone-silver-256gb.jpg",
+    "https://example.com/phone-silver-256gb-side.jpg"
+  ],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111117",
+    "66666666-6666-6666-6666-666666666666": "66666666-6666-6666-6666-666666666669",
+    "33333333-3333-3333-3333-333333333333": "33333333-3333-3333-3333-333333333335",
+    "55555555-5555-5555-5555-555555555555": "55555555-5555-5555-5555-555555555559",
+    "77777777-7777-7777-7777-777777777777": "77777777-7777-7777-7777-777777777781"
+  }
+}
+
+###
+
+### Add Variant - i5 8GB 256GB 13inch (to existing Laptop product)
+POST http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd03/variants
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd03",
+  "name": "i5 8GB 256GB 13inch",
+  "sku": "LT001-I58-256-13",
+  "overrideCost": null,
+  "overridePrice": {
+    "amount": 1499.99,
+    "currency": "USD"
+  },
+  "dimensions": null,
+  "mainImage": "https://example.com/laptop-i5-8gb-256gb.jpg",
+  "images": ["https://example.com/laptop-i5-8gb-256gb.jpg"],
+  "attributeValues": {
+    "44444444-4444-4444-4444-444444444444": "44444444-4444-4444-4444-444444444446",
+    "33333333-3333-3333-3333-333333333333": "33333333-3333-3333-3333-333333333335",
+    "66666666-6666-6666-6666-666666666666": "66666666-6666-6666-6666-666666666669",
+    "77777777-7777-7777-7777-777777777777": "77777777-7777-7777-7777-777777777782",
+    "55555555-5555-5555-5555-555555555555": "55555555-5555-5555-5555-555555555558"
+  }
+}
+
+###
+
+### Add Variant - White 3000mAh (to existing Headphones product)
+POST http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd04/variants
+Content-Type: application/json
+
+{
+  "productId": "dddddddd-dddd-dddd-dddd-dddddddddd04",
+  "name": "White 3000mAh",
+  "sku": "HEAD001-WHT-3000MAH",
+  "overrideCost": null,
+  "overridePrice": null,
+  "dimensions": null,
+  "mainImage": "https://example.com/headphones-white.jpg",
+  "images": ["https://example.com/headphones-white.jpg"],
+  "attributeValues": {
+    "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111114",
+    "55555555-5555-5555-5555-555555555555": "55555555-5555-5555-5555-555555555558"
+  }
+}
+
+###

@@ -1,6 +1,6 @@
-﻿namespace Catalog.Domain;
+namespace Catalog.Domain;
 
-public class Variant : AuditableEntity
+public class Variant : BaseEntity
 {
     public string Name { get; private set; }
     public Sku Sku { get; private set; }
@@ -60,11 +60,8 @@ public class Variant : AuditableEntity
         OverridePrice = overridePrice ?? throw new MoneyException("ovrride price cannot be null");
     }
 
-    public void SetMainImage(ImageUrl imageUrl, bool raiseEvent = true)
+    public void SetMainImage(ImageUrl? imageUrl, bool raiseEvent = true)
     {
-        if (imageUrl is null)
-            throw new DomainException("Main image URL cannot be empty");
-
         MainImage = imageUrl;
 
         if (raiseEvent)
@@ -83,6 +80,53 @@ public class Variant : AuditableEntity
         if (raiseEvent)
         {
             //
+        }
+    }
+
+    public void UpdateBasicInfo(string name, Sku sku)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Variant name cannot be empty");
+
+        Name = name;
+        Sku = sku ?? throw new DomainException("SKU cannot be null");
+    }
+
+    public void UpdateDimensions(Dimensions? dimensions)
+    {
+        OverrideDimensions = dimensions;
+    }
+
+    public void UpdateAttributeValues(IEnumerable<(ProductAttribute, Guid)> attributeValues)
+    {
+        _attributeValues.Clear();
+
+        foreach (var (attr, val) in attributeValues)
+        {
+            _attributeValues.Add(new VariantAttributeValue
+            {
+                ProductAttribute = attr,
+                ValueId = val
+            });
+        }
+
+        ValidateAttributeValues();
+    }
+
+    public void ClearImages()
+    {
+        _images.Clear();
+    }
+
+    public void SetImages(IEnumerable<ImageUrl> images)
+    {
+        _images.Clear();
+        foreach (var image in images)
+        {
+            if (image is null)
+                throw new DomainException("Image URL cannot be null");
+
+            _images.Add(image);
         }
     }
 

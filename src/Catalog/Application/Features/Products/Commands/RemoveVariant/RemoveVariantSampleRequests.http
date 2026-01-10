@@ -1,0 +1,41 @@
+### Remove Variant - Blue Small from Shirt (assuming it was added earlier)
+DELETE http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/variants/019ba71b-8170-773c-8489-6b9f0bb7b8e2
+Content-Type: application/json
+
+###
+
+### Remove Variant - White Medium from Shirt (assuming it was added earlier)
+DELETE http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv08
+Content-Type: application/json
+
+###
+
+### Remove Variant - Green 128GB from Smartphone (assuming it was added earlier)
+DELETE http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv09
+Content-Type: application/json
+
+###
+
+### Remove Variant - Silver 256GB from Smartphone (assuming it was added earlier)
+DELETE http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv10
+Content-Type: application/json
+
+###
+
+### Remove Variant - i5 8GB 256GB 13inch from Laptop (assuming it was added earlier)
+DELETE http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd03/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv11
+Content-Type: application/json
+
+###
+
+### Remove Variant - White 3000mAh from Headphones (assuming it was added earlier)
+DELETE http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd04/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv12
+Content-Type: application/json
+
+###
+
+### Remove Variant - Red Large (original variant from Shirt) - THIS WILL FAIL
+DELETE http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/variants/vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvv01
+Content-Type: application/json
+
+###

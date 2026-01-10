@@ -1,4 +1,5 @@
 using API;
+using API.Middlewares;
 using Catalog;
 using Catalog.Infrastructure;
 using Inventory.Infrastructure;
@@ -19,6 +20,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddServices(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapDefaultEndpoints();
 
