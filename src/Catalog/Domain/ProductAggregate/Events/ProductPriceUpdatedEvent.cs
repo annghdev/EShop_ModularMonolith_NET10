@@ -1,3 +1,3 @@
 ﻿namespace Catalog.Domain;
 
-public record ProductPriceUpdatedEvent(Guid ProductId, decimal Cost, decimal Price) : DomainEvent;
+public record ProductPriceUpdatedEvent(Product Payload) : DomainEvent;

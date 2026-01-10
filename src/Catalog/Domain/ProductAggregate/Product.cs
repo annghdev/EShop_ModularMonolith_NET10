@@ -52,7 +52,7 @@ public class Product : AggregateRoot
         return draft;
     }
 
-    public void UpdateBasicInfo(string name, string? description)
+    public void UpdateBasicInfo(string name, string? description, Dimensions dimensions)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Product name is required");
@@ -60,6 +60,7 @@ public class Product : AggregateRoot
         Name = name;
         Description = description;
         Slug = new(name);
+        Dimensions = dimensions ?? throw new DomainException("Dimensions is required");
 
         AddEvent(new ProductBasicInfoUpdatedEvent(this));
 
@@ -77,17 +78,8 @@ public class Product : AggregateRoot
 
         if (oldPrice != price.Amount)
         {
-            AddEvent(new ProductPriceUpdatedEvent(Id, Cost.Amount, Price.Amount));
+            AddEvent(new ProductPriceUpdatedEvent(this));
         }
-
-        IncreaseVersion();
-    }
-
-    public void UpdateDimensions(Dimensions dimensions)
-    {
-        Dimensions = dimensions ?? throw new ArgumentNullException(nameof(dimensions));
-
-        // raise event here
 
         IncreaseVersion();
     }

@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Application\Features\Products\Commands\ProductAttributes\" />
     <Folder Include="Application\IntegrationEventHandlers\" />
     <Folder Include="Infrastructure\EFCore\Migrations\" />
   </ItemGroup>

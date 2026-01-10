@@ -1,0 +1,84 @@
+### Update Product Basic Info - Shirt (Fashion)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/basic-info
+Content-Type: application/json
+
+{
+  "name": "Premium Cotton Shirt",
+  "description": "Ultra comfortable premium cotton shirt perfect for everyday wear and special occasions",
+  "dimensions": {
+    "width": 52,
+    "height": 72,
+    "depth": 2.5,
+    "weight": 0.35
+  }
+}
+
+###
+
+### Update Product Basic Info - Smartphone (Device)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14/basic-info
+Content-Type: application/json
+
+{
+  "name": "Premium Smartphone X1 Pro",
+  "description": "Latest flagship smartphone with advanced AI features and premium build quality",
+  "dimensions": {
+    "width": 7.6,
+    "height": 15.9,
+    "depth": 0.9,
+    "weight": 0.22
+  }
+}
+
+###
+
+### Update Product Basic Info - Laptop (Device)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd03/basic-info
+Content-Type: application/json
+
+{
+  "name": "Gaming Laptop Pro Elite",
+  "description": "High-performance gaming laptop with latest RTX graphics and premium cooling system",
+  "dimensions": {
+    "width": 37,
+    "height": 26,
+    "depth": 2.8,
+    "weight": 2.7
+  }
+}
+
+###
+
+### Update Product Basic Info - Headphones (Electronics)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd04/basic-info
+Content-Type: application/json
+
+{
+  "name": "Wireless Noise-Cancelling Headphones Pro",
+  "description": "Premium wireless headphones with advanced active noise cancellation and 40-hour battery life",
+  "dimensions": {
+    "width": 21,
+    "height": 19,
+    "depth": 9,
+    "weight": 0.32
+  }
+}
+
+###
+
+### Update Product Basic Info - Simple Name Change
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/basic-info
+Content-Type: application/json
+
+{
+  "name": "Classic Premium Shirt",
+  "description": "Comfortable cotton shirt perfect for everyday wear",
+  "dimensions": {
+    "width": 50,
+    "height": 70,
+    "depth": 2,
+    "weight": 0.3
+  }
+}
+
+###

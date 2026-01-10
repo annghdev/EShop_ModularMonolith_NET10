@@ -1,0 +1,84 @@
+### Update Product Pricing - Shirt (Fashion)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/pricing
+Content-Type: application/json
+
+{
+  "cost": {
+    "amount": 30.00,
+    "currency": "USD"
+  },
+  "price": {
+    "amount": 59.99,
+    "currency": "USD"
+  }
+}
+
+###
+
+### Update Product Pricing - Smartphone (Device)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14/pricing
+Content-Type: application/json
+
+{
+  "cost": {
+    "amount": 450.00,
+    "currency": "USD"
+  },
+  "price": {
+    "amount": 999.99,
+    "currency": "USD"
+  }
+}
+
+###
+
+### Update Product Pricing - Laptop (Device)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd03/pricing
+Content-Type: application/json
+
+{
+  "cost": {
+    "amount": 1300.00,
+    "currency": "USD"
+  },
+  "price": {
+    "amount": 2199.99,
+    "currency": "USD"
+  }
+}
+
+###
+
+### Update Product Pricing - Headphones (Electronics)
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd04/pricing
+Content-Type: application/json
+
+{
+  "cost": {
+    "amount": 180.00,
+    "currency": "USD"
+  },
+  "price": {
+    "amount": 349.99,
+    "currency": "USD"
+  }
+}
+
+###
+
+### Update Product Pricing - Price Increase
+PUT http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd13/pricing
+Content-Type: application/json
+
+{
+  "cost": {
+    "amount": 25.00,
+    "currency": "USD"
+  },
+  "price": {
+    "amount": 69.99,
+    "currency": "USD"
+  }
+}
+
+###

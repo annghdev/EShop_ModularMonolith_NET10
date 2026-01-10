@@ -1,18 +1,18 @@
 using Catalog.Domain;
-using Contracts.IntegrationEvents.CatalogEvents;
+using Contracts.IntegrationEvents;
 using Elastic.Clients.Elasticsearch;
 
-namespace Catalog.Application;
+namespace Catalog.Application.Features.Products.EventHandlers;
 
-public class ProductPublishedEventHandler(ElasticsearchClient elasticsearchClient, IIntegrationEventPublisher publisher)
-    : INotificationHandler<ProductPublishedEvent>
+public class ProductBasicInfoUpdatedEventHandler(ElasticsearchClient elasticsearchClient, IIntegrationEventPublisher publisher)
+    : INotificationHandler<ProductBasicInfoUpdatedEvent>
 {
     private const string IndexName = "products";
 
-    public async Task Handle(ProductPublishedEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(ProductBasicInfoUpdatedEvent notification, CancellationToken cancellationToken)
     {
         var t1 = SyncElasticSearch(notification.Payload, cancellationToken);
-        var t2 = PublishIntegrationEvent(notification.Payload, cancellationToken);
+        var t2 = PublishIntegrationEvent(notification.Payload.Id, cancellationToken);
 
         await Task.WhenAll(t1, t2);
     }
@@ -35,16 +35,10 @@ public class ProductPublishedEventHandler(ElasticsearchClient elasticsearchClien
         }
     }
 
-    private async Task PublishIntegrationEvent(Product product, CancellationToken cancellationToken)
+    private async Task PublishIntegrationEvent(Guid productId, CancellationToken cancellationToken)
     {
-        var integrationEvent = new ProductPublishedIntegrationEvent(
-                product.Id,
-                product.Variants
-                    .Select(v => new ProductVariantPublishDto(v.Id, v.Name, v.Sku.Value))
-                    .ToList()
-            );
+        var integrationEvent = new ProductBasicInfoUpdatedIntegrationEvent(productId);
 
         await publisher.PublishAsync(integrationEvent, cancellationToken);
     }
-
 }
