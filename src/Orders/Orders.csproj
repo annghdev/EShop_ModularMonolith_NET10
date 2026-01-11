@@ -9,10 +9,6 @@
   <ItemGroup>
     <Folder Include="Application\EventHandlers\" />
     <Folder Include="Application\Features\" />
-    <Folder Include="Domain\Carts\" />
-    <Folder Include="Domain\Orders\" />
-    <Folder Include="Domain\Payments\" />
-    <Folder Include="Domain\Shippings\" />
     <Folder Include="Infrastructure\" />
   </ItemGroup>
 
