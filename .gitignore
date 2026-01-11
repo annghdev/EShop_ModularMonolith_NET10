@@ -364,5 +364,6 @@ FodyWeavers.xsd
 
 .context/
 .cursor/
+.agent/
 .docs/
 /src/API/appsettings.Development.json
