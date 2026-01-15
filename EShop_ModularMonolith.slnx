@@ -10,7 +10,8 @@
     <Project Path="src/API/API.csproj" />
     <Project Path="src/Aspire/Aspire.AppHost/Aspire.AppHost.csproj" />
     <Project Path="src/Auth/Auth.csproj" Id="fa0d293b-a5a3-433d-907b-fe09bd29da73" />
-    <Project Path="src/BlazorAdmin/BlazorAdmin.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/">
     <Project Path="src/Catalog/Catalog.csproj" />
     <Project Path="src/Inventory/Inventory.csproj" />
     <Project Path="src/Orders/Orders.csproj" Id="99d36a76-da45-420f-8af2-abfbdeff7905" />
@@ -25,6 +26,9 @@
     <Project Path="src/Aspire/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj" />
     <Project Path="src/Contracts/Contracts.csproj" />
     <Project Path="src/Kernel/Kernel.csproj" Id="b9fad5df-3313-4521-8eba-5e7403aff333" />
+  </Folder>
+  <Folder Name="/src/UI/">
+    <Project Path="src/BlazorAdmin/BlazorAdmin.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Auth.Tests/Auth.Tests.csproj" Id="c98e9896-6c20-4a67-98f8-a66e4c858999" />
