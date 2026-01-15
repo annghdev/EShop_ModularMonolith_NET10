@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Identity\Identity.csproj" />
+    <ProjectReference Include="..\..\src\Users\Users.csproj" />
     <ProjectReference Include="..\SharedLibsForTests\SharedLibsForTests.csproj" />
   </ItemGroup>
 
