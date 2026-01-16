@@ -1,10 +1,8 @@
-﻿using Contracts;
-
-namespace Auth.Events;
+﻿namespace Contracts;
 
 public record AccountRegiteredForcustomerIntegrationEvent(
     Guid AccountId,
     string? GuestId,
-    string FullName,
+    string? FullName,
     string Email,
     string? PhoneNumber) : IntegrationEvent;

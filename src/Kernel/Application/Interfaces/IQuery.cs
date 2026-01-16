@@ -9,7 +9,4 @@ public interface IQuery
 }
 
 
-public interface IQuery<T> : IQuery, IRequest<T>
-{
-
-}
+public interface IQuery<T> : IQuery, IRequest<T>;

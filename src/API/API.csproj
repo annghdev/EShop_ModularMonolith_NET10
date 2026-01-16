@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Auth\Auth.csproj" />
     <ProjectReference Include="..\Catalog\Catalog.csproj" />
     <ProjectReference Include="..\Inventory\Inventory.csproj" />
     <ProjectReference Include="..\Pricing\Pricing.csproj" />

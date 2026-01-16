@@ -1,5 +1,7 @@
 using API;
 using API.Middlewares;
+using Auth;
+using Auth.Data;
 using Catalog;
 using Catalog.Infrastructure;
 using Inventory.Infrastructure;
@@ -18,6 +20,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddServices(builder.Configuration);
+builder.Services.AddAuthModule(builder.Configuration);
 
 var app = builder.Build();
 
@@ -41,11 +44,13 @@ app.MapGet("/", () =>
     return Results.Ok("Server is running...");
 });
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.MapEndpoints(typeof(Catalog.DependencyInjection).Assembly);
+app.MapEndpoints(typeof(Auth.DependencyInjection).Assembly);
 
 // Apply migrations and seed data
 using var scope = app.Services.CreateScope();
@@ -60,12 +65,20 @@ try
 
     Console.WriteLine("Catalog database migrations applied and data seeded successfully.");
 
+    // Migrate and seed Auth
+    var authContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    await authContext.Database.MigrateAsync();
+
+    var authSeeder = scope.ServiceProvider.GetRequiredService<AuthSeeder>();
+    await authSeeder.SeedAsync();
+
+    Console.WriteLine("Auth database migrations applied and data seeded successfully.");
 
     // Migrate Inventory
     var inventoryContext = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
     await inventoryContext.Database.MigrateAsync();
 
-    Console.WriteLine("Catalog database migrations applied and data seeded successfully.");
+    Console.WriteLine("Inventory database migrations applied successfully.");
 }
 catch (Exception ex)
 {

@@ -23,7 +23,7 @@ public class CacheInvalidationBehavior<TRequest, TResponse> : IPipelineBehavior<
     {
         var response = await next();
 
-        if (request is not ICommand command)
+        if (request is not IInvalidatesCache command)
         {
             return response;
         }

@@ -1,4 +1,4 @@
-namespace Auth.Entities;
+namespace Auth;
 
 /// <summary>
 /// External login information (Google, Facebook, etc.)

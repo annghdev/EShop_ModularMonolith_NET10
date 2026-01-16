@@ -19,6 +19,7 @@ var postgres = builder.AddPostgres("postgres-eshop", pgUsername, pgPassword)
 
 var catalogDb = postgres.AddDatabase("catalogdb");
 var inventoryDb = postgres.AddDatabase("inventorydb");
+var authDb = postgres.AddDatabase("authdb");
 
 var api = builder.AddProject<Projects.API>("api")
     .WithHttpHealthCheck("/health")
@@ -26,6 +27,8 @@ var api = builder.AddProject<Projects.API>("api")
         .WaitFor(catalogDb)
     .WithReference(inventoryDb)
         .WaitFor(inventoryDb)
+    .WithReference(authDb)
+        .WaitFor(authDb)
     .WithReference(elasticSearch)
         .WaitFor(elasticSearch)
     .WithReference(rabbitMq)

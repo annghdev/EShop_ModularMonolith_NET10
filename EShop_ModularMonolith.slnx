@@ -1,4 +1,5 @@
 <Solution>
+  <Folder Name="/assets/" />
   <Folder Name="/Solution Items/">
     <File Path=".gitattributes" />
     <File Path=".gitignore" />

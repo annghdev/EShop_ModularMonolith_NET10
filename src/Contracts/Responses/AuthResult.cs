@@ -1,12 +1,12 @@
-﻿namespace Contracts.Auth;
+﻿namespace Contracts;
 
-public record AuthResponse(string AccessToken, string? RefreshToken = null)
-    : TokensResponse(AccessToken, RefreshToken)
+public record AuthResult(string AccessToken, string? RefreshToken = null)
+    : TokensResult(AccessToken, RefreshToken)
 {
     public UserInfo? UserInfo { get; init; }
 }
 
-public record TokensResponse(string AccessToken, string? RefreshToken = null);
+public record TokensResult(string AccessToken, string? RefreshToken = null);
 
 public record UserInfo
 {
