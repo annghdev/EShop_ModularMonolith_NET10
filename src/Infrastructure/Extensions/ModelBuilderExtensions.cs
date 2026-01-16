@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Kernel.Extensions;
+namespace Infrastructure;
 
 public static class ModelBuilderExtensions
 {

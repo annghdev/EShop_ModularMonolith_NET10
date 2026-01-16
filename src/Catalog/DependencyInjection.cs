@@ -19,8 +19,8 @@ public static class DependencyInjection
         services.AddDbContext<CatalogDbContext>((sp, options) =>
         {
             options.UseNpgsql(configuration.GetConnectionString("catalogdb"));
-            //options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
         });
+        services.AddIntegrationEventHandlers(assembly);
 
         services.AddScoped<CatalogSeeder>();
         services.AddScoped<ICatalogUnitOfWork, CatalogUnitOfWork>();

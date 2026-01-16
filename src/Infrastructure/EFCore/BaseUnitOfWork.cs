@@ -4,7 +4,7 @@ using Kernel.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kernel.Infrastructure;
+namespace Infrastructure;
 
 public abstract class BaseUnitOfWork<TContext>(TContext context, ICurrentUser user, IPublisher publisher) : IUnitOfWork
     where TContext : DbContext

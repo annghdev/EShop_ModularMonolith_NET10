@@ -1,6 +1,4 @@
 ﻿using Inventory.Domain;
-using Kernel.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Inventory.Infrastructure.EFCore.Configurations;

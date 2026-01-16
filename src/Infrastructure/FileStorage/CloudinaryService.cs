@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace Kernel.Infrastructure;
+namespace Infrastructure;
 
 public class CloudinaryService : IImageStorageService
 {

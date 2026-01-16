@@ -1,6 +1,5 @@
 ﻿using Inventory.Application;
 using Inventory.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -19,6 +18,8 @@ public static class DependencyInjection
         {
             options.UseNpgsql(configuration.GetConnectionString("inventorydb"));
         });
+
+        services.AddIntegrationEventHandlers(assembly);
 
         services.AddScoped<IInventoryUnitOfWork, InventoryUnitOfWork>();
 

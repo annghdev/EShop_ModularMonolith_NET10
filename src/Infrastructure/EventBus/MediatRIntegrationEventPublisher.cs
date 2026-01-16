@@ -2,9 +2,9 @@
 using Kernel.Application;
 using MediatR;
 
-namespace Kernel.Infrastructure.EventBus;
+namespace Infrastructure;
 
-public sealed class IntegrationEventPublisher(IPublisher publisher) : IIntegrationEventPublisher
+public sealed class MediatRIntegrationEventPublisher(IPublisher publisher) : IIntegrationEventPublisher
 {
     public Task PublishAsync<T>(T @event, CancellationToken cancellationToken)
         where T : IntegrationEvent

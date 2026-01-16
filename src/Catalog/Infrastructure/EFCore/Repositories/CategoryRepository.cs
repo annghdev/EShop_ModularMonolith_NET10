@@ -1,6 +1,5 @@
 ﻿using Catalog.Domain;
 using Catalog.Domain.CategoryAggregate;
-using Kernel.Infrastructure.EFCore;
 
 namespace Catalog.Infrastructure.EFCore.Repositories;
 

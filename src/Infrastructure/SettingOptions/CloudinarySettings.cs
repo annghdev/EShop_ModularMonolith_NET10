@@ -1,4 +1,4 @@
-﻿namespace Kernel.Infrastructure;
+﻿namespace Infrastructure;
 
 public class CloudinarySettings
 {

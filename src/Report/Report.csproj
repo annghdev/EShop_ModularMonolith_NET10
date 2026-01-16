@@ -7,15 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj" />
-    <ProjectReference Include="..\Kernel\Kernel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Application\EventHandlers\" />
     <Folder Include="Application\Features\" />
     <Folder Include="Domain\" />
     <Folder Include="Infrastructure\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Kernel\Kernel.csproj" />
   </ItemGroup>
 
 </Project>

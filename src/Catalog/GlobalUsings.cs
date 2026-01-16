@@ -5,6 +5,6 @@ global using AutoMapper;
 global using Kernel;
 global using Kernel.Domain;
 global using Kernel.Application;
-global using Kernel.Infrastructure;
 global using Kernel.Extensions;
 global using Kernel.Utilities;
+global using Infrastructure;

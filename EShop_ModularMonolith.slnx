@@ -11,6 +11,12 @@
     <Project Path="src/Aspire/Aspire.AppHost/Aspire.AppHost.csproj" />
     <Project Path="src/Auth/Auth.csproj" Id="fa0d293b-a5a3-433d-907b-fe09bd29da73" />
   </Folder>
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/Aspire/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj" />
+    <Project Path="src/Contracts/Contracts.csproj" />
+    <Project Path="src/Infrastructure/Infrastructure.csproj" Id="ae7a33c7-5da0-4649-b7cb-7a14c9e4f6df" />
+    <Project Path="src/Kernel/Kernel.csproj" Id="b9fad5df-3313-4521-8eba-5e7403aff333" />
+  </Folder>
   <Folder Name="/src/Modules/">
     <Project Path="src/Catalog/Catalog.csproj" />
     <Project Path="src/Inventory/Inventory.csproj" />
@@ -21,11 +27,6 @@
     <Project Path="src/Shipping/Shipping.csproj" Id="1507c079-a667-4f85-bb47-5a9cbeb1fc68" />
     <Project Path="src/ShoppingCart/ShoppingCart.csproj" Id="ac4b1e67-22b7-4957-8625-6577339484c9" />
     <Project Path="src/Users/Users.csproj" Id="c29b9067-51aa-4699-9b53-3555e3f7df60" />
-  </Folder>
-  <Folder Name="/src/Shared/">
-    <Project Path="src/Aspire/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj" />
-    <Project Path="src/Contracts/Contracts.csproj" />
-    <Project Path="src/Kernel/Kernel.csproj" Id="b9fad5df-3313-4521-8eba-5e7403aff333" />
   </Folder>
   <Folder Name="/src/UI/">
     <Project Path="src/BlazorAdmin/BlazorAdmin.csproj" />
