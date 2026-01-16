@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using Kernel;
+using Microsoft.AspNetCore.Routing;
 using System.Reflection;
 
-namespace Kernel.Extensions;
+namespace Infrastructure;
 
 public static class RouteBuilderExtensions
 {

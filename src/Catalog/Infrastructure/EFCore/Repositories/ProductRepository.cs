@@ -1,5 +1,4 @@
 ﻿using Catalog.Domain;
-using Kernel.Infrastructure.EFCore;
 
 namespace Catalog.Infrastructure.EFCore.Repositories;
 

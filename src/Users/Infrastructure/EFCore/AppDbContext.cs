@@ -1,5 +1,4 @@
-﻿using Kernel.Infrastructure.EFCore;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Users.Infrastructure;
 

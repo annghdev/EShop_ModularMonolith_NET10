@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
-namespace Kernel.Infrastructure.EFCore;
+namespace Infrastructure;
 
 public abstract class BaseDbContext(DbContextOptions options) : DbContext(options)
 {

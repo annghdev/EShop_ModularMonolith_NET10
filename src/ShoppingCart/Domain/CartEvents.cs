@@ -1,4 +1,4 @@
-namespace ShoppingCart.Domain.Events;
+namespace ShoppingCart.Domain;
 
 // Item events
 public record CartItemAddedEvent(

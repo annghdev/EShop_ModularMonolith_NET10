@@ -1,7 +1,7 @@
 ﻿using Kernel.Application;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kernel.Infrastructure;
+namespace Infrastructure;
 
 public class InfrasDbContext(DbContextOptions<InfrasDbContext> options) : DbContext(options)
 {

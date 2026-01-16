@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Kernel.Infrastructure;
+namespace Infrastructure;
 
 public class AggreageRootConfiguration<TAggreateRoot> : IEntityTypeConfiguration<TAggreateRoot>
     where TAggreateRoot : AggregateRoot

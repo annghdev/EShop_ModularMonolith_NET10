@@ -4,7 +4,7 @@ using Razor.Templating.Core;
 using MailKit.Net.Smtp;
 using Kernel.Application;
 
-namespace Kernel.Infrastructure;
+namespace Infrastructure;
 
 public class MailkitService : IEmailService
 {

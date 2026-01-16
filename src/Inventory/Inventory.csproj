@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj" />
-    <ProjectReference Include="..\Kernel\Kernel.csproj" />
+    <Folder Include="Infrastructure\EFCore\Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\EFCore\Migrations\" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Kernel\Kernel.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
 ﻿using Inventory.Domain;
-using Kernel.Infrastructure.EFCore;
 using System.Reflection;
 
 namespace Inventory.Infrastructure;

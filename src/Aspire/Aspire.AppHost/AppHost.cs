@@ -1,5 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+var rabbitMq = builder.AddRabbitMQ("rabbitmq");
+
 //var esPassword = builder.AddParameter("es-password", secret: true);
 //var elasticSearch = builder.AddElasticsearch("elasticsearch", esPassword);
 
@@ -25,7 +27,9 @@ var api = builder.AddProject<Projects.API>("api")
     .WithReference(inventoryDb)
         .WaitFor(inventoryDb)
     .WithReference(elasticSearch)
-        .WaitFor(elasticSearch);
+        .WaitFor(elasticSearch)
+    .WithReference(rabbitMq)
+        .WaitFor(rabbitMq);
 
 //builder.AddProject<Projects.BlazorAdmin>("webadmin")
 //    .WithExternalHttpEndpoints()

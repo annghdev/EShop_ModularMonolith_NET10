@@ -1,7 +1,7 @@
 ﻿using Kernel.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kernel.Infrastructure.EFCore;
+namespace Infrastructure;
 
 public abstract class BaseRepository<TEntity, TDbContext>(TDbContext db) : IRepository<TEntity>
     where TEntity : class, IAggregate

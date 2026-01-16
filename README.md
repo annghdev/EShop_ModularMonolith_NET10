@@ -62,20 +62,25 @@ The **E-Shop Modular Monolith** project is a comprehensive e-commerce system des
 
 ```
 📁 src/
-├── API/                    # Main Host (ASP.NET Core)
+├── API/                    # API Gateway (ASP.NET Core)
 ├── Aspire/                 # Infrastructure resource environment setup, application orchestration and centralized management
+├── Auth/					# Authentication/Authorization
 ├── BlazorAdmin/            # Admin management frontend
 ├── Modules/                # Business modules
-│   ├── Identity/           # User management, authentication and authorization
 │   ├── Catalog/            # Product management
-│   ├── Sales/              # Core module, sales process management.
-│   ├── Inventory/          # Inventory processing
-│   ├── Pricing/            # Price and promotion processing
-│   └── Report/             # Statistics and reports
-├── Shared/                 # Shared between modules
-│   ├── Kernel/             # Core abstractions and framework library
-│   └── Contracts/          # Public DTOs and Events
-📁 Tests/                  # Unit & Integration Tests
+│   ├── Inventory/          # Inventory management
+│   ├── Orders/				# Orders processing
+│   ├── Payment/			# Payment processing
+│   ├── Pricing/            # Price, coupon and promotion management
+│   ├── Report/				# Statistics and reports
+│   ├── Shipping/			# Shipping management
+│   ├── ShoppingCart/		# Shopping cart management
+│   └── Users/				# Users management
+├── BuildingBlocks/         # Shared between modules
+│   ├── Contracts/          # Public DTOs and Events
+│   ├── Infrastructure/     # Common infrastructure (EF Core, Messaging, Caching ...)
+│   └── Kernel/             # Core abstractions, framework library
+📁 Tests/				    # Unit & Integration Tests
 ```
 
 **Benefits:**

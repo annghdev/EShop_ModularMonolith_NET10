@@ -1,8 +1,7 @@
-﻿using API.Services;
+using API.Services;
 using Catalog;
 using Inventory;
 using Kernel.Application;
-using Kernel.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API;
@@ -18,6 +17,10 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUser, CurrentUserService>();
 
         services.AddInfrasServices(configuration);
+        services.AddMassTransitWithHandlers(
+            configuration,
+            typeof(Catalog.DependencyInjection).Assembly,
+            typeof(Inventory.DependencyInjection).Assembly);
 
         //services.AddInfrasDB(configuration);
         services.AddCatalogContainer(configuration);

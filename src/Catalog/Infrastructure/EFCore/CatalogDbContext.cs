@@ -1,5 +1,4 @@
 using Catalog.Domain;
-using Kernel.Infrastructure.EFCore;
 using System.Reflection;
 using Attribute = Catalog.Domain.Attribute;
 
