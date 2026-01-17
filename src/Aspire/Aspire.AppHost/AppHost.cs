@@ -17,9 +17,10 @@ var postgres = builder.AddPostgres("postgres-eshop", pgUsername, pgPassword)
     //.WithDataVolume(isReadOnly: false)
     .WithPgWeb(pgAdmin => pgAdmin.WithHostPort(5050));
 
+var authDb = postgres.AddDatabase("authdb");
 var catalogDb = postgres.AddDatabase("catalogdb");
 var inventoryDb = postgres.AddDatabase("inventorydb");
-var authDb = postgres.AddDatabase("authdb");
+var pricingDb = postgres.AddDatabase("pricingdb");
 
 var api = builder.AddProject<Projects.API>("api")
     .WithHttpHealthCheck("/health")
@@ -27,6 +28,8 @@ var api = builder.AddProject<Projects.API>("api")
         .WaitFor(catalogDb)
     .WithReference(inventoryDb)
         .WaitFor(inventoryDb)
+    .WithReference(pricingDb)
+        .WaitFor(pricingDb)
     .WithReference(authDb)
         .WaitFor(authDb)
     .WithReference(elasticSearch)
