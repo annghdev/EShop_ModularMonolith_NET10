@@ -8,6 +8,7 @@ using Kernel.Application;
 using Microsoft.EntityFrameworkCore;
 using Orders;
 using Payment;
+using Shipping;
 
 namespace API;
 
@@ -38,6 +39,7 @@ public static class DependencyInjection
         services.AddShoppingCartContainer(configuration);
         services.AddOrdersContainer(configuration);
         services.AddPaymentContainer(configuration);
+        services.AddShippingContainer(configuration);
 
         return services;
     }

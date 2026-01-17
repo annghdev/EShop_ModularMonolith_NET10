@@ -12,6 +12,7 @@ using Kernel.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Orders.Infrastructure;
 using Payment.Infrastructure;
+using Shipping.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -129,6 +130,15 @@ try
     await paymentSeeder.SeedAsync();
 
     Console.WriteLine("Payment database migrations applied and data seeded successfully.");
+
+    // Migrate Shipping
+    var shippingContext = scope.ServiceProvider.GetRequiredService<ShippingDbContext>();
+    await shippingContext.Database.MigrateAsync();
+
+    var shippingSeeder = scope.ServiceProvider.GetRequiredService<ShippingSeeder>();
+    await shippingSeeder.SeedAsync();
+
+    Console.WriteLine("Shipping database migrations applied and data seeded successfully.");
 }
 catch (Exception ex)
 {
