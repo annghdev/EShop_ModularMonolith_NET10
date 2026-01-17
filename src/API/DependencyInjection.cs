@@ -6,6 +6,7 @@ using Users;
 using ShoppingCart;
 using Kernel.Application;
 using Microsoft.EntityFrameworkCore;
+using Orders;
 
 namespace API;
 
@@ -34,6 +35,7 @@ public static class DependencyInjection
         services.AddPricingContainer(configuration);
         services.AddUsersContainer(configuration);
         services.AddShoppingCartContainer(configuration);
+        services.AddOrdersContainer(configuration);
 
         return services;
     }

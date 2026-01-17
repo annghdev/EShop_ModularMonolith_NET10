@@ -10,6 +10,7 @@ using Users.Infrastructure;
 using ShoppingCart.Infrastructure;
 using Kernel.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Orders.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -109,6 +110,15 @@ try
     await shoppingCartSeeder.SeedAsync();
 
     Console.WriteLine("ShoppingCart database migrations applied and data seeded successfully.");
+
+    // Migrate Orders
+    var ordersContext = scope.ServiceProvider.GetRequiredService<OrdersDbContext>();
+    await ordersContext.Database.MigrateAsync();
+
+    var ordersSeeder = scope.ServiceProvider.GetRequiredService<OrdersSeeder>();
+    await ordersSeeder.SeedAsync();
+
+    Console.WriteLine("Orders database migrations applied and data seeded successfully.");
 }
 catch (Exception ex)
 {
