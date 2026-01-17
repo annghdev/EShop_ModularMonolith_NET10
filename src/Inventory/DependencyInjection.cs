@@ -1,4 +1,5 @@
 ﻿using Inventory.Application;
+using Inventory.Domain;
 using Inventory.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,13 @@ public static class DependencyInjection
 
         services.AddIntegrationEventHandlers(assembly);
 
+        // Repositories
+        services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+        services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
+
+        // Unit of Work
         services.AddScoped<IInventoryUnitOfWork, InventoryUnitOfWork>();
+        services.AddScoped<InventorySeeder>();
 
         return services;
     }

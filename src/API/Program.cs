@@ -84,6 +84,9 @@ try
     var inventoryContext = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
     await inventoryContext.Database.MigrateAsync();
 
+    var inventorySeeder = scope.ServiceProvider.GetRequiredService<InventorySeeder>();
+    await inventorySeeder.SeedAsync();
+
     Console.WriteLine("Inventory database migrations applied successfully.");
 
     // Migrate Pricing

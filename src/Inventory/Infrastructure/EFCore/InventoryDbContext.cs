@@ -6,9 +6,10 @@ namespace Inventory.Infrastructure;
 public class InventoryDbContext(DbContextOptions<InventoryDbContext> options) 
     : BaseDbContext(options)
 {
-    public DbSet<StockItem> StockItems { get; set; }
-    public DbSet<StockReservation> StockReservations { get; set; }
-    public DbSet<StockLog> StockLogs { get; set; }
+    public DbSet<Warehouse> Warehouses { get; set; }
+    public DbSet<InventoryItem> InventoryItems { get; set; }
+    public DbSet<InventoryReservation> InventoryReservations { get; set; }
+    public DbSet<InventoryMovement> InventoryMovements { get; set; }
 
     protected override Assembly GetAssembly()
     {

@@ -5,10 +5,10 @@ var rabbitMq = builder.AddRabbitMQ("rabbitmq");
 //var esPassword = builder.AddParameter("es-password", secret: true);
 //var elasticSearch = builder.AddElasticsearch("elasticsearch", esPassword);
 
-//var elasticSearch = builder.AddElasticsearch("elasticsearch")
+var elasticSearch = builder.AddElasticsearch("elasticsearch")
 //.WithDataVolume(isReadOnly: false)
 //.WithLifetime(ContainerLifetime.Persistent)
-//.WithContainerRuntimeArgs("--memory=512m");
+.WithContainerRuntimeArgs("--memory=512m");
 
 //var pgUsername = builder.AddParameter("db-username", secret: true);
 //var pgPassword = builder.AddParameter("db-password", secret: true);
@@ -48,8 +48,8 @@ var api = builder.AddProject<Projects.API>("api")
         .WaitFor(paymentDb)
     .WithReference(shippingDb)
         .WaitFor(shippingDb)
-    //.WithReference(elasticSearch)
-    //    .WaitFor(elasticSearch)
+    .WithReference(elasticSearch)
+        .WaitFor(elasticSearch)
     .WithReference(rabbitMq)
         .WaitFor(rabbitMq);
 
