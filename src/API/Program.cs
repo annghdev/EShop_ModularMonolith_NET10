@@ -7,6 +7,7 @@ using Catalog.Infrastructure;
 using Inventory.Infrastructure;
 using Pricing.Infrastructure;
 using Users.Infrastructure;
+using ShoppingCart.Infrastructure;
 using Kernel.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -99,6 +100,15 @@ try
     await usersSeeder.SeedAsync();
 
     Console.WriteLine("Users database migrations applied and data seeded successfully.");
+
+    // Migrate ShoppingCart
+    var shoppingCartContext = scope.ServiceProvider.GetRequiredService<ShoppingCartDbContext>();
+    await shoppingCartContext.Database.MigrateAsync();
+
+    var shoppingCartSeeder = scope.ServiceProvider.GetRequiredService<ShoppingCartSeeder>();
+    await shoppingCartSeeder.SeedAsync();
+
+    Console.WriteLine("ShoppingCart database migrations applied and data seeded successfully.");
 }
 catch (Exception ex)
 {
