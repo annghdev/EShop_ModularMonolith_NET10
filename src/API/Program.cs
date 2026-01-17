@@ -6,6 +6,7 @@ using Catalog;
 using Catalog.Infrastructure;
 using Inventory.Infrastructure;
 using Pricing.Infrastructure;
+using Users.Infrastructure;
 using Kernel.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -89,6 +90,15 @@ try
     await pricingSeeder.SeedAsync();
 
     Console.WriteLine("Pricing database migrations applied and data seeded successfully.");
+
+    // Migrate Users
+    var usersContext = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+    await usersContext.Database.MigrateAsync();
+
+    var usersSeeder = scope.ServiceProvider.GetRequiredService<UsersSeeder>();
+    await usersSeeder.SeedAsync();
+
+    Console.WriteLine("Users database migrations applied and data seeded successfully.");
 }
 catch (Exception ex)
 {
