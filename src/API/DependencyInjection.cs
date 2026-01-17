@@ -3,6 +3,7 @@ using Catalog;
 using Inventory;
 using Pricing;
 using Users;
+using ShoppingCart;
 using Kernel.Application;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,13 +25,15 @@ public static class DependencyInjection
             typeof(Catalog.DependencyInjection).Assembly,
             typeof(Inventory.DependencyInjection).Assembly,
             typeof(Pricing.DependencyInjection).Assembly,
-            typeof(Users.DependencyInjection).Assembly);
+            typeof(Users.DependencyInjection).Assembly,
+            typeof(ShoppingCart.DependencyInjection).Assembly);
 
         //services.AddInfrasDB(configuration);
         services.AddCatalogContainer(configuration);
         services.AddInventoryContainer(configuration);
         services.AddPricingContainer(configuration);
         services.AddUsersContainer(configuration);
+        services.AddShoppingCartContainer(configuration);
 
         return services;
     }

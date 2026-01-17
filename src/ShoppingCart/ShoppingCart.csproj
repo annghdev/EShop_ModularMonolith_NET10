@@ -11,4 +11,9 @@
     <ProjectReference Include="..\Kernel\Kernel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\EFCore\Configrations\" />
+    <Folder Include="Infrastructure\EFCore\Repositories\" />
+  </ItemGroup>
+
 </Project>

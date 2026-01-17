@@ -23,6 +23,7 @@ var usersDb = postgres.AddDatabase("usersdb");
 var catalogDb = postgres.AddDatabase("catalogdb");
 var inventoryDb = postgres.AddDatabase("inventorydb");
 var pricingDb = postgres.AddDatabase("pricingdb");
+var shoppingCartDb = postgres.AddDatabase("shoppingcartdb");
 
 var api = builder.AddProject<Projects.API>("api")
     .WithHttpHealthCheck("/health")
@@ -36,6 +37,8 @@ var api = builder.AddProject<Projects.API>("api")
         .WaitFor(authDb)
     .WithReference(usersDb)
         .WaitFor(usersDb)
+    .WithReference(shoppingCartDb)
+        .WaitFor(shoppingCartDb)
     //.WithReference(elasticSearch)
     //    .WaitFor(elasticSearch)
     .WithReference(rabbitMq)

@@ -63,7 +63,7 @@ public class CartItem : BaseEntity
         VariantName = variantName;
         Thumbnail = thumbnail;
         OriginalPrice = unitPrice ?? throw new DomainException("Unit price is required");
-        UnitPrice = unitPrice;
+        UnitPrice = new Money(OriginalPrice.Amount, OriginalPrice.Currency);
         DiscountAmount = new Money(0, unitPrice.Currency);
         Quantity = quantity;
     }
