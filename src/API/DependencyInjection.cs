@@ -1,6 +1,7 @@
 using API.Services;
 using Catalog;
 using Inventory;
+using Pricing;
 using Kernel.Application;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,11 +21,13 @@ public static class DependencyInjection
         services.AddMassTransitWithHandlers(
             configuration,
             typeof(Catalog.DependencyInjection).Assembly,
-            typeof(Inventory.DependencyInjection).Assembly);
+            typeof(Inventory.DependencyInjection).Assembly,
+            typeof(Pricing.DependencyInjection).Assembly);
 
         //services.AddInfrasDB(configuration);
         services.AddCatalogContainer(configuration);
         services.AddInventoryContainer(configuration);
+        services.AddPricingContainer(configuration);
 
         return services;
     }

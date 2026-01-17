@@ -9,7 +9,8 @@
   <ItemGroup>
     <Folder Include="Application\EventHandlers\" />
     <Folder Include="Application\Features\" />
-    <Folder Include="Infrastructure\" />
+    <Folder Include="Infrastructure\EFCore\Configurations\" />
+    <Folder Include="Infrastructure\EFCore\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
