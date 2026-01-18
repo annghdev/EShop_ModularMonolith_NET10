@@ -1,0 +1,103 @@
+@page "/login"
+@using BlazorAdmin.Services.Auth
+@layout EmptyLayout
+@inject NavigationManager NavigationManager
+@inject IMessageService MessageService
+@inject IJSRuntime JSRuntime
+
+<Layout Style="min-height: 100vh; background: #4579BC;">
+    <Content Style="display: flex; align-items: center; justify-content: center; padding: 50px;">
+        <Card Style="width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <Flex Justify="FlexJustify.Center" Align="FlexAlign.Center" Direction="FlexDirection.Vertical" Style="padding: 20px 0;">
+                <img src="logo.png" width="64" style="margin-bottom: 20px;" />
+                <Title Level="2">Đăng nhập</Title>
+                <Text Style="margin-bottom: 30px; color: #8c8c8c;">Vui lòng đăng nhập để tiếp tục</Text>
+            </Flex>
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <Alert Type="@AlertType.Error" Message="@_errorMessage" ShowIcon="true" Style="margin-bottom: 16px;" />
+            }
+
+            <Form Model="@_loginRequest" OnFinish="HandleLogin" OnFinishFailed="HandleLoginFailed" Layout="FormLayout.Vertical">
+                <FormItem Label="Tên đăng nhập" Required>
+                    <Input @bind-Value="@_loginRequest.Username" Placeholder="Nhập tên đăng nhập" Size="InputSize.Large" />
+                </FormItem>
+                <FormItem Label="Mật khẩu" Required>
+                    <InputPassword @bind-Value="@_loginRequest.Password" Placeholder="Nhập mật khẩu" Size="InputSize.Large" />
+                </FormItem>
+                <FormItem>
+                    <Button Type="ButtonType.Primary" HtmlType="submit" Block Size="ButtonSize.Large" Loading="@_isLoading">
+                        Đăng nhập
+                    </Button>
+                </FormItem>
+            </Form>
+        </Card>
+    </Content>
+</Layout>
+
+@code {
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private LoginRequestModel _loginRequest = new();
+    private bool _isLoading = false;
+    private string? _errorMessage;
+
+    private async Task HandleLogin(EditContext editContext)
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            // Use JavaScript to call the API from the browser (so cookies are set properly)
+            var result = await JSRuntime.InvokeAsync<LoginResult>("blazorAuth.login", 
+                _loginRequest.Username, 
+                _loginRequest.Password);
+
+            if (result.Success)
+            {
+                MessageService.Success("Đăng nhập thành công!");
+
+                // Navigate to return URL or home with force reload to pick up cookies
+                var targetUrl = !string.IsNullOrEmpty(ReturnUrl) 
+                    ? Uri.UnescapeDataString(ReturnUrl) 
+                    : "/";
+                
+                NavigationManager.NavigateTo(targetUrl, forceLoad: true);
+            }
+            else
+            {
+                _errorMessage = result.Message ?? "Đăng nhập thất bại";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Đăng nhập thất bại: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleLoginFailed(EditContext editContext)
+    {
+        MessageService.Warning("Vui lòng điền đầy đủ thông tin!");
+    }
+
+    class LoginRequestModel
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+    class LoginResult
+    {
+        public bool Success { get; set; }
+        public string? Message { get; set; }
+    }
+}

@@ -53,10 +53,10 @@ var api = builder.AddProject<Projects.API>("api")
     .WithReference(rabbitMq)
         .WaitFor(rabbitMq);
 
-//builder.AddProject<Projects.BlazorAdmin>("webadmin")
-//    .WithExternalHttpEndpoints()
-//    .WithHttpHealthCheck("/health")
-//    .WithReference(api)
-//    .WaitFor(api);
+builder.AddProject<Projects.BlazorAdmin>("webadmin")
+    .WithExternalHttpEndpoints()
+    .WithHttpHealthCheck("/health")
+    .WithReference(api)
+    .WaitFor(api);
 
 builder.Build().Run();

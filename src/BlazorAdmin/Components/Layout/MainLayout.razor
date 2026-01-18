@@ -1,23 +1,224 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazorAdmin.Auth
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject NavigationManager Navigation
+@inject ILogger<MainLayout> Logger
+@inject AuthenticationStateProvider AuthStateProvider
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<AuthorizeView>
+    <Authorized>
+        <Layout>
+            <Sider @bind-Collapsed=_collapsed Theme="SiderTheme.Light" Width="250">
+                <Menu Theme="MenuTheme.Light" DefaultSelectedKeys=@(new[] { "1" }) Mode="MenuMode.Inline">
+                    <Flex Style="padding:8px; margin-bottom:4px" Align="FlexAlign.Center" Justify="FlexJustify.Center">
+                        @if (!_collapsed)
+                        {
+                            <img width="32" src="logo.png" />
+                            <h4 style="margin-top:10px; margin-left:12px; color:darkorange">
+                                Andev <span style="color:#4579BC">EShop</span>
+                            </h4>
+                        }
+                        else
+                        {
+                            <img width="32" src="logo.png" style="margin: 4px 0px" />
+                        }
+                    </Flex>
+                    <MenuItem Key="1" RouterLink="/">
+                        <Icon Type="@IconType.Outline.LineChart" />
+                        <span>Dashboard</span>
+                    </MenuItem>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+                    <SubMenu Key="sub1" TitleTemplate="@sub1Title">
+                        <MenuItem Key="2" RouterLink="/orders/pending" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.UnorderedList" />
+                            <span>Chờ xác nhận</span>
+                        </MenuItem>
+                        <MenuItem Key="3" RouterLink="/orders" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.UnorderedList" />
+                            <span>Danh sách đơn</span>
+                        </MenuItem>
+                    </SubMenu>
+                    <SubMenu Key="sub2" TitleTemplate="@sub2Title">
+                        <MenuItem Key="4" RouterLink="/catalog/products" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Appstore" />
+                            <span>Bảng sản phẩm</span>
+                        </MenuItem>
+                        <MenuItem Key="5" RouterLink="/catalog/collections" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Solution" />
+                            <span>Bộ sản phẩm</span>
+                        </MenuItem>
+                        <MenuItem Key="6" RouterLink="/catalog/categories" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.OrderedList" />
+                            <span>Danh mục</span>
+                        </MenuItem>
+                        <MenuItem Key="7" RouterLink="/catalog/brands">
+                            <Icon Type="@IconType.Outline.Branches" />
+                            <span>Thương hiệu</span>
+                        </MenuItem>
+                        <MenuItem Key="8" RouterLink="/catalog/product-attributes">
+                            <Icon Type="@IconType.Outline.DotChart" />
+                            <span>Thuộc tính</span>
+                        </MenuItem>
+                    </SubMenu>
+                    <SubMenu Key="sub3" TitleTemplate="@sub3Title">
+                        <MenuItem Key="9" RouterLink="/inventory/movements" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Appstore" />
+                            <span>Nhật ký</span>
+                        </MenuItem>
+                        <MenuItem Key="10" RouterLink="/inventory/warehouses" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Appstore" />
+                            <span>Nhà kho</span>
+                        </MenuItem>
+                    </SubMenu>
+                    <SubMenu Key="sub4" TitleTemplate="@sub4Title">
+                        <MenuItem Key="11" RouterLink="/discount/promotions" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Appstore" />
+                            <span>Chương trình</span>
+                        </MenuItem>
+                        <MenuItem Key="12" RouterLink="/discount/coupons" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Appstore" />
+                            <span>Mã giảm giá</span>
+                        </MenuItem>
+                    </SubMenu>
+                    <SubMenu Key="sub5" TitleTemplate="@sub5Title">
+                        <MenuItem Key="13" RouterLink="/users/customers" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Appstore" />
+                            <span>Khách hàng</span>
+                        </MenuItem>
+                        <MenuItem Key="14" RouterLink="/users/staffs" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Appstore" />
+                            <span>Nhân viên</span>
+                        </MenuItem>
+                    </SubMenu>
+                    <SubMenu Key="sub6" TitleTemplate="@sub6Title">
+                        <MenuItem Key="15" RouterLink="/settings/profile">
+                            <Icon Type="@IconType.Outline.Profile" />
+                            <span>Hồ sơ cá nhân</span>
+                        </MenuItem>
+                        <MenuItem Key="16" RouterLink="/logout">
+                            <Icon Type="@IconType.Outline.Logout" />
+                            <span>Đăng xuất</span>
+                        </MenuItem>
+                    </SubMenu>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+                </Menu>
+            </Sider>
+            <Layout>       
+                    <ReuseTabs Style="margin: 16px;" Body="@Body">
+                        <TabPaneTemplate Context="tabContext">
+                            <Content Class="site-layout-background" Style="padding: 24px;min-height: 100vh; background:rgba(254,255,255,0.85)">
+                                @tabContext.Body
+                            </Content>
+                        </TabPaneTemplate>
+                    </ReuseTabs>
+            </Layout>
+        </Layout>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Logger.LogInformation("MainLayout: User not authorized, redirecting to login");
+            
+            // Get relative path only, exclude /login and /not-found
+            var uri = new Uri(Navigation.Uri);
+            var relativePath = uri.PathAndQuery;
+            
+            // Don't include problematic return URLs
+            if (relativePath.Contains("/login") || relativePath.Contains("/not-found") || relativePath == "/")
+            {
+                Navigation.NavigateTo("/login", forceLoad: true);
+            }
+            else
+            {
+                var returnUrl = Uri.EscapeDataString(relativePath);
+                Navigation.NavigateTo($"/login?returnUrl={returnUrl}", forceLoad: true);
+            }
+        }
+        <p>Đang chuyển hướng đến trang đăng nhập...</p>
+    </NotAuthorized>
+    <Authorizing>
+        <p>Đang kiểm tra quyền truy cập...</p>
+    </Authorizing>
+</AuthorizeView>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+<style>
+    .trigger {
+        font-size: 18px;
+        line-height: 64px;
+        padding: 0 24px;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .trigger:hover {
+            color: #1890ff;
+        }
+
+    .user-dropdown-trigger:hover {
+        background-color: rgba(0, 0, 0, 0.06);
+    }
+</style>
+
+@code {
+    RenderFragment sub1Title =
+        @<span>
+            <Icon Type="@IconType.Outline.OrderedList" />
+            Đơn hàng
+        </span>;
+
+    RenderFragment sub2Title =
+        @<span>
+            <Icon Type="@IconType.Outline.Appstore" />
+            Hàng hóa
+        </span>;
+
+    RenderFragment sub3Title =
+        @<span>
+            <Icon Type="@IconType.Outline.AppstoreAdd" />
+            Tồn kho
+        </span>;
+
+    RenderFragment sub4Title =
+        @<span>
+            <Icon Type="@IconType.Outline.MoneyCollect" />
+            Khuyến mãi
+        </span>;
+
+    RenderFragment sub5Title =
+        @<span>
+            <Icon Type="@IconType.Outline.Team" />
+            Người dùng
+        </span>;
+
+    RenderFragment sub6Title =
+        @<span>
+            <Icon Type="@IconType.Outline.Setting" />
+            Cài đặt
+        </span>;
+
+    bool _collapsed = false;
+
+    CustomAuthStateProvider AuthState => (CustomAuthStateProvider)AuthStateProvider;
+
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        Logger.LogDebug("Location changed to: {Location}", e.Location);
+        // Force auth state refresh to detect cookie changes
+
+        AuthState.NotifyUserAuthentication();
+    }
+
+    void Toggle()
+    {
+        _collapsed = !_collapsed;
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

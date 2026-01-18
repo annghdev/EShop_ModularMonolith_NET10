@@ -1,0 +1,11 @@
+﻿@page "/catalog/products"
+@inject NavigationManager NavigationManager
+
+<h3>ProductPage</h3>
+
+<Button OnClick=@(()=>{NavigationManager.NavigateTo($"/catalog/products/{Guid.NewGuid()}");}) />
+
+<p>@Guid.NewGuid()</p>
+
+@code {
+}

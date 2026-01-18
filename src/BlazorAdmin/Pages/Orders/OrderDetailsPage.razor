@@ -1,0 +1,7 @@
+﻿@page "/orders/{OrderId:guid}"
+
+<h3>Order details</h3>
+
+@code {
+    [Parameter] public Guid OrderId { get; set; }
+}
