@@ -1,0 +1,29 @@
+@inject NavigationManager Navigation
+@inject ILogger<RedirectToLogin> Logger
+@inject MessageService MessageService
+
+@code {
+    private bool _redirected = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && !_redirected)
+        {
+            Logger.LogError("RedirectToLogin: User is not authenticated, redirecting to login page.");
+
+            _redirected = true;
+            Logger.LogInformation("RedirectToLogin: Redirecting to /login");
+            
+            // Get the current URL to use as return URL
+            var currentUri = Navigation.Uri;
+            var baseUri = Navigation.BaseUri;
+            
+            // Only include return URL if not already on login page
+            if (!currentUri.Contains("/login", StringComparison.OrdinalIgnoreCase))
+            {
+                var returnUrl = Uri.EscapeDataString(currentUri);
+                Navigation.NavigateTo($"/login?returnUrl={returnUrl}", forceLoad: true);
+            }
+        }
+    }
+}

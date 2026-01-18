@@ -1,0 +1,21 @@
+﻿@page "/catalog/products/{ProductId:guid}"
+@implements IReuseTabsPage
+@inject NavigationManager navigationManager
+@attribute [ReuseTabsPage(Singleton = false)]
+
+<h3>ProductDetailsPage - @ProductId</h3>
+<Button OnClick=@(() => { navigationManager.NavigateTo($"/catalog/products/{Guid.NewGuid()}"); }) />
+<Button OnClick=@(() => { navigationManager.NavigateTo($"/catalog/products"); }) />
+
+@code {
+    [Parameter] public Guid ProductId { get; set; }
+
+    public RenderFragment GetPageTitle()
+    {
+        return @<span> Product/@ProductId </span>;
+    }
+    private void OnLationChanged(object sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

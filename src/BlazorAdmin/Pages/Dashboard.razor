@@ -1,0 +1,22 @@
+﻿@page "/"
+@* @attribute [Authorize] *@
+@attribute [ReuseTabsPage(Pin = true, Closable = false)]
+
+<PageTitle>Home</PageTitle>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        Admin
+    </Authorized>
+    <NotAuthorized>
+        Not Admin
+    </NotAuthorized>
+</AuthorizeView>
+<AuthorizeView Roles="SysAdmin">
+    <Authorized>
+       Sys Admin
+    </Authorized>
+</AuthorizeView>
+
+<h1>Dashboard</h1>
+
