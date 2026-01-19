@@ -1,11 +1,340 @@
 ﻿@page "/catalog/products"
+@using Contracts.Responses.Catalog
+@using BlazorAdmin.Services
+@inject IProductService ProductService
 @inject NavigationManager NavigationManager
 
-<h3>ProductPage</h3>
+<Card>
+    <TitleTemplate>
+        <Space Style="width: 100%; justify-content: space-between">
+            <SpaceItem>
+                <Title Level="4">Danh sách sản phẩm</Title>
+            </SpaceItem>
+            <SpaceItem>
+                <Button Type="@ButtonType.Primary" OnClick="NavigateToCreate">
+                    <Icon Type="plus" Theme="IconThemeType.Outline" />
+                    Tạo sản phẩm
+                </Button>
+            </SpaceItem>
+        </Space>
+    </TitleTemplate>
+    <Body>
+        <Space Direction="SpaceDirection.Vertical" Style="width: 100%">
+            <SpaceItem>
+                <Space>
+                    <SpaceItem>
+                        <Search Placeholder=@("tìm sản phẩm...")
+                                Style=@("width: 350px")
+                                @bind-Value="@_searchKeyword"
+                                OnSearch="HandleQuickSearch"
+                                EnterButton="true" />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" OnClick="ShowFilterModal">
+                            <Icon Type=@("filter") Theme="IconThemeType.Outline" />
+                            Bộ lọc
+                        </Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button OnClick="HandleReset">
+                            <Icon Type=@("reload") Theme="IconThemeType.Outline" />
+                            Reset
+                        </Button>
+                    </SpaceItem>
+                    @if (HasActiveFilters())
+                    {
+                        <SpaceItem>
+                            <Tag Color="TagColor.Blue" Closable OnClose="@(() => InvokeAsync(HandleReset))">
+                                @GetActiveFiltersText()
+                            </Tag>
+                        </SpaceItem>
+                    }
+                </Space>
+            </SpaceItem>
+            <SpaceItem>
+                <Space Style=@("width: 100%; justify-content: space-between; align-items: center;")>
+                    <SpaceItem>
+                        <Text Strong>Tổng số: @_totalCount sản phẩm</Text>
+                    </SpaceItem>
+                </Space>
+            </SpaceItem>
+            <SpaceItem>
+                <Table TItem="ProductSearchDto"
+                       DataSource="@_products"
+                       Loading="@_loading"
+                       PageIndex="_currentPage"
+                       PageSize="_pageSize"
+                       Total="_totalCount"
+                       OnPageIndexChange="@(async (args) => { _currentPage = args.Page; await LoadProducts(); })"
+                       OnPageSizeChange="@(async (args) => { _currentPage = 1; _pageSize = args.PageSize; await LoadProducts(); })"
+                       RowKey="x => x.Id.ToString()">
+                    <PropertyColumn Property="c => c.Thumbnail" Title=@("Hình ảnh")>
+                        <Image Src="@context.Thumbnail" Width="60" Height="45" Style="object-fit: cover; border-radius: 4px" />
+                    </PropertyColumn>
+                    <PropertyColumn Property="c => c.Name" Title=@("Tên sản phẩm")>
+                        <a @onclick="() => NavigateToDetail(context.Slug)" style="cursor: pointer; color: #1890ff;">
+                            @context.Name
+                        </a>
+                    </PropertyColumn>
+                    <PropertyColumn Property="c => c.Sku" Title="SKU" />
+                    <PropertyColumn Property="c => c.CategoryName" Title=@("Danh mục") />
+                    <PropertyColumn Property="c => c.BrandName" Title=@("Thương hiệu") />
+                    <PropertyColumn Property="c => c.Price!.Amount" Title=@("Giá")>
+                        @context.Price?.Amount.ToString("N0") VND
+                    </PropertyColumn>
+                    <PropertyColumn Property="c => c.Status" Title=@("Trạng thái")>
+                        @if (context.Status == "Published")
+                        {
+                            <Tag Color="TagColor.Green">Đã xuất bản</Tag>
+                        }
+                        else if (context.Status == "Draft")
+                        {
+                            <Tag Color="default">Nháp</Tag>
+                        }
+                        else if (context.Status == "Discontinued")
+                        {
+                            <Tag Color="TagColor.Orange">Ngừng bán</Tag>
+                        }
+                        else
+                        {
+                            <Tag>@context.Status</Tag>
+                        }
+                    </PropertyColumn>
+                    <PropertyColumn Property="c => c.VariantCount" Title=@("Biến thể") />
+                    <PropertyColumn Property="c => c.CreatedAt" Title=@("Ngày tạo") Format="yyyy-MM-dd" />
+                    <ActionColumn Title=@("Thao tác")>
+                        <Space>
+                            <SpaceItem>
+                                <Button Size="@ButtonSize.Small" OnClick="() => NavigateToDetail(context.Slug)">
+                                    Chi tiết
+                                </Button>
+                            </SpaceItem>
+                        </Space>
+                    </ActionColumn>
+                </Table>
+            </SpaceItem>
+        </Space>
+    </Body>
+</Card>
 
-<Button OnClick=@(()=>{NavigationManager.NavigateTo($"/catalog/products/{Guid.NewGuid()}");}) />
-
-<p>@Guid.NewGuid()</p>
+@* Filter Modal *@
+<Modal Title=@("Bộ lọc nâng cao")
+       @bind-Visible="_showFilterModal"
+       OnOk="HandleApplyFilter"
+       OnCancel="() => _showFilterModal = false"
+       Width="700">
+    <Form Model="@_filterModel" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("Từ khóa")>
+            <Input @bind-Value="_filterModel.Keyword" Placeholder=@("Tìm theo tên hoặc SKU") />
+        </FormItem>
+        
+        <FormItem Label=@("Danh mục")>
+            <Select TItem="CategoryDto"
+                    TItemValue="Guid?"
+                    @bind-Value="_filterModel.CategoryId"
+                    DataSource="@_categories"
+                    LabelName="@nameof(CategoryDto.Name)"
+                    ValueName="@nameof(CategoryDto.Id)"
+                    Placeholder=@("Chọn danh mục")
+                    AllowClear
+                    Style="width: 100%" />
+        </FormItem>
+        
+        <FormItem Label=@("Thương hiệu")>
+            <Select TItem="BrandDto"
+                    TItemValue="Guid?"
+                    @bind-Value="_filterModel.BrandId"
+                    DataSource="@_brands"
+                    LabelName="@nameof(BrandDto.Name)"
+                    ValueName="@nameof(BrandDto.Id)"
+                    Placeholder=@("Chọn thương hiệu")
+                    AllowClear
+                    Style="width: 100%" />
+        </FormItem>
+        
+        <FormItem Label=@("Trạng thái")>
+            <Select TItem="string"
+                    TItemValue="string"
+                    @bind-Value="_filterModel.Status"
+                    DataSource="@_statusOptionsVi"
+                    Placeholder=@("Chọn trạng thái")
+                    AllowClear
+                    Style="width: 100%" />
+        </FormItem>
+        
+        <FormItem Label=@("Giá tối thiểu (VNĐ)")>
+            <AntDesign.InputNumber @bind-Value="_filterModel.MinPrice" 
+                                   Placeholder=@("Giá tối thiểu") 
+                                   Step="10000m" 
+                                   Min="0" 
+                                   Style="width: 100%" 
+                                   Format="N0" />
+        </FormItem>
+        
+        <FormItem Label=@("Giá tối đa (VNĐ)")>
+            <AntDesign.InputNumber @bind-Value="_filterModel.MaxPrice" 
+                                   Placeholder=@("Giá tối đa") 
+                                   Step="10000m" 
+                                   Min="0" 
+                                   Style="width: 100%" 
+                                   Format="N0" />
+        </FormItem>
+        
+        <FormItem Label=@("Sắp xếp theo")>
+            <Select TItem="string"
+                    TItemValue="string"
+                    @bind-Value="_filterModel.SortBy"
+                    Style="width: 100%">
+                <SelectOptions>
+                    <SelectOption Value=@("createdAt") Label=@("Ngày tạo") />
+                    <SelectOption Value=@("name") Label=@("Tên") />
+                    <SelectOption Value=@("price") Label=@("Giá") />
+                </SelectOptions>
+            </Select>
+        </FormItem>
+        
+        <FormItem Label=@("Thứ tự")>
+            <RadioGroup @bind-Value="_filterModel.SortOrder">
+                <Radio Value=@("asc")>Tăng dần</Radio>
+                <Radio Value=@("desc")>Giảm dần</Radio>
+            </RadioGroup>
+        </FormItem>
+    </Form>
+</Modal>
 
 @code {
+    private List<ProductSearchDto> _products = [];
+    private bool _loading = false;
+    private int _currentPage = 1;
+    private int _pageSize = 10;
+    private int _totalCount = 0;
+    private string? _searchKeyword;
+    
+    // Filter state
+    private bool _showFilterModal = false;
+    private FilterModel _filterModel = new();
+    private List<CategoryDto> _categories = [];
+    private List<BrandDto> _brands = [];
+    
+    private readonly List<string> _statusOptions = ["Draft", "Published", "Discontinued"];
+    private readonly List<string> _statusOptionsVi = ["Nháp", "Đã xuất bản", "Ngừng bán"];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDropdownData();
+        await LoadProducts();
+    }
+    
+    private async Task LoadDropdownData()
+    {
+        _categories = await ProductService.GetCategoriesAsync();
+        _brands = await ProductService.GetBrandsAsync();
+    }
+
+    private async Task LoadProducts()
+    {
+        if (_loading) return; // Prevent concurrent loads
+
+        _loading = true;
+        StateHasChanged(); // Show spinner immediately
+
+        try
+        {
+            var result = await ProductService.SearchProductsAsync(
+                keyword: _filterModel.Keyword,
+                categoryId: _filterModel.CategoryId?.ToString(),
+                brandId: _filterModel.BrandId?.ToString(),
+                status: _filterModel.Status,
+                page: _currentPage,
+                pageSize: _pageSize
+            );
+
+            _products = result.Items;
+            _totalCount = result.Total;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+    
+    // Filter methods
+    private void ShowFilterModal()
+    {
+        _showFilterModal = true;
+    }
+    
+    private async Task HandleApplyFilter()
+    {
+        _currentPage = 1; // Reset to first page
+        _showFilterModal = false;
+        await LoadProducts();
+    }
+    
+    private bool HasActiveFilters()
+    {
+        return !string.IsNullOrWhiteSpace(_filterModel.Keyword) ||
+               _filterModel.CategoryId.HasValue ||
+               _filterModel.BrandId.HasValue ||
+               !string.IsNullOrWhiteSpace(_filterModel.Status) ||
+               _filterModel.MinPrice.HasValue ||
+               _filterModel.MaxPrice.HasValue;
+    }
+    
+    private string GetActiveFiltersText()
+    {
+        var filters = new List<string>();
+        
+        if (!string.IsNullOrWhiteSpace(_filterModel.Keyword))
+            filters.Add($"Keyword: {_filterModel.Keyword}");
+        if (_filterModel.CategoryId.HasValue)
+            filters.Add($"Category: {_categories.FirstOrDefault(c => c.Id == _filterModel.CategoryId.Value)?.Name}");
+        if (_filterModel.BrandId.HasValue)
+            filters.Add($"Brand: {_brands.FirstOrDefault(b => b.Id == _filterModel.BrandId.Value)?.Name}");
+        if (!string.IsNullOrWhiteSpace(_filterModel.Status))
+            filters.Add($"Status: {_filterModel.Status}");
+        if (_filterModel.MinPrice.HasValue || _filterModel.MaxPrice.HasValue)
+            filters.Add($"Price: {_filterModel.MinPrice ?? 0:N0} - {_filterModel.MaxPrice ?? decimal.MaxValue:N0}");
+        
+        return string.Join(" | ", filters);
+    }
+    
+    private async Task HandleQuickSearch()
+    {
+        // Quick search uses keyword only, clears other filters
+        _filterModel = new FilterModel { Keyword = _searchKeyword };
+        _currentPage = 1;
+        await LoadProducts();
+    }
+
+    private async Task HandleReset()
+    {
+        _searchKeyword = null;
+        _filterModel = new FilterModel();
+        _currentPage = 1;
+        await LoadProducts();
+    }
+
+    private void NavigateToDetail(string slug)
+    {
+        NavigationManager.NavigateTo($"/catalog/products/{slug}");
+    }
+
+    private void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo("/catalog/products/create");
+    }
+    
+    // Filter Model
+    private class FilterModel
+    {
+        public string? Keyword { get; set; }
+        public Guid? CategoryId { get; set; }
+        public Guid? BrandId { get; set; }
+        public string? Status { get; set; }
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
+        public string SortBy { get; set; } = "createdAt";
+        public string SortOrder { get; set; } = "asc";
+    }
 }

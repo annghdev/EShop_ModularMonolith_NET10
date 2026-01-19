@@ -1,7 +1,7 @@
 using BlazorAdmin.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BlazorAdmin.Controllers;
+namespace BlazorAdmin.Auth;
 
 /// <summary>
 /// Server-side controller for cookie-based authentication operations.
@@ -46,12 +46,12 @@ public class AuthController : ControllerBase
                     result.AccessToken.Length);
                 
                 // Split into chunks
-                SetChunkedCookie(AccessTokenCookie, result.AccessToken, 60);
+                SetChunkedCookie(AccessTokenCookie, result.AccessToken, 60 * 24);
             }
             else
             {
                 // Set HttpOnly cookies for tokens
-                SetTokenCookie(AccessTokenCookie, result.AccessToken, 60);
+                SetTokenCookie(AccessTokenCookie, result.AccessToken, 60 * 24);
             }
             
             SetTokenCookie(RefreshTokenCookie, result.RefreshToken, 60 * 24 * 7);

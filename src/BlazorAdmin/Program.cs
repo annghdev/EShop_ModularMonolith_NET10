@@ -63,6 +63,9 @@ builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
+// Product services
+builder.Services.AddScoped<BlazorAdmin.Services.IProductService, BlazorAdmin.Services.ProductFakeDataService>();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
