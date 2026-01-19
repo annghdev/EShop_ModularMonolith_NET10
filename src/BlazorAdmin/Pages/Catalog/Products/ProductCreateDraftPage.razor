@@ -1,0 +1,332 @@
+﻿@page "/catalog/products/create"
+@page "/catalog/products/create/{ProductId:guid}"
+@using Contracts.Responses.Catalog
+@using Contracts.Requests.Catalog
+@using Contracts.Responses
+@using BlazorAdmin.Services
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@inject IMessageService MessageService
+@implements IReuseTabsPage
+@attribute [ReuseTabsPage(Singleton = false)]
+@inject ReuseTabsService ReuseTabsService
+
+@if (_loading)
+{
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+        <Spin Size="SpinSize.Large" Tip=@("Đang tải...") />
+    </div>
+}
+else if (_product == null)
+{
+    <Result Status="ResultStatus.Http404"
+            Title=@("Không tìm thấy")
+            SubTitle=@("Bản nháp không tồn tại hoặc đã bị xóa")>
+        <Extra>
+            <Button Type="@ButtonType.Primary" OnClick="GoBack">
+                Quay lại danh sách
+            </Button>
+        </Extra>
+    </Result>
+}
+else
+{
+    <PageHeader Title="@GetPageTitle()" OnBack="GoBack" Style="border:1px solid rgba(100,100,100,0.1)">
+        <PageHeaderExtra>
+            <Space>
+                <SpaceItem>
+                    <Button OnClick="HandleSave" Loading="_saving">
+                        <Icon Type=@("save") /> Lưu nháp
+                    </Button>
+                </SpaceItem>
+                <SpaceItem>
+                    <Popconfirm Title=@("Xuất bản sản phẩm này?")
+                                OnConfirm="HandlePublish"
+                                OkText=@("Xuất bản")
+                                CancelText=@("Hủy")>
+                        <Button Type="@ButtonType.Primary" Loading="_publishing">
+                            <Icon Type=@("check") /> Xuất bản
+                        </Button>
+                    </Popconfirm>
+                </SpaceItem>
+                <SpaceItem>
+                    <Popconfirm Title=@("Hủy bản nháp? Dữ liệu sẽ bị xóa vĩnh viễn.")
+                                OnConfirm="HandleDiscard"
+                                OkText=@("Xóa")
+                                CancelText=@("Hủy")>
+                        <Button Danger>
+                            <Icon Type=@("delete") /> Hủy bản nháp
+                        </Button>
+                    </Popconfirm>
+                </SpaceItem>
+            </Space>
+        </PageHeaderExtra>
+    </PageHeader>
+
+    <div style="padding: 16px;">
+        <Row Gutter="(16, 16)">
+            <!-- Basic Info -->
+            <AntDesign.Col Md="16" Xs="24">
+                <Card Title=@("Thông tin cơ bản")>
+                    <Form Model="@_form" LabelColSpan="6" WrapperColSpan="18">
+                        <FormItem Label=@("Tên sản phẩm") Required>
+                            <Input @bind-Value="_form.Name" Placeholder=@("Nhập tên sản phẩm")" />
+                        </FormItem>
+                        <FormItem Label="SKU" Required>
+                            <Input @bind-Value="_form.Sku" Placeholder=@("Mã SKU duy nhất")" />
+                        </FormItem>
+                        <FormItem Label=@("Mô tả")>
+                            <TextArea @bind-Value="_form.Description" Rows="4" Placeholder=@("Mô tả sản phẩm...")" />
+                        </FormItem>
+                        <FormItem Label=@("Danh mục")>
+                            <Select TItem="CategoryDto"
+                                    TItemValue="Guid?"
+                                    @bind-Value="_form.CategoryId"
+                                    DataSource="@_categories"
+                                    LabelName="@nameof(CategoryDto.Name)"
+                                    ValueName="@nameof(CategoryDto.Id)"
+                                    Placeholder=@("Chọn danh mục")
+                                    Style=@("width: 100%")" />
+                        </FormItem>
+                        <FormItem Label=@("Thương hiệu")>
+                            <Select TItem="BrandDto"
+                                    TItemValue="Guid?"
+                                    @bind-Value="_form.BrandId"
+                                    DataSource="@_brands"
+                                    LabelName="@nameof(BrandDto.Name)"
+                                    ValueName="@nameof(BrandDto.Id)"
+                                    Placeholder=@("Chọn thương hiệu")
+                                    Style=@("width: 100%")" />
+                        </FormItem>
+                    </Form>
+                </Card>
+            </AntDesign.Col>
+
+            <!-- Pricing -->
+            <AntDesign.Col Md="8" Xs="24">
+                <Card Title=@("Giá cả")>
+                    <Form Model="@_form" LabelColSpan="8" WrapperColSpan="16">
+                        <FormItem Label=@("Giá vốn (VNĐ)")>
+                            <AntDesign.InputNumber @bind-Value="_form.CostAmount" 
+                                                   Step="10000" 
+                                                   Min="0" 
+                                                   Style=@("width: 100%") />
+                        </FormItem>
+                        <FormItem Label=@("Giá bán (VNĐ)")>
+                            <AntDesign.InputNumber @bind-Value="_form.PriceAmount" 
+                                                   Step="10000" 
+                                                   Min="0" 
+                                                   Style=@("width: 100%") />
+                        </FormItem>
+                    </Form>
+                </Card>
+            </AntDesign.Col>
+
+            <!-- Dimensions -->
+            <AntDesign.Col Md="12" Xs="24">
+                <Card Title=@("Kích thước & Trọng lượng")>
+                    <Form Model="@_form" LabelColSpan="8" WrapperColSpan="16">
+                        <FormItem Label=@("Rộng (cm)")>
+                            <AntDesign.InputNumber @bind-Value="_form.Width" Step="0.1m" Min="0" Style=@("width: 100%") />
+                        </FormItem>
+                        <FormItem Label=@("Cao (cm)")>
+                            <AntDesign.InputNumber @bind-Value="_form.Height" Step="0.1m" Min="0" Style=@("width: 100%") />
+                        </FormItem>
+                        <FormItem Label=@("Sâu (cm)")>
+                            <AntDesign.InputNumber @bind-Value="_form.Depth" Step="0.1m" Min="0" Style=@("width: 100%") />
+                        </FormItem>
+                        <FormItem Label=@("Trọng lượng (kg)")>
+                            <AntDesign.InputNumber @bind-Value="_form.Weight" Step="0.1m" Min="0" Style=@("width: 100%") />
+                        </FormItem>
+                    </Form>
+                </Card>
+            </AntDesign.Col>
+
+            <!-- Images -->
+            <AntDesign.Col Md="12" Xs="24">
+                <Card Title=@("Hình ảnh")>
+                    <Form Model="@_form" LabelColSpan="8" WrapperColSpan="16">
+                        <FormItem Label=@("Thumbnail URL")>
+                            <Input @bind-Value="_form.Thumbnail" Placeholder=@("https://example.com/image.jpg")" />
+                        </FormItem>
+                        @if (!string.IsNullOrEmpty(_form.Thumbnail))
+                        {
+                            <FormItem Label=@("Xem trước")>
+                                <Image Src="@_form.Thumbnail" Width="150" Style=@("border-radius: 8px;") />
+                            </FormItem>
+                        }
+                    </Form>
+                </Card>
+            </AntDesign.Col>
+        </Row>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid? ProductId { get; set; }
+
+    private ProductDto? _product;
+    private DraftFormModel _form = new();
+    private bool _loading = true;
+    private bool _saving = false;
+    private bool _publishing = false;
+
+    private List<CategoryDto> _categories = [];
+    private List<BrandDto> _brands = [];
+
+    private string pageTitle = "Bản nháp";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDropdownData();
+
+        if (ProductId.HasValue)
+        {
+            // Editing existing draft
+            _product = await ProductService.GetProductByIdAsync(ProductId.Value);
+            if (_product != null && _product.Status == "Draft")
+            {
+                MapProductToForm();
+            }
+            else
+            {
+                _product = null; // Not found or not a draft
+            }
+        }
+        else
+        {
+            // Creating new draft
+            _product = await ProductService.CreateNewDraftAsync();
+            MapProductToForm();
+            NavigationManager.NavigateTo($"/catalog/products/create/{_product.Id}", replace: true);
+        }
+        _loading = false;
+    }
+
+    private async Task LoadDropdownData()
+    {
+        _categories = await ProductService.GetCategoriesAsync();
+        _brands = await ProductService.GetBrandsAsync();
+    }
+
+    private void MapProductToForm()
+    {
+        if (_product == null) return;
+
+        _form = new DraftFormModel
+        {
+            Name = _product.Name,
+            Description = _product.Description,
+            Sku = _product.Sku,
+            CostAmount = _product.Cost?.Amount ?? 0,
+            PriceAmount = _product.Price?.Amount ?? 0,
+            Width = _product.Dimensions?.Width ?? 10,
+            Height = _product.Dimensions?.Height ?? 10,
+            Depth = _product.Dimensions?.Depth ?? 10,
+            Weight = _product.Dimensions?.Weight ?? 1,
+            CategoryId = _product.Category.Id,
+            BrandId = _product.Brand.Id,
+            Thumbnail = _product.Thumbnail
+        };
+    }
+
+    private string GetPageTitle()
+    {
+        if (string.IsNullOrWhiteSpace(_form.Name))
+            return "Tạo sản phẩm";
+        return $"Chỉnh sửa: {_form.Name}";
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/catalog/products");
+    }
+
+    private async Task HandleSave()
+    {
+        if (_product == null) return;
+
+        _saving = true;
+        StateHasChanged();
+
+        var request = new UpdateProductDraftRequest
+        {
+            Name = _form.Name,
+            Description = _form.Description,
+            Sku = _form.Sku,
+            CostAmount = _form.CostAmount,
+            PriceAmount = _form.PriceAmount,
+            Width = _form.Width,
+            Height = _form.Height,
+            Depth = _form.Depth,
+            Weight = _form.Weight,
+            CategoryId = _form.CategoryId ?? Guid.Empty,
+            BrandId = _form.BrandId ?? Guid.Empty,
+            Thumbnail = _form.Thumbnail,
+            Images = []
+        };
+
+        await ProductService.UpdateDraftAsync(_product.Id, request);
+        MessageService.Success("Đã lưu bản nháp!");
+
+        _saving = false;
+    }
+
+    private async Task HandlePublish()
+    {
+        if (_product == null) return;
+
+        // First save
+        await HandleSave();
+        await Task.Delay(500); // Small delay for better UX
+        _publishing = true;
+        StateHasChanged();
+
+        await ProductService.PublishProductAsync(_product.Id);
+        MessageService.Success("Đã xuất bản sản phẩm!");
+
+        _publishing = false;
+
+        // Navigate to product details
+        var updatedProduct = await ProductService.GetProductByIdAsync(_product.Id);
+        if (updatedProduct?.Slug != null)
+        {
+            NavigationManager.NavigateTo($"/catalog/products/{updatedProduct.Slug}");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/catalog/products");
+        }
+    }
+
+    private async Task HandleDiscard()
+    {
+        if (_product == null) return;
+
+        await ProductService.DiscardDraftAsync(_product.Id);
+        MessageService.Success("Đã hủy bản nháp!");
+        NavigationManager.NavigateTo("/catalog/products");
+    }
+
+    RenderFragment IReuseTabsPage.GetPageTitle()
+    {
+        pageTitle = GetPageTitle();
+        return @<span>@pageTitle</span>;
+    }
+
+    private class DraftFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string Sku { get; set; } = string.Empty;
+        public decimal CostAmount { get; set; }
+        public decimal PriceAmount { get; set; }
+        public decimal Width { get; set; } = 10;
+        public decimal Height { get; set; } = 10;
+        public decimal Depth { get; set; } = 10;
+        public decimal Weight { get; set; } = 1;
+        public Guid? CategoryId { get; set; }
+        public Guid? BrandId { get; set; }
+        public string? Thumbnail { get; set; }
+    }
+}

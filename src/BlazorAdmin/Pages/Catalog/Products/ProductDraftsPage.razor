@@ -1,0 +1,141 @@
+﻿@page "/catalog/products/drafts"
+@using Contracts.Responses.Catalog
+@using Contracts.Responses
+@using BlazorAdmin.Services
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@inject IMessageService MessageService
+@implements IReuseTabsPage
+@attribute [ReuseTabsPage(Singleton = false)]
+@inject ReuseTabsService ReuseTabsService
+
+<PageHeader Title=@("Bản nháp sản phẩm") OnBack="GoBack">
+    <PageHeaderExtra>
+        <Button Type="@ButtonType.Primary" OnClick="CreateNew">
+            <Icon Type=@("plus") Theme="IconThemeType.Outline" /> Tạo mới
+        </Button>
+    </PageHeaderExtra>
+</PageHeader>
+
+<div style="padding: 16px;">
+    @if (_loading)
+    {
+        <Spin Size="SpinSize.Large" Tip=@("Đang tải...") />
+    }
+    else if (!_drafts.Any())
+    {
+        <Card>
+            <Empty Description=@("Không có bản nháp nào")>
+                <ChildContent>
+                    <Button Type="@ButtonType.Primary" OnClick="CreateNew">
+                        <Icon Type=@("plus") /> Tạo sản phẩm mới
+                    </Button>
+                </ChildContent>
+            </Empty>
+        </Card>
+    }
+    else
+    {
+        <Card>
+            <Table TItem="ProductSearchDto" 
+                   DataSource="@_drafts" 
+                   Bordered 
+                   Size="@TableSize.Small">
+                <PropertyColumn Property="c => c.Thumbnail" Title=@("Ảnh")>
+                    @if (!string.IsNullOrEmpty(context.Thumbnail))
+                    {
+                        <Image Src="@context.Thumbnail" Width="60" Height="45" Style="object-fit: cover; border-radius: 4px;" />
+                    }
+                    else
+                    {
+                        <div style="width: 60px; height: 45px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                            <Icon Type=@("picture") Style="color: #999;" />
+                        </div>
+                    }
+                </PropertyColumn>
+                <PropertyColumn Property="c => c.Name" Title=@("Tên sản phẩm")>
+                    @if (string.IsNullOrWhiteSpace(context.Name))
+                    {
+                        <span style="color: #999;">Chưa đặt tên</span>
+                    }
+                    else
+                    {
+                        <strong>@context.Name</strong>
+                    }
+                </PropertyColumn>
+                <PropertyColumn Property="c => c.Sku" Title="SKU" />
+                <PropertyColumn Property="c => c.CategoryName" Title=@("Danh mục") />
+                <PropertyColumn Property="c => c.BrandName" Title=@("Thương hiệu") />
+                <PropertyColumn Property="c => c.CreatedAt" Title=@("Ngày tạo")>
+                    @context.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                </PropertyColumn>
+                <ActionColumn Title=@("Thao tác")>
+                    <Space>
+                        <SpaceItem>
+                            <Button Type="@ButtonType.Primary" Size="@ButtonSize.Small" OnClick="() => ContinueEditing(context.Id)">
+                                <Icon Type=@("edit") /> Tiếp tục
+                            </Button>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Popconfirm Title=@("Xóa bản nháp này?")
+                                        OnConfirm="() => HandleDiscard(context.Id)"
+                                        OkText=@("Xóa")
+                                        CancelText=@("Hủy")>
+                                <Button Size="@ButtonSize.Small" Danger>
+                                    <Icon Type=@("delete") /> Xóa
+                                </Button>
+                            </Popconfirm>
+                        </SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </Table>
+        </Card>
+    }
+</div>
+
+@code {
+    private List<ProductSearchDto> _drafts = [];
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDrafts();
+    }
+
+    private async Task LoadDrafts()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        _drafts = await ProductService.GetDraftsAsync();
+        _loading = false;
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/catalog/products");
+    }
+
+    private async Task CreateNew()
+    {
+        var draft = await ProductService.CreateNewDraftAsync();
+        NavigationManager.NavigateTo($"/catalog/products/create/{draft.Id}");
+    }
+
+    private void ContinueEditing(Guid productId)
+    {
+        NavigationManager.NavigateTo($"/catalog/products/create/{productId}");
+    }
+
+    public RenderFragment GetPageTitle()
+    {
+        return @<span>Bản nháp</span>;
+    }
+
+    private async Task HandleDiscard(Guid productId)
+    {
+        await ProductService.DiscardDraftAsync(productId);
+        MessageService.Success("Đã xóa bản nháp!");
+        await LoadDrafts();
+    }
+}

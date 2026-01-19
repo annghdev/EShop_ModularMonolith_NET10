@@ -193,7 +193,8 @@ public class ProductFakeDataService : IProductService
     {
         await Task.Delay(300); // Simulate network delay
         
-        var query = _products.AsQueryable();
+        // Exclude drafts from search - use GetDraftsAsync for drafts
+        var query = _products.Where(p => p.Status != "Draft").AsQueryable();
         
         if (!string.IsNullOrEmpty(keyword))
             query = query.Where(p => p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase));
@@ -471,5 +472,133 @@ public class ProductFakeDataService : IProductService
         {
             product.UpdatedAt = DateTimeOffset.Now;
         }
+    }
+    
+    // === Draft Management ===
+    
+    public async Task<List<ProductSearchDto>> GetDraftsAsync()
+    {
+        await Task.Delay(200);
+        return _products
+            .Where(p => p.Status == "Draft")
+            .OrderByDescending(p => p.CreatedAt)
+            .Select(p => new ProductSearchDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Slug = p.Slug ?? "",
+                Sku = p.Sku,
+                Thumbnail = p.Thumbnail,
+                CategoryName = p.Category.Name,
+                BrandName = p.Brand.Name,
+                Price = p.Price,
+                Status = p.Status,
+                VariantCount = p.Variants.Count,
+                CreatedAt = p.CreatedAt.DateTime
+            })
+            .ToList();
+    }
+    
+    public async Task<ProductDto> CreateNewDraftAsync()
+    {
+        await Task.Delay(300);
+        
+        var newId = Guid.CreateVersion7();
+        var defaultCategory = _categories.FirstOrDefault() ?? new CategoryDto { Id = Guid.Empty, Name = "Uncategorized" };
+        var defaultBrand = _brands.FirstOrDefault() ?? new BrandDto { Id = Guid.Empty, Name = "Unknown" };
+        
+        var draft = new ProductDto
+        {
+            Id = newId,
+            Name = "",
+            Description = null,
+            Slug = $"draft-{newId.ToString()[..8]}",
+            Sku = $"SKU-{newId.ToString()[..8].ToUpper()}",
+            Cost = new MoneyDto { Amount = 0, Currency = "VND" },
+            Price = new MoneyDto { Amount = 0, Currency = "VND" },
+            Dimensions = new DimensionsDto { Width = 10, Height = 10, Depth = 10, Weight = 1 },
+            HasStockQuantity = true,
+            Thumbnail = null,
+            Images = [],
+            Category = defaultCategory,
+            Brand = defaultBrand,
+            DisplayPriority = 1,
+            Status = "Draft",
+            Attributes = [],
+            Variants = [],
+            CreatedAt = DateTimeOffset.Now,
+            UpdatedAt = null
+        };
+        
+        _products.Add(draft);
+        return draft;
+    }
+    
+    public async Task UpdateDraftAsync(Guid productId, UpdateProductDraftRequest request)
+    {
+        await Task.Delay(300);
+        var product = _products.FirstOrDefault(p => p.Id == productId);
+        if (product == null || product.Status != "Draft") return;
+        
+        product.Name = request.Name;
+        product.Description = request.Description;
+        product.Sku = request.Sku;
+        product.Cost = new MoneyDto { Amount = request.CostAmount, Currency = "VND" };
+        product.Price = new MoneyDto { Amount = request.PriceAmount, Currency = "VND" };
+        product.Dimensions = new DimensionsDto
+        {
+            Width = request.Width,
+            Height = request.Height,
+            Depth = request.Depth,
+            Weight = request.Weight
+        };
+        
+        // Update category
+        var category = _categories.FirstOrDefault(c => c.Id == request.CategoryId);
+        if (category != null) product.Category = category;
+        
+        // Update brand
+        var brand = _brands.FirstOrDefault(b => b.Id == request.BrandId);
+        if (brand != null) product.Brand = brand;
+        
+        product.Thumbnail = request.Thumbnail;
+        product.Images = request.Images ?? [];
+        
+        // Update slug based on name
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            product.Slug = GenerateSlug(request.Name);
+        }
+        
+        product.UpdatedAt = DateTimeOffset.Now;
+    }
+    
+    public async Task DiscardDraftAsync(Guid productId)
+    {
+        await Task.Delay(300);
+        var product = _products.FirstOrDefault(p => p.Id == productId && p.Status == "Draft");
+        if (product != null)
+        {
+            _products.Remove(product);
+        }
+    }
+    
+    private string GenerateSlug(string name)
+    {
+        return name.ToLower()
+            .Replace(" ", "-")
+            .Replace("đ", "d")
+            .Replace("á", "a").Replace("à", "a").Replace("ả", "a").Replace("ã", "a").Replace("ạ", "a")
+            .Replace("ă", "a").Replace("ắ", "a").Replace("ằ", "a").Replace("ẳ", "a").Replace("ẵ", "a").Replace("ặ", "a")
+            .Replace("â", "a").Replace("ấ", "a").Replace("ầ", "a").Replace("ẩ", "a").Replace("ẫ", "a").Replace("ậ", "a")
+            .Replace("é", "e").Replace("è", "e").Replace("ẻ", "e").Replace("ẽ", "e").Replace("ẹ", "e")
+            .Replace("ê", "e").Replace("ế", "e").Replace("ề", "e").Replace("ể", "e").Replace("ễ", "e").Replace("ệ", "e")
+            .Replace("í", "i").Replace("ì", "i").Replace("ỉ", "i").Replace("ĩ", "i").Replace("ị", "i")
+            .Replace("ó", "o").Replace("ò", "o").Replace("ỏ", "o").Replace("õ", "o").Replace("ọ", "o")
+            .Replace("ô", "o").Replace("ố", "o").Replace("ồ", "o").Replace("ổ", "o").Replace("ỗ", "o").Replace("ộ", "o")
+            .Replace("ơ", "o").Replace("ớ", "o").Replace("ờ", "o").Replace("ở", "o").Replace("ỡ", "o").Replace("ợ", "o")
+            .Replace("ú", "u").Replace("ù", "u").Replace("ủ", "u").Replace("ũ", "u").Replace("ụ", "u")
+            .Replace("ư", "u").Replace("ứ", "u").Replace("ừ", "u").Replace("ử", "u").Replace("ữ", "u").Replace("ự", "u")
+            .Replace("ý", "y").Replace("ỳ", "y").Replace("ỷ", "y").Replace("ỹ", "y").Replace("ỵ", "y");
     }
 }

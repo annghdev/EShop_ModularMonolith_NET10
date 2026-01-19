@@ -28,17 +28,17 @@
                         <span>Dashboard</span>
                     </MenuItem>
 
-                    <SubMenu Key="sub1" TitleTemplate="@sub1Title">
+                    <SubMenu Key="sub1" TitleTemplate="@sub1Title" >
                         <MenuItem Key="2" RouterLink="/orders/pending" RouterMatch="NavLinkMatch.Prefix">
                             <Icon Type="@IconType.Outline.UnorderedList" />
-                            <span>Chờ xác nhận</span>
+                            <span>Duyệt đơn</span>
                         </MenuItem>
                         <MenuItem Key="3" RouterLink="/orders" RouterMatch="NavLinkMatch.Prefix">
                             <Icon Type="@IconType.Outline.UnorderedList" />
                             <span>Danh sách đơn</span>
                         </MenuItem>
                     </SubMenu>
-                    <SubMenu Key="sub2" TitleTemplate="@sub2Title">
+                    <SubMenu Key="sub2" TitleTemplate="@sub2Title" >
                         <MenuItem Key="4" RouterLink="/catalog/products" RouterMatch="NavLinkMatch.Prefix">
                             <Icon Type="@IconType.Outline.Appstore" />
                             <span>Bảng sản phẩm</span>
@@ -59,8 +59,12 @@
                             <Icon Type="@IconType.Outline.DotChart" />
                             <span>Thuộc tính</span>
                         </MenuItem>
+                        <MenuItem Key="17" RouterLink="/catalog/products/drafts" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.DotChart" />
+                            <span>Bản nháp</span>
+                        </MenuItem>
                     </SubMenu>
-                    <SubMenu Key="sub3" TitleTemplate="@sub3Title">
+                    <SubMenu Key="sub3" TitleTemplate="@sub3Title" >
                         <MenuItem Key="9" RouterLink="/inventory/movements" RouterMatch="NavLinkMatch.Prefix">
                             <Icon Type="@IconType.Outline.Appstore" />
                             <span>Nhật ký</span>
@@ -70,7 +74,7 @@
                             <span>Nhà kho</span>
                         </MenuItem>
                     </SubMenu>
-                    <SubMenu Key="sub4" TitleTemplate="@sub4Title">
+                    <SubMenu Key="sub4" TitleTemplate="@sub4Title" >
                         <MenuItem Key="11" RouterLink="/discount/promotions" RouterMatch="NavLinkMatch.Prefix">
                             <Icon Type="@IconType.Outline.Appstore" />
                             <span>Chương trình</span>
@@ -80,7 +84,7 @@
                             <span>Mã giảm giá</span>
                         </MenuItem>
                     </SubMenu>
-                    <SubMenu Key="sub5" TitleTemplate="@sub5Title">
+                    <SubMenu Key="sub5" TitleTemplate="@sub5Title" >
                         <MenuItem Key="13" RouterLink="/users/customers" RouterMatch="NavLinkMatch.Prefix">
                             <Icon Type="@IconType.Outline.Appstore" />
                             <span>Khách hàng</span>
@@ -90,7 +94,15 @@
                             <span>Nhân viên</span>
                         </MenuItem>
                     </SubMenu>
-                    <SubMenu Key="sub6" TitleTemplate="@sub6Title">
+                    <SubMenu Key="sub6" TitleTemplate="@sub6Title" >
+                        <MenuItem Key="18" RouterLink="/settings/profile">
+                            <Icon Type="@IconType.Outline.Profile" />
+                            <span>Cổng thanh toán</span>
+                        </MenuItem>
+                        <MenuItem Key="19" RouterLink="/settings/profile">
+                            <Icon Type="@IconType.Outline.Profile" />
+                            <span>Dịch vụ vận chuyển</span>
+                        </MenuItem>
                         <MenuItem Key="15" RouterLink="/settings/profile">
                             <Icon Type="@IconType.Outline.Profile" />
                             <span>Hồ sơ cá nhân</span>
@@ -106,7 +118,7 @@
             <Layout>       
                     <ReuseTabs Style="margin: 16px;" Body="@Body">
                         <TabPaneTemplate Context="tabContext">
-                            <Content Class="site-layout-background" Style="padding: 24px;min-height: 100vh; background:rgba(254,255,255,0.85)">
+                            <Content Class="site-layout-background" Style="padding: 0px;min-height: 100vh; background:rgba(254,255,255,0.85)">
                                 @tabContext.Body
                             </Content>
                         </TabPaneTemplate>
@@ -168,7 +180,7 @@
     RenderFragment sub2Title =
         @<span>
             <Icon Type="@IconType.Outline.Appstore" />
-            Hàng hóa
+            Sản phẩm
         </span>;
 
     RenderFragment sub3Title =

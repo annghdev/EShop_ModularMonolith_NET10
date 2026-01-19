@@ -35,6 +35,12 @@ public interface IProductService
     Task AddImageAsync(string slug, string imageUrl);
     Task RemoveImageAsync(string slug, string imageUrl);
     
+    // Draft Management
+    Task<List<ProductSearchDto>> GetDraftsAsync();
+    Task<ProductDto> CreateNewDraftAsync();
+    Task UpdateDraftAsync(Guid productId, UpdateProductDraftRequest request);
+    Task DiscardDraftAsync(Guid productId);
+    
     // Helper methods for dropdowns
     Task<List<CategoryDto>> GetCategoriesAsync();
     Task<List<BrandDto>> GetBrandsAsync();

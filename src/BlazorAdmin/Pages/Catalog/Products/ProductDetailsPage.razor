@@ -21,15 +21,15 @@ else if (_product == null)
 }
 else
 {
-    <PageHeader Title="@_product.Name" OnBack="GoBack">
+    <PageHeader Title="@_product.Name" OnBack="GoBack" Style="border:1px solid rgba(100,100,100,0.1)">
         <PageHeaderExtra>
             <Space>
                 @if (_product.Status == "Draft")
                 {
                     <SpaceItem>
                         <Button Type="@ButtonType.Primary" OnClick="HandlePublish">
-                            <Icon Type="check" Theme="IconThemeType.Outline" />
-                            Publish
+                            <Icon Type="@IconType.Outline.Up" />
+                            Xuất bản
                         </Button>
                     </SpaceItem>
                 }
@@ -38,18 +38,16 @@ else
                     <SpaceItem>
                         <Button Type="@ButtonType.Primary" OnClick="HandleRepublish">
                             <Icon Type="redo" Theme="IconThemeType.Outline" />
-                            Republish
+                            Tái bản
                         </Button>
                     </SpaceItem>
                 }
-                <SpaceItem>
-                    <Tag Color="@GetStatusColor(_product.Status)">@_product.Status</Tag>
-                </SpaceItem>
             </Space>
         </PageHeaderExtra>
     </PageHeader>
 
-    <div style="padding: 24px; background: #f0f2f5;">
+    @* <div style="padding: 24px; background: #f0f2f5;"> *@
+    <div>
         <Row Gutter="(16, 16)">
             <!-- Basic Information -->
             <AntDesign.Col Span="24">
@@ -102,6 +100,9 @@ else
                                     : "0";
                                 }
                                 <Text>@margin VND</Text>
+                            </DescriptionsItem>
+                            <DescriptionsItem Title=@("Thuế VAT")>
+                                <Text Strong>10%</Text>
                             </DescriptionsItem>
                         </Descriptions>
                     </ChildContent>
@@ -218,8 +219,8 @@ else
                         @if (_product.Attributes?.Any() == true)
                         {
                             <Table TItem="ProductAttributeDto" DataSource="@_product.Attributes" Bordered Size="@TableSize.Small">
+                                <PropertyColumn Property="c => c.DisplayOrder" Title=@("Thứ tự") Style="max-width:120px" />
                                 <PropertyColumn Property="c => c.AttributeName" Title=@("Tên thuộc tính") />
-                                <PropertyColumn Property="c => c.DisplayOrder" Title=@("Thứ tự hiển thị") />
                                 <PropertyColumn Property="c => c.HasVariant" Title=@("Dùng cho biến thể")>
                                     @if (context.HasVariant)
                                     {
@@ -252,7 +253,7 @@ else
 
             <!-- Variants -->
             <AntDesign.Col Span="24">
-                <Card Title="@($"Product Variants ({_product.Variants?.Count ?? 0})")">
+                <Card Title="@($"Biến thể ({_product.Variants?.Count ?? 0})")">
                     <Extra>
                         <Button Type="@ButtonType.Primary" Size="ButtonSize.Small" OnClick="ShowAddVariantModal">
                             <Icon Type=@("plus") Theme="IconThemeType.Outline" /> Thêm biến thể
@@ -640,6 +641,7 @@ else
     private void GoBack()
     {
         NavigationManager.NavigateTo("/catalog/products");
+        ReuseTabsService.CloseCurrent();
     }
 
     private string GetStatusColor(string status)

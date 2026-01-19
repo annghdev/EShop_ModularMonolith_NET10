@@ -11,10 +11,20 @@
                 <Title Level="4">Danh sách sản phẩm</Title>
             </SpaceItem>
             <SpaceItem>
-                <Button Type="@ButtonType.Primary" OnClick="NavigateToCreate">
-                    <Icon Type="plus" Theme="IconThemeType.Outline" />
-                    Tạo sản phẩm
-                </Button>
+                <Space>
+                    <SpaceItem>
+                        <Button OnClick="NavigateToDrafts">
+                            <Icon Type=@("file-text") Theme="IconThemeType.Outline" />
+                            Bản nháp
+                        </Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" OnClick="NavigateToCreate">
+                            <Icon Type=@("plus") Theme="IconThemeType.Outline" />
+                            Tạo sản phẩm
+                        </Button>
+                    </SpaceItem>
+                </Space>
             </SpaceItem>
         </Space>
     </TitleTemplate>
@@ -216,8 +226,8 @@
     private List<CategoryDto> _categories = [];
     private List<BrandDto> _brands = [];
     
-    private readonly List<string> _statusOptions = ["Draft", "Published", "Discontinued"];
-    private readonly List<string> _statusOptionsVi = ["Nháp", "Đã xuất bản", "Ngừng bán"];
+    private readonly List<string> _statusOptions = ["Published", "Discontinued"];
+    private readonly List<string> _statusOptionsVi = ["Đã xuất bản", "Ngừng bán"];
 
     protected override async Task OnInitializedAsync()
     {
@@ -323,6 +333,11 @@
     private void NavigateToCreate()
     {
         NavigationManager.NavigateTo("/catalog/products/create");
+    }
+    
+    private void NavigateToDrafts()
+    {
+        NavigationManager.NavigateTo("/catalog/products/drafts");
     }
     
     // Filter Model
