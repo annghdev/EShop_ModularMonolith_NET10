@@ -1,21 +1,990 @@
-﻿@page "/catalog/products/{ProductId:guid}"
+﻿@page "/catalog/products/{Slug}"
+@using Contracts.Requests.Catalog
+@using Contracts.Responses.Catalog
+@using Contracts.Responses
+@using BlazorAdmin.Services
 @implements IReuseTabsPage
-@inject NavigationManager navigationManager
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@inject IMessageService MessageService
 @attribute [ReuseTabsPage(Singleton = false)]
 
-<h3>ProductDetailsPage - @ProductId</h3>
-<Button OnClick=@(() => { navigationManager.NavigateTo($"/catalog/products/{Guid.NewGuid()}"); }) />
-<Button OnClick=@(() => { navigationManager.NavigateTo($"/catalog/products"); }) />
+@if (_loading)
+{
+    <div style="text-align: center; padding: 50px;">
+        <Spin Size="SpinSize.Large" />
+    </div>
+}
+else if (_product == null)
+{
+    <Result Status="ResultStatus.Http404" Title="Product Not Found" SubTitle="The product you are looking for does not exist." />
+}
+else
+{
+    <PageHeader Title="@_product.Name" OnBack="GoBack" Style="border:1px solid rgba(100,100,100,0.1)">
+        <PageHeaderExtra>
+            <Space>
+                @if (_product.Status == "Draft")
+                {
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" OnClick="HandlePublish">
+                            <Icon Type="@IconType.Outline.Up" />
+                            Xuất bản
+                        </Button>
+                    </SpaceItem>
+                }
+                @if (_product.Status == "Discontinued")
+                {
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" OnClick="HandleRepublish">
+                            <Icon Type="redo" Theme="IconThemeType.Outline" />
+                            Tái bản
+                        </Button>
+                    </SpaceItem>
+                }
+            </Space>
+        </PageHeaderExtra>
+    </PageHeader>
 
+    @* <div style="padding: 24px; background: #f0f2f5;"> *@
+    <div>
+        <Row Gutter="(16, 16)">
+            <!-- Basic Information -->
+            <AntDesign.Col Span="24">
+                <Card Title=@("Thông tin cơ bản")>
+                    <Extra>
+                        <Button Size="ButtonSize.Small" OnClick="ShowUpdateBasicInfoModal">
+                            <Icon Type="edit" Theme="IconThemeType.Outline" /> Chỉnh sửa
+                        </Button>
+                    </Extra>
+                    <ChildContent>
+                        <Descriptions Bordered Column="2">
+                            <DescriptionsItem Title=@("Tên sản phẩm")>@_product.Name</DescriptionsItem>
+                            <DescriptionsItem Title="SKU">@_product.Sku</DescriptionsItem>
+                            <DescriptionsItem Title=@("Trạng thái")>
+                                <Tag Color="@GetStatusColor(_product.Status)">@GetStatusText(_product.Status)</Tag>
+                            </DescriptionsItem>
+                            <DescriptionsItem Title="Slug">@_product.Slug</DescriptionsItem>
+                            <DescriptionsItem Title=@("Danh mục")>@_product.Category?.Name</DescriptionsItem>
+                            <DescriptionsItem Title=@("Thương hiệu")>@_product.Brand?.Name</DescriptionsItem>
+                            <DescriptionsItem Title=@("Ngày tạo")>@_product.CreatedAt.ToString("yyyy-MM-dd HH:mm")</DescriptionsItem>
+                            <DescriptionsItem Title=@("Cập nhật")>@(_product.UpdatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Chưa cập nhật")</DescriptionsItem>
+                            <DescriptionsItem Title=@("Mô tả") Span="2">
+                                @(_product.Description ?? "Chưa có mô tả")
+                            </DescriptionsItem>
+                        </Descriptions>
+                    </ChildContent>
+                </Card>
+            </AntDesign.Col>
+
+            <!-- Pricing & Dimensions -->
+            <AntDesign.Col Md="12" Xs="24">
+                <Card Title=@("Giá cả")>
+                    <Extra>
+                        <Button Size="ButtonSize.Small" OnClick="ShowUpdatePricingModal">
+                            <Icon Type="edit" Theme="IconThemeType.Outline" /> Chỉnh sửa
+                        </Button>
+                    </Extra>
+                    <ChildContent>
+                        <Descriptions Bordered Column="1">
+                            <DescriptionsItem Title=@("Giá vốn")>
+                                <Text Strong>@_product.Cost?.Amount.ToString("N0") @_product.Cost?.Currency</Text>
+                            </DescriptionsItem>
+                            <DescriptionsItem Title=@("Giá bán")>
+                                <Text Strong Style="color: #52c41a; font-size: 18px;">@_product.Price?.Amount.ToString("N0") @_product.Price?.Currency</Text>
+                            </DescriptionsItem>
+                            <DescriptionsItem Title="Margin">
+                                @{
+                                    var margin = _product.Price != null && _product.Cost != null
+                                    ? (_product.Price.Amount - _product.Cost.Amount).ToString("N0")
+                                    : "0";
+                                }
+                                <Text>@margin VND</Text>
+                            </DescriptionsItem>
+                            <DescriptionsItem Title=@("Thuế VAT")>
+                                <Text Strong>10%</Text>
+                            </DescriptionsItem>
+                        </Descriptions>
+                    </ChildContent>
+                </Card>
+            </AntDesign.Col>
+
+            <AntDesign.Col Md="12" Xs="24">
+                <Card Title=@("Kích thước & Trọng lượng")>
+                    <Extra>
+                        <Button Size="ButtonSize.Small" OnClick="ShowUpdateDimensionsModal">
+                            <Icon Type="edit" Theme="IconThemeType.Outline" /> Chỉnh sửa
+                        </Button>
+                    </Extra>
+                    <ChildContent>
+                        <Descriptions Bordered Column="1">
+                            <DescriptionsItem Title=@("Rộng (cm)")>@_product.Dimensions?.Width cm</DescriptionsItem>
+                            <DescriptionsItem Title=@("Cao (cm)")>@_product.Dimensions?.Height cm</DescriptionsItem>
+                            <DescriptionsItem Title=@("Sâu (cm)")>@_product.Dimensions?.Depth cm</DescriptionsItem>
+                            <DescriptionsItem Title=@("Trọng lượng (kg)")>@_product.Dimensions?.Weight kg</DescriptionsItem>
+                        </Descriptions>
+                    </ChildContent>
+                </Card>
+            </AntDesign.Col>
+
+            <!-- Images -->
+            <AntDesign.Col Span="24">
+                <Card Title=@("Hình ảnh sản phẩm")>
+                    <ChildContent>
+                        <Row Gutter="16">
+                            <!-- Thumbnail - Left Side -->
+                            <AntDesign.Col Md="8" Xs="24">
+                                <Space Direction="SpaceDirection.Vertical" Style=@("width: 100%")>
+                                    <SpaceItem>
+                                        <Space Style=@("width: 100%; justify-content: space-between;")>
+                                            <SpaceItem><Text Strong>Thumbnail</Text></SpaceItem>
+                                            <SpaceItem>
+                                                <Button Size="ButtonSize.Small" OnClick="ShowUpdateThumbnailModal">
+                                                    <Icon Type=@("edit") /> Sửa
+                                                </Button>
+                                            </SpaceItem>
+                                        </Space>
+                                    </SpaceItem>
+                                    <SpaceItem>
+                                        @if (!string.IsNullOrEmpty(_product.Thumbnail))
+                                        {
+                                            <div style="text-align: center;">
+                                                <Image Src="@_product.Thumbnail" Width="100%" Style="max-width: 300px; border-radius: 8px;" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <Empty Description=@("Chưa có thumbnail") Simple />
+                                        }
+                                    </SpaceItem>
+                                </Space>
+                            </AntDesign.Col>
+
+                            <!-- Gallery - Right Side with Flex Wrap -->
+                            <AntDesign.Col Md="16" Xs="24">
+                                <Space Direction="SpaceDirection.Vertical" Style=@("width: 100%")>
+                                    <SpaceItem>
+                                        <Space Style=@("width: 100%; justify-content: space-between;")>
+                                            <SpaceItem><Text Strong>Gallery Images</Text></SpaceItem>
+                                            <SpaceItem>
+                                                <Button Type="@ButtonType.Primary" Size="ButtonSize.Small" OnClick="ShowAddImageModal">
+                                                    <Icon Type=@("plus") /> Thêm ảnh
+                                                </Button>
+                                            </SpaceItem>
+                                        </Space>
+                                    </SpaceItem>
+                                    <SpaceItem>
+                                        @if (_product.Images?.Any() == true)
+                                        {
+                                            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                                @foreach (var image in _product.Images)
+                                                {
+                                                    <div style="position: relative; flex: 0 0 auto;">
+                                                        <Image Src="@image" Width="150" Height="150" Style="object-fit: cover; border-radius: 8px;" />
+                                                        <div style="position: absolute; top: 4px; right: 4px;">
+                                                            <Popconfirm Title=@("Xóa ảnh này?")
+                                                                        OnConfirm="() => HandleRemoveImage(image)"
+                                                                        OkText=@("Xóa")
+                                                                        CancelText=@("Hủy")>
+                                                                <Button Size="@ButtonSize.Small" Danger Shape="@ButtonShape.Circle">
+                                                                    <Icon Type=@("delete") />
+                                                                </Button>
+                                                            </Popconfirm>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <Empty Description=@("Chưa có ảnh") Simple />
+                                        }
+                                    </SpaceItem>
+                                </Space>
+                            </AntDesign.Col>
+                        </Row>
+                    </ChildContent>
+                </Card>
+            </AntDesign.Col>
+
+            <!-- Product Attributes -->
+            <AntDesign.Col Span="24">
+                <Card Title="@($"Thuộc tính sản phẩm ({_product.Attributes?.Count ?? 0})")">
+                    <Extra>
+                        <Button Type="@ButtonType.Primary" Size="ButtonSize.Small" OnClick="ShowAddAttributeModal">
+                            <Icon Type=@("plus") Theme="IconThemeType.Outline" /> Thêm thuộc tính
+                        </Button>
+                    </Extra>
+                    <ChildContent>
+                        @if (_product.Attributes?.Any() == true)
+                        {
+                            <Table TItem="ProductAttributeDto" DataSource="@_product.Attributes" Bordered Size="@TableSize.Small">
+                                <PropertyColumn Property="c => c.DisplayOrder" Title=@("Thứ tự") Style="max-width:120px" />
+                                <PropertyColumn Property="c => c.AttributeName" Title=@("Tên thuộc tính") />
+                                <PropertyColumn Property="c => c.HasVariant" Title=@("Dùng cho biến thể")>
+                                    @if (context.HasVariant)
+                                    {
+                                        <Tag Color="TagColor.Green">Có</Tag>
+                                    }
+                                    else
+                                    {
+                                        <Tag>Không</Tag>
+                                    }
+                                </PropertyColumn>
+                                <ActionColumn Title=@("Thao tác")>
+                                    <Popconfirm Title=@("Xóa thuộc tính này?")
+                                                OnConfirm="() => HandleRemoveAttribute(context.AttributeId)"
+                                                OkText=@("Xóa")
+                                                CancelText=@("Hủy")>
+                                        <Button Size="@ButtonSize.Small" Danger>
+                                            <Icon Type=@("delete") /> Xóa
+                                        </Button>
+                                    </Popconfirm>
+                                </ActionColumn>
+                            </Table>
+                        }
+                        else
+                        {
+                            <Empty Description=@("Chưa có thuộc tính") />
+                        }
+                    </ChildContent>
+                </Card>
+            </AntDesign.Col>
+
+            <!-- Variants -->
+            <AntDesign.Col Span="24">
+                <Card Title="@($"Biến thể ({_product.Variants?.Count ?? 0})")">
+                    <Extra>
+                        <Button Type="@ButtonType.Primary" Size="ButtonSize.Small" OnClick="ShowAddVariantModal">
+                            <Icon Type=@("plus") Theme="IconThemeType.Outline" /> Thêm biến thể
+                        </Button>
+                    </Extra>
+                    <ChildContent>
+                        @if (_product.Variants?.Any() == true)
+                        {
+                            <Table TItem="VariantDto"
+                                   DataSource="@_product.Variants"
+                                   Bordered
+                                   ExpandIconColumnIndex=0>
+                                <PropertyColumn Property="c => c.MainImage" Title="Image">
+                                    <Image Src="@context.MainImage" Width="60" Height="45" Style="object-fit: cover; border-radius: 4px;" />
+                                </PropertyColumn>
+                                <PropertyColumn Property="c => c.Name" Title="Variant Name" />
+                                <PropertyColumn Property="c => c.Sku" Title="SKU" />
+                                <ColumnDefinition Title="Attributes">
+                                    <Space Size="@("small")">
+                                        @foreach (var attr in context.AttributeValues)
+                                        {
+                                            <SpaceItem>
+                                                @if (!string.IsNullOrEmpty(attr.ColorCode))
+                                                {
+
+                                                    @if (attr.ValueName.ToLower() == "white" || attr.ColorCode.ToLower() == "#ffffff" || attr.ColorCode.ToLower() == "#fff")
+                                                    {
+                                                        <Tag Color="@attr.ColorCode" Style="border:1px solid grey; color: black">@attr.ValueName</Tag>
+                                                    }
+                                                    else
+                                                    {
+                                                        <Tag Color="@attr.ColorCode">@attr.ValueName</Tag>
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    <Tag>@attr.AttributeName: @attr.ValueName</Tag>
+                                                }
+                                            </SpaceItem>
+                                        }
+                                    </Space>
+                                </ColumnDefinition>
+                                <ColumnDefinition Title="Price">
+                                    @{
+                                        var price = context.OverridePrice ?? _product.Price;
+                                    }
+                                    @price?.Amount.ToString("N0") @price?.Currency
+                                </ColumnDefinition>
+                                <ColumnDefinition Title="Cost">
+                                    @{
+                                        var cost = context.OverrideCost ?? _product.Cost;
+                                    }
+                                    @cost?.Amount.ToString("N0") @cost?.Currency
+                                </ColumnDefinition>
+                                <ActionColumn Title=@("Thao tác")>
+                                    <Space>
+                                        <SpaceItem>
+                                            <Button Size="@ButtonSize.Small" OnClick="() => ShowEditVariantModal(context)">
+                                                <Icon Type=@("edit") Theme="IconThemeType.Outline" /> Sửa
+                                            </Button>
+                                        </SpaceItem>
+                                        <SpaceItem>
+                                            <Popconfirm Title=@("Xóa biến thể này?")
+                                                        OnConfirm="() => HandleRemoveVariant(context.Id)"
+                                                        OkText=@("Xóa")
+                                                        CancelText=@("Hủy")>
+                                                <Button Size="@ButtonSize.Small" Danger>
+                                                    <Icon Type=@("delete") /> Xóa
+                                                </Button>
+                                            </Popconfirm>
+                                        </SpaceItem>
+                                    </Space>
+                                </ActionColumn>
+                            </Table>
+                        }
+                        else
+                        {
+                            <Empty Description=@("No variants created yet") />
+                        }
+                    </ChildContent>
+                </Card>
+            </AntDesign.Col>
+        </Row>
+    </div>
+}
+
+@* === Update Modals === *@
+
+@* Basic Info Update Modal *@
+<Modal Title="Update Basic Information"
+       @bind-Visible="_showUpdateBasicInfo"
+       OnOk="HandleUpdateBasicInfo"
+       OnCancel="() => _showUpdateBasicInfo = false"
+       Width="600">
+    <Form Model="@_basicInfoModel" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label="Name">
+            <Input @bind-Value="_basicInfoModel.Name" Placeholder="Product name" />
+        </FormItem>
+        <FormItem Label="SKU">
+            <Input @bind-Value="_basicInfoModel.Sku" Placeholder="Stock keeping unit" />
+        </FormItem>
+        <FormItem Label="Description">
+            <TextArea @bind-Value="_basicInfoModel.Description" Rows="4" Placeholder="Product description" />
+        </FormItem>
+        <FormItem Label="Category">
+            <Select @bind-Value="_basicInfoModel.CategoryId"
+                    DataSource="@_categories"
+                    LabelName="@nameof(CategoryDto.Name)"
+                    ValueName="@nameof(CategoryDto.Id)"
+                    Placeholder="Select category" />
+        </FormItem>
+        <FormItem Label="Brand">
+            <Select @bind-Value="_basicInfoModel.BrandId"
+                    DataSource="@_brands"
+                    LabelName="@nameof(BrandDto.Name)"
+                    ValueName="@nameof(BrandDto.Id)"
+                    Placeholder="Select brand" />
+        </FormItem>
+    </Form>
+</Modal>
+
+@* Pricing Update Modal *@
+<Modal Title="Update Pricing"
+       @bind-Visible="_showUpdatePricing"
+       OnOk="HandleUpdatePricing"
+       OnCancel="() => _showUpdatePricing = false"
+       Width="500">
+    <Form Model="@_pricingModel" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label="Cost (VND)">
+            <AntDesign.InputNumber @bind-Value="_pricingModel.CostAmount" Placeholder="Cost amount" Step="1000" Min="0" Style="width: 100%" />
+        </FormItem>
+        <FormItem Label="Price (VND)">
+            <AntDesign.InputNumber @bind-Value="_pricingModel.PriceAmount" Placeholder="Selling price" Step="1000" Min="0" Style="width: 100%" />
+        </FormItem>
+    </Form>
+</Modal>
+
+@* Dimensions Update Modal *@
+<Modal Title="Update Dimensions & Weight"
+       @bind-Visible="_showUpdateDimensions"
+       OnOk="HandleUpdateDimensions"
+       OnCancel="() => _showUpdateDimensions = false"
+       Width="500">
+    <Form Model="@_dimensionsModel" LabelColSpan="8" WrapperColSpan=16>
+        <FormItem Label="Width (cm)">
+            <AntDesign.InputNumber @bind-Value="_dimensionsModel.Width" Placeholder="Width" Step=@(0.1m) Min="0" Style="width: 100%" />
+        </FormItem>
+        <FormItem Label="Height (cm)">
+            <AntDesign.InputNumber @bind-Value="_dimensionsModel.Height" Placeholder="Height" Step="0.1m" Min="0" Style="width: 100%" />
+        </FormItem>
+        <FormItem Label="Depth (cm)">
+            <AntDesign.InputNumber @bind-Value="_dimensionsModel.Depth" Placeholder="Depth" Step="0.1m" Min="0" Style="width: 100%" />
+        </FormItem>
+        <FormItem Label="Weight (kg)">
+            <AntDesign.InputNumber @bind-Value="_dimensionsModel.Weight" Placeholder="Weight" Step="0.1m" Min="0" Style="width: 100%" />
+        </FormItem>
+    </Form>
+</Modal>
+
+@* Add Attribute Modal *@
+<Modal Title=@("Thêm thuộc tính")
+       @bind-Visible="_showAddAttribute"
+       OnOk="HandleAddAttribute"
+       OnCancel="() => _showAddAttribute = false"
+       Width="500">
+    <Form Model="@_addAttributeModel" LabelColSpan="8" WrapperColSpan="16">
+        <FormItem Label=@("Thuộc tính")>
+            <Select TItem="AttributeDto"
+                    TItemValue="Guid?"
+                    @bind-Value="_addAttributeModel.AttributeId"
+                    DataSource="@_allAttributes"
+                    LabelName="@nameof(AttributeDto.Name)"
+                    ValueName="@nameof(AttributeDto.Id)"
+                    Placeholder=@("Chọn thuộc tính")
+                    Style=@("width: 100%")" />
+        </FormItem>
+        <FormItem Label=@("Thứ tự hiển thị")>
+            <AntDesign.InputNumber @bind-Value="_addAttributeModel.DisplayOrder" Min="0" Style=@("width: 100%") />
+        </FormItem>
+        <FormItem Label=@("Dùng cho biến thể")>
+            <Checkbox @bind-Checked="_addAttributeModel.HasVariant">Có</Checkbox>
+        </FormItem>
+    </Form>
+</Modal>
+
+@* Update Thumbnail Modal *@
+<Modal Title=@("Cập nhật Thumbnail")
+       @bind-Visible="_showUpdateThumbnail"
+       OnOk="HandleUpdateThumbnail"
+       OnCancel="() => _showUpdateThumbnail = false"
+       Width="600">
+    <Form Model="@_updateThumbnailModel" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("URL Thumbnail")>
+            <Input @bind-Value="_updateThumbnailModel.ThumbnailUrl" Placeholder=@("https://example.com/image.jpg")" />
+        </FormItem>
+        @if (!string.IsNullOrEmpty(_updateThumbnailModel.ThumbnailUrl))
+        {
+            <FormItem Label=@("Xem trước")>
+                <Image Src="@_updateThumbnailModel.ThumbnailUrl" Width="200" Style=@("border-radius: 8px;") />
+            </FormItem>
+        }
+    </Form>
+</Modal>
+
+@* Add Image Modal *@
+<Modal Title=@("Thêm ảnh vào Gallery")
+       @bind-Visible="_showAddImage"
+       OnOk="HandleAddImage"
+       OnCancel="() => _showAddImage = false"
+       Width="600">
+    <Form Model="@_addImageModel" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("URL Ảnh")>
+            <Input @bind-Value="_addImageModel.ImageUrl" Placeholder=@("https://example.com/image.jpg")" />
+        </FormItem>
+        @if (!string.IsNullOrEmpty(_addImageModel.ImageUrl))
+        {
+            <FormItem Label=@("Xem trước")>
+                <Image Src="@_addImageModel.ImageUrl" Width="200" Style=@("border-radius: 8px;") />
+            </FormItem>
+        }
+    </Form>
+</Modal>
+
+@* Add/Edit Variant Modal *@
+<Modal Title="@(_isEditingVariant ? "Sửa biến thể" : "Thêm biến thể")"
+       @bind-Visible="_showVariantModal"
+       OnOk="HandleSaveVariant"
+       OnCancel="() => _showVariantModal = false"
+       Width="800">
+    <Form Model="@_variantModel" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("Tên biến thể")>
+            <Input @bind-Value="_variantModel.Name" Placeholder=@("Ví dụ: iPhone 14 Pro Max - Gold - 256GB")" />
+        </FormItem>
+        <FormItem Label="SKU">
+            <Input @bind-Value="_variantModel.Sku" Placeholder="@($"{_product?.Sku}-VAR1")" />
+        </FormItem>
+        
+        @* Attribute Values - Dynamic based on product attributes with HasVariant=true *@
+        @if (_product?.Attributes?.Any(a => a.HasVariant) == true)
+        {
+            <Divider>Giá trị thuộc tính</Divider>
+            @foreach (var attr in _product.Attributes.Where(a => a.HasVariant))
+            {
+                var attributeFromList = _allAttributes.FirstOrDefault(a => a.Id == attr.AttributeId);
+                if (attributeFromList != null)
+                {
+                    <FormItem Label="@attr.AttributeName">
+                        <Select TItem="AttributeValueDto"
+                                TItemValue="Guid?"
+                                Value="@GetVariantAttributeValue(attr.AttributeId)"
+                                ValueChanged="@((Guid? val) => SetVariantAttributeValue(attr.AttributeId, val))"
+                                DataSource="@attributeFromList.Values"
+                                LabelName="@nameof(AttributeValueDto.Value)"
+                                ValueName="@nameof(AttributeValueDto.Id)"
+                                Placeholder="@($"Chọn {attr.AttributeName}")"
+                                Style=@("width: 100%")" />
+                    </FormItem>
+                }
+            }
+        }
+        
+        <Divider>Giá (Tùy chọn override)</Divider>
+        <FormItem Label=@("Giá vốn (VNĐ)")>
+            <AntDesign.InputNumber @bind-Value="_variantModel.OverrideCostAmount" 
+                                   Placeholder="@(_product?.Cost?.Amount.ToString("N0"))" 
+                                   Step="10000m" 
+                                   Min="0" 
+                                   Style=@("width: 100%") />
+        </FormItem>
+        <FormItem Label=@("Giá bán (VNĐ)")>
+            <AntDesign.InputNumber @bind-Value="_variantModel.OverridePriceAmount" 
+                                   Placeholder="@(_product?.Price?.Amount.ToString("N0"))" 
+                                   Step="10000m" 
+                                   Min="0" 
+                                   Style=@("width: 100%") />
+        </FormItem>
+        
+        <Divider>Hình ảnh</Divider>
+        <FormItem Label=@("Ảnh chính")>
+            <Input @bind-Value="_variantModel.MainImage" Placeholder=@("https://example.com/image.jpg")" />
+        </FormItem>
+    </Form>
+</Modal>
+
+@inject ReuseTabsService ReuseTabsService
 @code {
-    [Parameter] public Guid ProductId { get; set; }
+    [Parameter] public string Slug { get; set; } = string.Empty;
+
+    private ProductDto? _product;
+    private bool _loading = true;
+    private string pageTitle = "Sản phẩm";
+
+    // Modal state
+    private bool _showUpdateBasicInfo = false;
+    private bool _showUpdatePricing = false;
+    private bool _showUpdateDimensions = false;
+    private bool _showAddAttribute = false;
+    private bool _showUpdateThumbnail = false;
+    private bool _showAddImage = false;
+    private bool _showVariantModal = false;
+    private bool _isEditingVariant = false;
+    private Guid? _editingVariantId = null;
+
+    // Modal models
+    private BasicInfoModel _basicInfoModel = new();
+    private PricingModel _pricingModel = new();
+    private DimensionsModel _dimensionsModel = new();
+    private AddAttributeModel _addAttributeModel = new();
+    private UpdateThumbnailModel _updateThumbnailModel = new();
+    private AddImageModel _addImageModel = new();
+    private VariantModel _variantModel = new();
+
+    // Dropdown data
+    private List<CategoryDto> _categories = [];
+    private List<BrandDto> _brands = [];
+    private List<AttributeDto> _allAttributes = [];
 
     public RenderFragment GetPageTitle()
     {
-        return @<span> Product/@ProductId </span>;
+        pageTitle = _product?.Name ?? Slug;
+        ReuseTabsService.Update();
+        return @<span>@pageTitle</span>;
     }
-    private void OnLationChanged(object sender, EventArgs e)
+
+    void UpdateTitle()
     {
-        InvokeAsync(StateHasChanged);
+        pageTitle = _product?.Name ?? Slug;
+        ReuseTabsService.Update();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadProduct();
+        await LoadDropdownData();
+        ReuseTabsService.Update();
+    }
+
+    private async Task LoadProduct()
+    {
+        _loading = true;
+        try
+        {
+            _product = await ProductService.GetProductBySlugAsync(Slug);
+        }
+        finally
+        {
+            UpdateTitle();
+            _loading = false;
+        }
+    }
+
+    private async Task HandlePublish()
+    {
+        if (_product == null) return;
+
+        try
+        {
+            await ProductService.PublishProductAsync(_product.Id);
+            MessageService.Success("Product published successfully!");
+            await LoadProduct(); // Reload to get updated status
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Failed to publish product: {ex.Message}");
+        }
+    }
+
+    private async Task HandleRepublish()
+    {
+        if (_product == null) return;
+
+        try
+        {
+            await ProductService.RepublishProductAsync(_product.Id);
+            MessageService.Success("Product republished successfully!");
+            await LoadProduct(); // Reload to get updated status
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Failed to republish product: {ex.Message}");
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/catalog/products");
+        ReuseTabsService.CloseCurrent();
+    }
+
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Published" => "green",
+            "Draft" => "default",
+            "Discontinued" => "orange",
+            "Discarded" => "red",
+            _ => "default"
+        };
+    }
+    
+    private string GetStatusText(string status)
+    {
+        return status switch
+        {
+            "Published" => "Đã xuất bản",
+            "Draft" => "Nháp",
+            "Discontinued" => "Ngừng bán",
+            _ => status
+        };
+    }
+
+    // === Modal Methods ===
+
+    private async Task LoadDropdownData()
+    {
+        _categories = await ProductService.GetCategoriesAsync();
+        _brands = await ProductService.GetBrandsAsync();
+        _allAttributes = await ProductService.GetAttributesAsync();
+    }
+    
+    // === Attributes Management ===
+    
+    private void ShowAddAttributeModal()
+    {
+        _addAttributeModel = new AddAttributeModel();
+        _showAddAttribute = true;
+    }
+    
+    private async Task HandleAddAttribute()
+    {
+        if (_product == null || !_addAttributeModel.AttributeId.HasValue) return;
+        
+        await ProductService.AddProductAttributeAsync(
+            Slug,
+            _addAttributeModel.AttributeId.Value,
+            _addAttributeModel.DisplayOrder,
+            _addAttributeModel.HasVariant
+        );
+        
+        MessageService.Success("Đã thêm thuộc tính!");
+        _showAddAttribute = false;
+        await LoadProduct(); // Reload to show new attribute
+    }
+    
+    private async Task HandleRemoveAttribute(Guid attributeId)
+    {
+        if (_product == null) return;
+        
+        await ProductService.RemoveProductAttributeAsync(Slug, attributeId);
+        MessageService.Success("Đã xóa thuộc tính!");
+        await LoadProduct();
+    }
+
+    private void ShowUpdateBasicInfoModal()
+    {
+        if (_product == null) return;
+
+        _basicInfoModel = new BasicInfoModel
+        {
+            Name = _product.Name,
+            Sku = _product.Sku,
+            Description = _product.Description,
+            CategoryId = _product.Category?.Id ?? Guid.Empty,
+            BrandId = _product.Brand?.Id ?? Guid.Empty
+        };
+        _showUpdateBasicInfo = true;
+    }
+
+    private void ShowUpdatePricingModal()
+    {
+        if (_product == null) return;
+
+        _pricingModel = new PricingModel
+        {
+            CostAmount = _product.Cost?.Amount ?? 0,
+            PriceAmount = _product.Price?.Amount ?? 0
+        };
+        _showUpdatePricing = true;
+    }
+
+    private void ShowUpdateDimensionsModal()
+    {
+        if (_product == null) return;
+
+        _dimensionsModel = new DimensionsModel
+        {
+            Width = _product.Dimensions?.Width ?? 0,
+            Height = _product.Dimensions?.Height ?? 0,
+            Depth = _product.Dimensions?.Depth ?? 0,
+            Weight = _product.Dimensions?.Weight ?? 0
+        };
+        _showUpdateDimensions = true;
+    }
+
+    private async Task HandleUpdateBasicInfo()
+    {
+        if (_product == null) return;
+
+        // Update product (fake service will update in-memory)
+        _product.Name = _basicInfoModel.Name;
+        _product.Sku = _basicInfoModel.Sku;
+        _product.Description = _basicInfoModel.Description;
+        _product.Category = _categories.FirstOrDefault(c => c.Id == _basicInfoModel.CategoryId) ?? _product.Category;
+        _product.Brand = _brands.FirstOrDefault(b => b.Id == _basicInfoModel.BrandId) ?? _product.Brand;
+        _product.UpdatedAt = DateTimeOffset.Now;
+
+        MessageService.Success("Basic info updated successfully!");
+        _showUpdateBasicInfo = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleUpdatePricing()
+    {
+        if (_product == null) return;
+
+        _product.Cost = new MoneyDto { Amount = _pricingModel.CostAmount, Currency = "VND" };
+        _product.Price = new MoneyDto { Amount = _pricingModel.PriceAmount, Currency = "VND" };
+        _product.UpdatedAt = DateTimeOffset.Now;
+
+        MessageService.Success("Pricing updated successfully!");
+        _showUpdatePricing = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleUpdateDimensions()
+    {
+        if (_product == null) return;
+
+        _product.Dimensions = new DimensionsDto
+        {
+            Width = _dimensionsModel.Width,
+            Height = _dimensionsModel.Height,
+            Depth = _dimensionsModel.Depth,
+            Weight = _dimensionsModel.Weight
+        };
+        _product.UpdatedAt = DateTimeOffset.Now;
+
+        MessageService.Success("Dimensions updated successfully!");
+        _showUpdateDimensions = false;
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    // === Images Management ===
+    
+    private void ShowUpdateThumbnailModal()
+    {
+        if (_product == null) return;
+        _updateThumbnailModel = new UpdateThumbnailModel
+        {
+            ThumbnailUrl = _product.Thumbnail ?? ""
+        };
+        _showUpdateThumbnail = true;
+    }
+    
+    private async Task HandleUpdateThumbnail()
+    {
+        if (_product == null || string.IsNullOrWhiteSpace(_updateThumbnailModel.ThumbnailUrl)) return;
+        
+        await ProductService.UpdateThumbnailAsync(Slug, _updateThumbnailModel.ThumbnailUrl);
+        MessageService.Success("Đã cập nhật thumbnail!");
+        _showUpdateThumbnail = false;
+        await LoadProduct();
+    }
+    
+    private void ShowAddImageModal()
+    {
+        _addImageModel = new AddImageModel();
+        _showAddImage = true;
+    }
+    
+    private async Task HandleAddImage()
+    {
+        if (_product == null || string.IsNullOrWhiteSpace(_addImageModel.ImageUrl)) return;
+        
+        await ProductService.AddImageAsync(Slug, _addImageModel.ImageUrl);
+        MessageService.Success("Đã thêm ảnh!");
+        _showAddImage = false;
+        await LoadProduct();
+    }
+    
+    private async Task HandleRemoveImage(string imageUrl)
+    {
+        if (_product == null) return;
+        
+        await ProductService.RemoveImageAsync(Slug, imageUrl);
+        MessageService.Success("Đã xóa ảnh!");
+        await LoadProduct();
+    }
+
+    private void ShowAddVariantModal()
+    {
+        _isEditingVariant = false;
+        _editingVariantId = null;
+        _variantModel = new VariantModel();
+        _showVariantModal = true;
+    }
+
+    private void ShowEditVariantModal(VariantDto variant)
+    {
+        _isEditingVariant = true;
+        _editingVariantId = variant.Id;
+        _variantModel = new VariantModel
+        {
+            Name = variant.Name,
+            Sku = variant.Sku,
+            OverrideCostAmount = variant.OverrideCost?.Amount,
+            OverridePriceAmount = variant.OverridePrice?.Amount,
+            MainImage = variant.MainImage,
+            AttributeValues = variant.AttributeValues.ToDictionary(
+                av => av.ProductAttributeId,
+                av => av.ValueId
+            )
+        };
+        _showVariantModal = true;
+    }
+    
+    private async Task HandleSaveVariant()
+    {
+        if (_product == null) return;
+        
+        if (_isEditingVariant && _editingVariantId.HasValue)
+        {
+            var request = new UpdateVariantRequest
+            {
+                Name = _variantModel.Name,
+                Sku = _variantModel.Sku,
+                OverrideCostAmount = _variantModel.OverrideCostAmount,
+                OverridePriceAmount = _variantModel.OverridePriceAmount,
+                MainImage = _variantModel.MainImage,
+                Images = _variantModel.Images,
+                AttributeValues = _variantModel.AttributeValues
+            };
+            
+            await ProductService.UpdateVariantAsync(Slug, _editingVariantId.Value, request);
+            MessageService.Success("Đã cập nhật biến thể!");
+        }
+        else
+        {
+            var request = new AddVariantRequest
+            {
+                Name = _variantModel.Name,
+                Sku = _variantModel.Sku,
+                OverrideCostAmount = _variantModel.OverrideCostAmount,
+                OverridePriceAmount = _variantModel.OverridePriceAmount,
+                MainImage = _variantModel.MainImage,
+                Images = _variantModel.Images,
+                AttributeValues = _variantModel.AttributeValues
+            };
+            
+            await ProductService.AddVariantAsync(Slug, request);
+            MessageService.Success("Đã thêm biến thể!");
+        }
+        
+        _showVariantModal = false;
+        await LoadProduct();
+    }
+    
+    private async Task HandleRemoveVariant(Guid variantId)
+    {
+        if (_product == null) return;
+        
+        await ProductService.RemoveVariantAsync(Slug, variantId);
+        MessageService.Success("Đã xóa biến thể!");
+        await LoadProduct();
+    }
+    
+    private Guid? GetVariantAttributeValue(Guid attributeId)
+    {
+        return _variantModel.AttributeValues.TryGetValue(attributeId, out var valueId) ? valueId : null;
+    }
+    
+    private void SetVariantAttributeValue(Guid attributeId, Guid? valueId)
+    {
+        if (valueId.HasValue)
+            _variantModel.AttributeValues[attributeId] = valueId.Value;
+        else
+            _variantModel.AttributeValues.Remove(attributeId);
+    }
+
+    // === Modal Models ===
+
+    private class BasicInfoModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Sku { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public Guid CategoryId { get; set; }
+        public Guid BrandId { get; set; }
+    }
+
+    private class PricingModel
+    {
+        public decimal CostAmount { get; set; }
+        public decimal PriceAmount { get; set; }
+    }
+
+    private class DimensionsModel
+    {
+        public decimal Width { get; set; }
+        public decimal Height { get; set; }
+        public decimal Depth { get; set; }
+        public decimal Weight { get; set; }
+    }
+    
+    private class AddAttributeModel
+    {
+        public Guid? AttributeId { get; set; }
+        public int DisplayOrder { get; set; } = 0;
+        public bool HasVariant { get; set; } = false;
+    }
+    
+    private class UpdateThumbnailModel
+    {
+        public string ThumbnailUrl { get; set; } = string.Empty;
+    }
+    
+    private class AddImageModel
+    {
+        public string ImageUrl { get; set; } = string.Empty;
+    }
+    
+    private class VariantModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Sku { get; set; } = string.Empty;
+        public decimal? OverrideCostAmount { get; set; }
+        public decimal? OverridePriceAmount { get; set; }
+        public string? MainImage { get; set; }
+        public List<string> Images { get; set; } = [];
+        public Dictionary<Guid, Guid> AttributeValues { get; set; } = new();
     }
 }
