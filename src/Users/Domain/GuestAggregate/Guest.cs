@@ -5,7 +5,7 @@ namespace Users.Domain;
 /// </summary>
 public class Guest : AggregateRoot
 {
-    public string GuestId { get; private set; } = string.Empty;  // Client-generated ID (cookie/localStorage)
+    public string ClientId { get; private set; } = string.Empty;  // Client-generated ID (cookie/localStorage)
     public string? Email { get; private set; }                    // Captured but not verified
     public string? Phone { get; private set; }
     public string? FullName { get; private set; }
@@ -30,7 +30,7 @@ public class Guest : AggregateRoot
 
         var guest = new Guest
         {
-            GuestId = guestId,
+            ClientId = guestId,
             FirstVisitAt = DateTimeOffset.UtcNow,
             LastActivityAt = DateTimeOffset.UtcNow,
             IsConverted = false
@@ -69,7 +69,7 @@ public class Guest : AggregateRoot
         IsConverted = true;
         ConvertedToCustomerId = customerId;
 
-        AddEvent(new GuestConvertedEvent(Id, GuestId, customerId));
+        AddEvent(new GuestConvertedEvent(Id, ClientId, customerId));
         IncreaseVersion();
     }
 

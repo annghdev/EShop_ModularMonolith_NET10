@@ -1,4 +1,4 @@
-using Contracts.Responses;
+using Contracts;
 
 namespace Contracts.Requests.Catalog;
 
@@ -8,9 +8,9 @@ public class CreateProductDraftRequest
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string Sku { get; set; } = string.Empty;
-    public MoneyDto Cost { get; set; } = new();
-    public MoneyDto Price { get; set; } = new();
-    public DimensionsDto Dimensions { get; set; } = new() { Width = 10, Height = 10, Depth = 10, Weight = 1 };
+    public MoneyDto Cost { get; set; } = new(0);
+    public MoneyDto Price { get; set; } = new(0);
+    public DimensionsDto Dimensions { get; set; } = new(0, 0, 0, 0);
     public bool HasStockQuantity { get; set; } = true;
     public Guid CategoryId { get; set; }
     public Guid BrandId { get; set; }

@@ -4,7 +4,7 @@ using Orders.Infrastructure.EFCore.Repositories;
 
 namespace Orders.Infrastructure;
 
-public class OrdersUnitOfWork(OrdersDbContext context, ICurrentUser user, IPublisher publisher)
+public class OrdersUnitOfWork(OrdersDbContext context, IUserContext user, IPublisher publisher)
     : BaseUnitOfWork<OrdersDbContext>(context, user, publisher), IOrdersUnitOfWork
 {
     private IOrderRepository? _orders;

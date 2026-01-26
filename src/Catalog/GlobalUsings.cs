@@ -8,3 +8,4 @@ global using Kernel.Application;
 global using Kernel.Extensions;
 global using Kernel.Utilities;
 global using Infrastructure;
+global using Contracts;

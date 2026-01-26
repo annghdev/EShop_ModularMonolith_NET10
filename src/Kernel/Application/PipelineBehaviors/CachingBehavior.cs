@@ -24,7 +24,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         CancellationToken cancellationToken)
     {
         // Only process cacheable requests
-        if (request is not IQuery query)
+        if (request is not ICacheable query)
         {
             return await next();
         }

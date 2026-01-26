@@ -27,7 +27,7 @@ public class GuestRepository(UsersDbContext db)
 
         return await dbSet
             .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.GuestId == normalizedId, ct);
+            .FirstOrDefaultAsync(g => g.ClientId == normalizedId, ct);
     }
 
     public async Task<Guest?> GetByEmailAsync(string email, CancellationToken ct = default)

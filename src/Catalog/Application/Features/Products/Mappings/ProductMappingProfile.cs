@@ -1,4 +1,5 @@
 using Catalog.Domain;
+using Contracts.Responses;
 
 namespace Catalog.Application;
 

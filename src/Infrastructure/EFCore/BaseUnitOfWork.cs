@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 
-public abstract class BaseUnitOfWork<TContext>(TContext context, ICurrentUser user, IPublisher publisher) : IUnitOfWork
+public abstract class BaseUnitOfWork<TContext>(TContext context, IUserContext user, IPublisher publisher) : IUnitOfWork
     where TContext : DbContext
 {
     public async Task CommitAsync(CancellationToken cancellationToken = default)

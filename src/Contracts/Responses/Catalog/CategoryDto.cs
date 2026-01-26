@@ -1,4 +1,4 @@
-namespace Contracts.Responses.Catalog;
+namespace Contracts.Responses;
 
 public class CategoryDto
 {

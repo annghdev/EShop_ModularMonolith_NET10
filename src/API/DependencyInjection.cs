@@ -20,7 +20,7 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
 
-        services.AddScoped<ICurrentUser, CurrentUserService>();
+        services.AddScoped<IUserContext, UserContext>();
 
         services.AddInfrasServices(configuration);
         services.AddMassTransitWithHandlers(

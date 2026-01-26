@@ -4,7 +4,7 @@ using ShoppingCart.Infrastructure.EFCore.Repositories;
 
 namespace ShoppingCart.Infrastructure;
 
-public class ShoppingCartUnitOfWork(ShoppingCartDbContext context, ICurrentUser user, IPublisher publisher)
+public class ShoppingCartUnitOfWork(ShoppingCartDbContext context, IUserContext user, IPublisher publisher)
     : BaseUnitOfWork<ShoppingCartDbContext>(context, user, publisher), IShoppingCartUnitOfWork
 {
     private ICartRepository? _carts;

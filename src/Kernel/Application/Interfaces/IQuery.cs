@@ -1,12 +1,12 @@
 ﻿using MediatR;
 
-namespace Kernel.Application;
+namespace Kernel;
 
-public interface IQuery
+public interface ICacheable
 {
     public string CacheKey { get; }
     public TimeSpan? ExpirationSliding { get; }
 }
 
 
-public interface IQuery<T> : IQuery, IRequest<T>;
+public interface IQuery<T> : ICacheable, IRequest<T>;

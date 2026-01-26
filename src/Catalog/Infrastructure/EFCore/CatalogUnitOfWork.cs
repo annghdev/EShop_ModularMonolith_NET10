@@ -5,7 +5,7 @@ using Catalog.Infrastructure.EFCore.Repositories;
 
 namespace Catalog.Infrastructure;
 
-public sealed class CatalogUnitOfWork(CatalogDbContext context, ICurrentUser user, IPublisher publisher)
+public sealed class CatalogUnitOfWork(CatalogDbContext context, IUserContext user, IPublisher publisher)
     : BaseUnitOfWork<CatalogDbContext>(context, user, publisher), ICatalogUnitOfWork
 {
     private IProductRepository? productRepository;

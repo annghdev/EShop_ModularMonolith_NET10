@@ -1,5 +1,5 @@
 ﻿using MediatR;
-namespace Kernel.Application;
+namespace Kernel;
 
 public interface IInvalidatesCache
 {

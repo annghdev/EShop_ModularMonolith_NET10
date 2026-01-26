@@ -7,8 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Application\Features\Brands\" />
+    <Folder Include="Application\Features\Categories\" />
+    <Folder Include="Application\Features\Collections\" />
+    <Folder Include="Application\Features\Attributes\" />
     <Folder Include="Application\Features\Products\Commands\ProductAttributes\" />
-    <Folder Include="Application\IntegrationEventHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\EventHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\CommandHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\QueryHandlers\" />
     <Folder Include="Infrastructure\EFCore\Migrations\" />
   </ItemGroup>
 

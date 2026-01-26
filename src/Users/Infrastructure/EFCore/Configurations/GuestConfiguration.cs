@@ -9,7 +9,7 @@ public class GuestConfiguration : IEntityTypeConfiguration<Guest>
     {
         new AggreageRootConfiguration<Guest>().Configure(builder);
 
-        builder.Property(g => g.GuestId)
+        builder.Property(g => g.ClientId)
             .HasMaxLength(100)
             .IsRequired();
 
@@ -84,7 +84,7 @@ public class GuestConfiguration : IEntityTypeConfiguration<Guest>
         builder.Navigation(g => g.LastShippingAddress)
             .IsRequired(false);
 
-        builder.HasIndex(g => g.GuestId)
+        builder.HasIndex(g => g.ClientId)
             .IsUnique();
 
         builder.HasIndex(g => g.Email);

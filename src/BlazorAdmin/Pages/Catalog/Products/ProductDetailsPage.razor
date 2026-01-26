@@ -1,6 +1,5 @@
 ﻿@page "/catalog/products/{Slug}"
 @using Contracts.Requests.Catalog
-@using Contracts.Responses.Catalog
 @using Contracts.Responses
 @using BlazorAdmin.Services
 @implements IReuseTabsPage
@@ -771,8 +770,8 @@ else
     {
         if (_product == null) return;
 
-        _product.Cost = new MoneyDto { Amount = _pricingModel.CostAmount, Currency = "VND" };
-        _product.Price = new MoneyDto { Amount = _pricingModel.PriceAmount, Currency = "VND" };
+        _product.Cost = new MoneyDto(Amount : _pricingModel.CostAmount, Currency : "VND" );
+        _product.Price = new MoneyDto ( Amount : _pricingModel.PriceAmount, Currency : "VND" );
         _product.UpdatedAt = DateTimeOffset.Now;
 
         MessageService.Success("Pricing updated successfully!");
@@ -784,13 +783,13 @@ else
     {
         if (_product == null) return;
 
-        _product.Dimensions = new DimensionsDto
-        {
-            Width = _dimensionsModel.Width,
-            Height = _dimensionsModel.Height,
-            Depth = _dimensionsModel.Depth,
-            Weight = _dimensionsModel.Weight
-        };
+        _product.Dimensions = new DimensionsDto(
+        
+            Width : _dimensionsModel.Width,
+            Height : _dimensionsModel.Height,
+            Depth : _dimensionsModel.Depth,
+            Weight : _dimensionsModel.Weight
+        );
         _product.UpdatedAt = DateTimeOffset.Now;
 
         MessageService.Success("Dimensions updated successfully!");

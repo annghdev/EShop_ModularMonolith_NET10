@@ -7,8 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="IntegrationQueries\" />
-    <Folder Include="IntegrationCommands\" />
+    <Folder Include="IntegrationCommands\Inventories\" />
+    <Folder Include="Responses\Shipping\" />
+    <Folder Include="Responses\Payments\" />
+    <Folder Include="Responses\Orders\" />
   </ItemGroup>
 
   <ItemGroup>

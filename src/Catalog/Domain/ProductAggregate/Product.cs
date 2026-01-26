@@ -263,10 +263,10 @@ public class Product : AggregateRoot
     }
 }
 
-public enum ProductStatus
-{
-    Draft,
-    Discarded,
-    Published,
-    Discontinued
-}
+//public enum ProductStatus
+//{
+//    Draft,
+//    Discarded,
+//    Published,
+//    Discontinued
+//}

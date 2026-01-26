@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Application\IntegrationHandlers\CommandHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\EventHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\QueryHandlers\" />
+    <Folder Include="Application\Features\" />
     <Folder Include="Infrastructure\EFCore\Configrations\" />
     <Folder Include="Infrastructure\EFCore\Repositories\" />
   </ItemGroup>

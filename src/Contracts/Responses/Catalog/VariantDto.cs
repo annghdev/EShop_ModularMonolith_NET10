@@ -1,6 +1,4 @@
-using Contracts.Responses;
-
-namespace Contracts.Responses.Catalog;
+namespace Contracts.Responses;
 
 public class VariantDto
 {

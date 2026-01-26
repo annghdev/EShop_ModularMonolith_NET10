@@ -11,4 +11,10 @@
     <ProjectReference Include="..\Kernel\Kernel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\IntegrationHandlers\CommandHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\EventHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\QueryHandlers\" />
+  </ItemGroup>
+
 </Project>

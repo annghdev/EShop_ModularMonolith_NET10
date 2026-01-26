@@ -5,7 +5,7 @@ namespace Inventory.Infrastructure;
 
 public class InventoryUnitOfWork(
     InventoryDbContext context,
-    ICurrentUser user,
+    IUserContext user,
     IPublisher publisher,
     IWarehouseRepository warehouseRepository,
     IInventoryItemRepository inventoryItemRepository)

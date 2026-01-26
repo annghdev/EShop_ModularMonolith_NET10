@@ -41,6 +41,7 @@ public static class DependencyInjection
 
     public static IServiceCollection AddInfrasServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<IIntegrationRequestSender, IntegrationRequestSender>();
         services.AddScoped<IIntegrationEventPublisher, MasstransitEventPublisher>();
 
         services.AddSingleton<ICacheService, MemoryCacheService>();

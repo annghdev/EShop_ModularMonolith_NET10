@@ -1,5 +1,5 @@
-﻿using Contracts.Responses.Catalog;
-using Contracts.Requests.Catalog;
+﻿using Contracts.Requests.Catalog;
+using Contracts.Responses;
 
 namespace BlazorAdmin.Services;
 
