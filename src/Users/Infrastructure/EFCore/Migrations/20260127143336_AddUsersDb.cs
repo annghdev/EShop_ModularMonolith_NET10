@@ -69,7 +69,7 @@ namespace Users.Infrastructure.EFCore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    GuestId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ClientId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     Guest_Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     FullName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
@@ -157,15 +157,15 @@ namespace Users.Infrastructure.EFCore.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Guests_ClientId",
+                table: "Guests",
+                column: "ClientId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Guests_Email",
                 table: "Guests",
                 column: "Email");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Guests_GuestId",
-                table: "Guests",
-                column: "GuestId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Guests_IsConverted",

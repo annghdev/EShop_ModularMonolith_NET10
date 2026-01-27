@@ -115,10 +115,11 @@
 
                 </Menu>
             </Sider>
-            <Layout>       
+            <Layout Style="background:rgba(255,255,255,0.8)">
+            @* <Layout> *@
                     <ReuseTabs Style="margin: 16px;" Body="@Body">
                         <TabPaneTemplate Context="tabContext">
-                            <Content Class="site-layout-background" Style="padding: 0px;min-height: 100vh; background:rgba(254,255,255,0.85)">
+                            <Content Class="site-layout-background" Style="padding: 0px;min-height: 100vh; background:white">
                                 @tabContext.Body
                             </Content>
                         </TabPaneTemplate>

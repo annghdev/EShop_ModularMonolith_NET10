@@ -12,6 +12,7 @@
     <Folder Include="Application\IntegrationHandlers\EventHandlers\" />
     <Folder Include="Application\IntegrationHandlers\QueryHandlers\" />
     <Folder Include="Infrastructure\EFCore\Configurations\" />
+    <Folder Include="Infrastructure\EFCore\Migrations\" />
     <Folder Include="Infrastructure\EFCore\Repositories\" />
   </ItemGroup>
 

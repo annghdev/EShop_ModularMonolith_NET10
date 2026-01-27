@@ -182,6 +182,11 @@ namespace Users.Infrastructure.EFCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<Guid?>("ConvertedToCustomerId")
                         .HasColumnType("uuid");
 
@@ -202,11 +207,6 @@ namespace Users.Infrastructure.EFCore.Migrations
                     b.Property<string>("FullName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
-
-                    b.Property<string>("GuestId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("IsConverted")
                         .HasColumnType("boolean");
@@ -233,10 +233,10 @@ namespace Users.Infrastructure.EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email");
-
-                    b.HasIndex("GuestId")
+                    b.HasIndex("ClientId")
                         .IsUnique();
+
+                    b.HasIndex("Email");
 
                     b.HasIndex("IsConverted");
 
