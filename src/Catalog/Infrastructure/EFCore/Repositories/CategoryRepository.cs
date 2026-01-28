@@ -60,4 +60,6 @@ public class CategoryRepository(CatalogDbContext db) : BaseRepository<Category, 
     {
         return GetByIdWithHierarchyAsync(id);
     }
+
+    public IQueryable<Category> AsQueryable() => dbSet;
 }

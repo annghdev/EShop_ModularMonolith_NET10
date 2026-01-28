@@ -16,6 +16,7 @@ public record ProductPriceUpdatedEvent(Product Payload) : DomainEvent;
 
 public record ProductPublishedEvent(Product Payload) : DomainEvent;
 public record ProductDiscontinuedEvent(Guid ProductId) : DomainEvent;
+public record ProductRepublishedEvent(Guid ProductId) : DomainEvent;
 
 
 public record VariantAddedEvent(Variant Payload) : DomainEvent;

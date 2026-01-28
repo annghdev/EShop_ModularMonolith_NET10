@@ -63,4 +63,6 @@ public class ProductRepository(CatalogDbContext db)
 
         return data ?? [];
     }
+
+    public IQueryable<Product> AsQueryable() => dbSet;
 }
