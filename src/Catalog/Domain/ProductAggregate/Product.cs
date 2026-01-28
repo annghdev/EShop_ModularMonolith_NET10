@@ -116,6 +116,18 @@ public class Product : AggregateRoot
         IncreaseVersion();
     }
 
+    public void Republish()
+    {
+        if (Status != ProductStatus.Discontinued)
+            throw new DomainException("Only discontinued products can be republished");
+
+        ValidateProduct();
+
+        Status = ProductStatus.Published;
+        AddEvent(new ProductRepublishedEvent(Id));
+        IncreaseVersion();
+    }
+
     public void UpdateThumbnail(ImageUrl imageUrl, bool raiseEvent = true)
     {
         Thumbnail = imageUrl;
