@@ -1,7 +1,607 @@
-﻿@page "/catalog/categories"
+@page "/catalog/categories"
+@using Contracts.Requests.Catalog
+@using Contracts.Responses
+@using BlazorAdmin.Services
+@inject ICategoryService CategoryService
+@inject IAttributeService AttributeService
+@inject IMessageService MessageService
+@implements IReuseTabsPage
+@attribute [ReuseTabsPage(Singleton = false)]
+@inject ReuseTabsService ReuseTabsService
 
-<h3>CategoryPage</h3>
+<Card>
+    <TitleTemplate>
+        <Space Style="width: 100%; justify-content: space-between">
+            <SpaceItem>
+                <Title Level="4">Quản lý danh mục</Title>
+            </SpaceItem>
+            <SpaceItem>
+                <Button Type="@ButtonType.Primary" OnClick="ShowCreateCategoryModal">
+                    <Icon Type=@("plus") Theme="IconThemeType.Outline" />
+                    Thêm danh mục
+                </Button>
+            </SpaceItem>
+        </Space>
+    </TitleTemplate>
+    <Body>
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <div style="flex: 1; min-width: 340px;">
+                <Card Title=@("Danh mục gốc")>
+                    @if (_loadingTree)
+                    {
+                        <Spin />
+                    }
+                    else if (!_categoryTree.Any())
+                    {
+                        <Empty Description=@("Chưa có danh mục") />
+                    }
+                    else
+                    {
+                        <div class="category-tree">
+                            @foreach (var node in _categoryTree)
+                            {
+                                @RenderCategoryNode(node, 0)
+                            }
+                        </div>
+                    }
+                </Card>
+            </div>
+            <div style="flex: 1.1; min-width: 380px;">
+                <Card Title=@("Chi tiết danh mục")>
+                    @if (_selectedCategory == null)
+                    {
+                        <Empty Description=@("Chọn danh mục để xem chi tiết") />
+                    }
+                    else
+                    {
+                        <Descriptions Bordered Column="1">
+                            <DescriptionsItem Title=@("Tên danh mục")>@_selectedCategory.Name</DescriptionsItem>
+                            <DescriptionsItem Title=@("Cấp bậc")>@_selectedCategory.Level</DescriptionsItem>
+                            <DescriptionsItem Title=@("Danh mục cha")>@GetCategoryName(_selectedCategory.ParentId)</DescriptionsItem>
+                            <DescriptionsItem Title=@("Đường dẫn")>@GetCategoryPath(_selectedCategory.Id)</DescriptionsItem>
+                            <DescriptionsItem Title=@("Hình ảnh")>@(_selectedCategory.Image ?? "Chưa có")</DescriptionsItem>
+                        </Descriptions>
+
+                        <Space Style="margin-top: 12px;" Size="@("small")">
+                            <Button Size="@ButtonSize.Small" Type="@ButtonType.Primary" OnClick="@(() => ShowEditCategoryModal(_selectedCategory.Id))">
+                                <Icon Type=@("edit") Theme="IconThemeType.Outline" />
+                                Sửa
+                            </Button>
+                            <Popconfirm Title=@("Bạn có chắc muốn xóa danh mục này?")
+                                        OkText=@("Xóa")
+                                        CancelText=@("Hủy")
+                                        OnConfirm="@(() => DeleteCategoryAsync(_selectedCategory.Id))">
+                                <Button Size="@ButtonSize.Small" Danger>
+                                    <Icon Type=@("delete") Theme="IconThemeType.Outline" />
+                                    Xóa
+                                </Button>
+                            </Popconfirm>
+                        </Space>
+
+                        <Divider>Thuộc tính mặc định (theo cây)</Divider>
+                        @if (_selectedCategory.DefaultAttributes.Any())
+                        {
+                            <Table TItem="CategoryDefaultAttributeDto"
+                                   DataSource="@_selectedCategory.DefaultAttributes"
+                                   Bordered
+                                   Size="@TableSize.Small"
+                                   RowKey="x => x.AttributeId.ToString()">
+                                <PropertyColumn Property="c => c.AttributeName" Title=@("Thuộc tính") />
+                                <PropertyColumn Property="c => c.DisplayOrder" Title=@("Ưu tiên") />
+                            </Table>
+                        }
+                        else
+                        {
+                            <Tag>Chưa có</Tag>
+                        }
+                    }
+                </Card>
+            </div>
+        </div>
+    </Body>
+</Card>
+
+<Modal @bind-Visible="_showCategoryModal"
+       Title="@(_isEditingCategory ? "Cập nhật danh mục" : "Thêm danh mục")"
+       Width="700"
+       OnOk="HandleSaveCategoryAsync"
+       OnCancel="CloseCategoryModal">
+    <Form Model="@_form" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("Tên danh mục") Required>
+            <Input @bind-Value="_form.Name" Placeholder=@("Nhập tên danh mục") />
+        </FormItem>
+        <FormItem Label=@("Danh mục cha")>
+            <Select TItem="CategorySelectOption"
+                    TItemValue="Guid?"
+                    @bind-Value="_form.ParentId"
+                    DataSource="@_parentOptions"
+                    LabelName="@nameof(CategorySelectOption.Name)"
+                    ValueName="@nameof(CategorySelectOption.Id)"
+                    AllowClear="true"
+                    Placeholder=@("Chọn danh mục cha")
+                    Style=@("width: 100%") />
+        </FormItem>
+        <FormItem Label=@("Hình ảnh")>
+            <Input @bind-Value="_form.Image" Placeholder=@("URL hình ảnh") />
+        </FormItem>
+        <FormItem Label=@("Thuộc tính mặc định")>
+            <Space Direction="@SpaceDirection.Vertical" Style="width: 100%;">
+                <SpaceItem>
+                    <Button Size="@ButtonSize.Small" OnClick="AddDefaultAttributeRow">
+                        <Icon Type=@("plus") Theme="IconThemeType.Outline" />
+                        Thêm thuộc tính mặc định
+                    </Button>
+                </SpaceItem>
+                <SpaceItem>
+                    <Table TItem="DefaultAttributeFormItem"
+                           DataSource="@_form.DefaultAttributes"
+                           Bordered
+                           Size="@TableSize.Small"
+                           RowKey="x => x.RowId.ToString()"
+                           Context="row">
+                        <ColumnDefinition Title=@("Thuộc tính")>
+                            <Select TItem="AttributeDto"
+                                    TItemValue="Guid?"
+                                    @bind-Value="row.AttributeId"
+                                    DataSource="@_attributes"
+                                    LabelName="@nameof(AttributeDto.Name)"
+                                    ValueName="@nameof(AttributeDto.Id)"
+                                    Placeholder=@("Chọn thuộc tính")
+                                    Style=@("width: 100%") />
+                        </ColumnDefinition>
+                        <ColumnDefinition Title=@("Ưu tiên")>
+                            <AntDesign.InputNumber @bind-Value="row.DisplayOrder"
+                                                   Min="0"
+                                                   Step="1"
+                                                   Style="width: 100%" />
+                        </ColumnDefinition>
+                        <ActionColumn Title=@("Thao tác")>
+                            <Button Size="@ButtonSize.Small" Danger OnClick="@(() => RemoveDefaultAttributeRow(row.RowId))">
+                                <Icon Type=@("minus") Theme="IconThemeType.Outline" />
+                                Xóa
+                            </Button>
+                        </ActionColumn>
+                    </Table>
+                </SpaceItem>
+            </Space>
+        </FormItem>
+    </Form>
+</Modal>
 
 @code {
+    private List<CategoryTreeDto> _categoryTree = [];
+    private List<CategorySelectOption> _parentOptions = [];
+    private Dictionary<Guid, Guid?> _parentLookup = new();
+    private Dictionary<Guid, string> _nameLookup = new();
+    private List<AttributeDto> _attributes = [];
 
+    private CategoryDetailDto? _selectedCategory;
+    private Guid? _selectedCategoryId;
+
+    private bool _loadingTree = true;
+    private bool _showCategoryModal = false;
+    private bool _isEditingCategory = false;
+    private Guid? _editingCategoryId;
+    private CategoryFormModel _form = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAttributesAsync();
+        await LoadCategoryTreeAsync();
+    }
+
+    private async Task LoadAttributesAsync()
+    {
+        _attributes = await AttributeService.GetAttributesAsync();
+    }
+
+    private async Task LoadCategoryTreeAsync()
+    {
+        try
+        {
+            _loadingTree = true;
+            StateHasChanged();
+
+            _categoryTree = await CategoryService.GetCategoryTreeAsync();
+            BuildLookupCaches();
+            BuildParentOptions();
+
+            if (_selectedCategoryId.HasValue)
+            {
+                await LoadCategoryDetailAsync(_selectedCategoryId.Value);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error(ex.Message);
+        }
+        finally
+        {
+            _loadingTree = false;
+        }
+    }
+
+    private void BuildLookupCaches()
+    {
+        _parentLookup = new Dictionary<Guid, Guid?>();
+        _nameLookup = new Dictionary<Guid, string>();
+        foreach (var node in _categoryTree)
+        {
+            AddLookup(node, null);
+        }
+    }
+
+    private void AddLookup(CategoryTreeDto node, Guid? parentId)
+    {
+        _parentLookup[node.Id] = parentId;
+        _nameLookup[node.Id] = node.Name;
+        foreach (var child in node.Children)
+        {
+            AddLookup(child, node.Id);
+        }
+    }
+
+    private void BuildParentOptions()
+    {
+        _parentOptions = [];
+        foreach (var node in _categoryTree)
+        {
+            AppendOptions(node, 0);
+        }
+    }
+
+    private void AppendOptions(CategoryTreeDto node, int level)
+    {
+        var prefix = new string('-', level * 2);
+        _parentOptions.Add(new CategorySelectOption
+        {
+            Id = node.Id,
+            Name = string.IsNullOrEmpty(prefix) ? node.Name : $"{prefix} {node.Name}"
+        });
+
+        foreach (var child in node.Children)
+        {
+            AppendOptions(child, level + 1);
+        }
+    }
+
+    private async Task SelectCategoryAsync(Guid id)
+    {
+        _selectedCategoryId = id;
+        await LoadCategoryDetailAsync(id);
+    }
+
+    private async Task LoadCategoryDetailAsync(Guid id)
+    {
+        try
+        {
+            _selectedCategory = await CategoryService.GetCategoryDetailAsync(id);
+            if (_selectedCategory == null)
+            {
+                _selectedCategoryId = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error(ex.Message);
+        }
+    }
+
+    private string GetCategoryName(Guid? id)
+    {
+        if (!id.HasValue)
+        {
+            return "Gốc";
+        }
+
+        return _nameLookup.TryGetValue(id.Value, out var name) ? name : "Không rõ";
+    }
+
+    private string GetCategoryPath(Guid id)
+    {
+        if (!_nameLookup.ContainsKey(id))
+        {
+            return "Không rõ";
+        }
+
+        var path = new List<string>();
+        var currentId = id;
+        while (true)
+        {
+            if (_nameLookup.TryGetValue(currentId, out var name))
+            {
+                path.Add(name);
+            }
+
+            if (_parentLookup.TryGetValue(currentId, out var parentId) && parentId.HasValue)
+            {
+                currentId = parentId.Value;
+                continue;
+            }
+
+            break;
+        }
+
+        path.Reverse();
+        return string.Join(" / ", path);
+    }
+
+    private void ShowCreateCategoryModal()
+    {
+        _isEditingCategory = false;
+        _editingCategoryId = null;
+        _form = new CategoryFormModel();
+        BuildParentOptions();
+        _showCategoryModal = true;
+    }
+
+    private void ShowEditCategoryModal(Guid id)
+    {
+        if (_selectedCategory == null)
+        {
+            return;
+        }
+
+        _isEditingCategory = true;
+        _editingCategoryId = id;
+        _form = new CategoryFormModel
+        {
+            Name = _selectedCategory.Name,
+            Image = _selectedCategory.Image,
+            ParentId = _selectedCategory.ParentId,
+            DefaultAttributes = _selectedCategory.OwnDefaultAttributes.Select(a => new DefaultAttributeFormItem
+            {
+                RowId = Guid.CreateVersion7(),
+                AttributeId = a.AttributeId,
+                DisplayOrder = a.DisplayOrder
+            }).ToList()
+        };
+
+        BuildParentOptions();
+        _parentOptions = _parentOptions.Where(p => p.Id != id).ToList();
+        _showCategoryModal = true;
+    }
+
+    private void CloseCategoryModal()
+    {
+        _showCategoryModal = false;
+    }
+
+    private void AddDefaultAttributeRow()
+    {
+        _form.DefaultAttributes.Add(new DefaultAttributeFormItem
+        {
+            RowId = Guid.CreateVersion7(),
+            DisplayOrder = 0
+        });
+    }
+
+    private void RemoveDefaultAttributeRow(Guid rowId)
+    {
+        var item = _form.DefaultAttributes.FirstOrDefault(x => x.RowId == rowId);
+        if (item != null)
+        {
+            _form.DefaultAttributes.Remove(item);
+        }
+    }
+
+    private async Task HandleSaveCategoryAsync()
+    {
+        try
+        {
+            if (_isEditingCategory && _editingCategoryId.HasValue)
+            {
+                var request = MapToUpdateRequest();
+                await CategoryService.UpdateCategoryAsync(_editingCategoryId.Value, request);
+                MessageService.Success("Cập nhật danh mục thành công.");
+            }
+            else
+            {
+                var request = MapToCreateRequest();
+                var newId = await CategoryService.CreateCategoryAsync(request);
+                MessageService.Success("Tạo danh mục mới thành công.");
+                _selectedCategoryId = newId == Guid.Empty ? _selectedCategoryId : newId;
+            }
+
+            _showCategoryModal = false;
+            await LoadCategoryTreeAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error(ex.Message);
+        }
+    }
+
+    private CreateCategoryRequest MapToCreateRequest()
+    {
+        return new CreateCategoryRequest
+        {
+            Name = _form.Name,
+            Image = _form.Image,
+            ParentId = _form.ParentId,
+            DefaultAttributes = MapDefaultAttributes()
+        };
+    }
+
+    private UpdateCategoryRequest MapToUpdateRequest()
+    {
+        return new UpdateCategoryRequest
+        {
+            Name = _form.Name,
+            Image = _form.Image,
+            ParentId = _form.ParentId,
+            DefaultAttributes = MapDefaultAttributes()
+        };
+    }
+
+    private List<CategoryDefaultAttributeRequest> MapDefaultAttributes()
+    {
+        return _form.DefaultAttributes
+            .Where(a => a.AttributeId.HasValue)
+            .Select(a => new CategoryDefaultAttributeRequest
+            {
+                AttributeId = a.AttributeId!.Value,
+                DisplayOrder = a.DisplayOrder
+            })
+            .ToList();
+    }
+
+    private async Task DeleteCategoryAsync(Guid id)
+    {
+        try
+        {
+            await CategoryService.DeleteCategoryAsync(id);
+            MessageService.Success("Xóa danh mục thành công.");
+            if (_selectedCategoryId == id)
+            {
+                _selectedCategoryId = null;
+                _selectedCategory = null;
+            }
+            await LoadCategoryTreeAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error(ex.Message);
+        }
+    }
+
+    RenderFragment IReuseTabsPage.GetPageTitle()
+    {
+        ReuseTabsService.Update();
+        return @<span>Quản lý danh mục</span>;
+    }
+
+    private RenderFragment RenderCategoryNode(CategoryTreeDto node, int level) => @<div class="category-node-wrap">
+        <div class="@GetCategoryNodeClass(node.Id)" style=@($"margin-left: {level * 16}px;")>
+            <div class="category-node-content" @onclick="() => SelectCategoryAsync(node.Id)">
+                <Icon Type=@("folder") Theme="IconThemeType.Outline" />
+                <span class="category-node-name">@node.Name</span>
+            </div>
+            <div class="category-node-meta">
+                @if (node.Children.Any())
+                {
+                    <span class="category-node-badge">@node.Children.Count</span>
+                }
+            </div>
+        </div>
+        @if (node.Children.Any())
+        {
+            <div class="category-children">
+                @foreach (var child in node.Children)
+                {
+                    @RenderCategoryNode(child, level + 1)
+                }
+            </div>
+        }
+    </div>;
+
+    private string GetCategoryNodeClass(Guid id)
+    {
+        return _selectedCategoryId == id
+            ? "category-node category-node-selected"
+            : "category-node";
+    }
+
+    private sealed class CategorySelectOption
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    private sealed class CategoryFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string? Image { get; set; }
+        public Guid? ParentId { get; set; }
+        public List<DefaultAttributeFormItem> DefaultAttributes { get; set; } = [];
+    }
+
+    private sealed class DefaultAttributeFormItem
+    {
+        public Guid RowId { get; set; }
+        public Guid? AttributeId { get; set; }
+        public int DisplayOrder { get; set; }
+    }
 }
+
+<style>
+    .category-tree {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px;
+        border: 1px solid #f0f0f0;
+        border-radius: 8px;
+        background: #fafafa;
+    }
+
+    .category-node-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .category-node {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: #ffffff;
+        border: 1px solid transparent;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .category-node:hover {
+        border-color: #d6e4ff;
+        background: #f5f9ff;
+    }
+
+    .category-node-selected {
+        border-color: #91caff;
+        background: #e6f4ff;
+        box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.08);
+    }
+
+    .category-node-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        color: #262626;
+        font-weight: 500;
+    }
+
+    .category-node-name {
+        font-size: 14px;
+    }
+
+    .category-node-meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .category-node-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: #f0f0f0;
+        color: #595959;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .category-children {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 4px;
+    }
+</style>

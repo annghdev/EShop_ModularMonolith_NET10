@@ -10,7 +10,7 @@ namespace Catalog.Application;
 /// </summary>
 public class GetCategories
 {
-    public record Query() : IQuery<List<CategoryDto>>
+    public record Query() : IRequest<List<CategoryDto>>
     {
         public string CacheKey => "categories_all";
         public TimeSpan? ExpirationSliding => TimeSpan.FromHours(1);
