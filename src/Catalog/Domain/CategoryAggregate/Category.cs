@@ -1,4 +1,4 @@
-﻿namespace Catalog.Domain;
+namespace Catalog.Domain;
 
 public class Category : AggregateRoot
 {
@@ -8,6 +8,15 @@ public class Category : AggregateRoot
     public Guid? ParentId { get; set; }
     public Category? Parent { get; set; }
     public ICollection<CategoryDefaultAttribute> DefaultAttributes { get; set; } = [];
+
+    public void SetDefaultAttributes(IEnumerable<CategoryDefaultAttribute> attributes)
+    {
+        DefaultAttributes.Clear();
+        foreach (var attribute in attributes)
+        {
+            DefaultAttributes.Add(attribute);
+        }
+    }
 
     public IEnumerable<CategoryDefaultAttribute> GetAllDefaultAttributesFromHierarchy()
     {

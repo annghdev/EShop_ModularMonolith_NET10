@@ -7,7 +7,7 @@ namespace Catalog.Application;
 
 public class GetCategoryDefaultAttributes
 {
-    public record Query(Guid CategoryId) : IQuery<List<CategoryDefaultAttributeDto>>
+    public record Query(Guid CategoryId) : IRequest<List<CategoryDefaultAttributeDto>>
     {
         public string CacheKey => $"category_attributes_{CategoryId}";
 

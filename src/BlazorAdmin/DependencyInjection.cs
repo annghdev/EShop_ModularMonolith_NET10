@@ -21,5 +21,8 @@ public static class DependencyInjection
 
         services.AddHttpClient<IAttributeService, AttributeApiService>(c => c.BaseAddress = new Uri("http+https://api"))
             .AddHttpMessageHandler<JwtAuthorizationHandler>();
+
+        services.AddHttpClient<ICategoryService, CategoryApiService>(c => c.BaseAddress = new Uri("http+https://api"))
+            .AddHttpMessageHandler<JwtAuthorizationHandler>();
     }
 }
