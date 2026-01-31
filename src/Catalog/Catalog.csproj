@@ -12,6 +12,7 @@
     <Folder Include="Application\Features\Collections\" />
     <Folder Include="Application\Features\Attributes\" />
     <Folder Include="Application\Features\Products\Commands\ProductAttributes\" />
+    <Folder Include="Application\Features\Products\Commands\UpdateDraft\" />
     <Folder Include="Application\IntegrationHandlers\EventHandlers\" />
     <Folder Include="Application\IntegrationHandlers\CommandHandlers\" />
     <Folder Include="Application\IntegrationHandlers\QueryHandlers\" />

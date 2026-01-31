@@ -55,6 +55,7 @@ public class SearchProductAdmin
         public async Task<PaginatedResult<ProductSearchDto>> Handle(Query query, CancellationToken cancellationToken)
         {
             var dbQuery = uow.Products.AsQueryable()
+                .Where(p => p.Status != ProductStatus.Draft)
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
                 .Include(p => p.Variants)

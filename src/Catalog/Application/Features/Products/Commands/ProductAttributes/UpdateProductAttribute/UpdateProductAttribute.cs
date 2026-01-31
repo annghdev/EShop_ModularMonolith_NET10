@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Routing;
 namespace Catalog.Application;
 
 /// <summary>
-/// Add an attribute to a product.
+/// Update product attribute settings.
 /// </summary>
-public class AddProductAttribute
+public class UpdateProductAttribute
 {
-    public record Command(string Slug, Guid AttributeId, int DisplayOrder, bool HasVariant) : ICommand
+    public record Command(string Slug, Guid AttributeId, bool HasVariant) : ICommand
     {
         public IEnumerable<string> CacheKeysToInvalidate => [$"product_slug_{Slug}"];
         public IEnumerable<string> CacheKeyPrefix => ["product"];
@@ -25,9 +25,6 @@ public class AddProductAttribute
 
             RuleFor(c => c.AttributeId)
                 .NotEmpty().WithMessage("Attribute ID cannot be empty");
-
-            RuleFor(c => c.DisplayOrder)
-                .GreaterThanOrEqualTo(0).WithMessage("Display order must be >= 0");
         }
     }
 
@@ -36,23 +33,12 @@ public class AddProductAttribute
         public async Task Handle(Command command, CancellationToken cancellationToken)
         {
             var product = await uow.Products.LoadFullAggregateBySlug(command.Slug);
-
             if (product == null)
             {
                 throw new NotFoundException("Product", command.Slug);
             }
 
-            // Verify attribute exists
-            var attribute = await uow.Attributes.FindAsync([command.AttributeId], cancellationToken);
-            if (attribute == null)
-            {
-                throw new NotFoundException("Attribute", command.AttributeId);
-            }
-
-            // Get default value if any (first value of the attribute)
-            var defaultValueId = attribute.Values.FirstOrDefault()?.Id ?? Guid.Empty;
-
-            product.AddAttribute(command.AttributeId, defaultValueId, command.DisplayOrder, command.HasVariant);
+            product.UpdateAttributeVariantUsage(command.AttributeId, command.HasVariant);
 
             await uow.CommitAsync(cancellationToken);
         }
@@ -62,16 +48,16 @@ public class AddProductAttribute
     {
         public void Map(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/products/{slug}/attributes", async (string slug, AddProductAttributeRequest request, ISender sender) =>
+            app.MapPut("api/products/{slug}/attributes/{attributeId:guid}", async (string slug, Guid attributeId, UpdateProductAttributeRequest request, ISender sender) =>
             {
-                await sender.Send(new Command(slug, request.AttributeId, request.DisplayOrder, request.HasVariant));
-                return Results.Created();
+                await sender.Send(new Command(slug, attributeId, request.HasVariant));
+                return Results.Ok();
             })
             .WithTags("Products")
-            .WithName("AddProductAttribute")
+            .WithName("UpdateProductAttribute")
             .RequireAuthorization();
         }
     }
 }
 
-public record AddProductAttributeRequest(Guid AttributeId, int DisplayOrder, bool HasVariant = false);
+public record UpdateProductAttributeRequest(bool HasVariant);

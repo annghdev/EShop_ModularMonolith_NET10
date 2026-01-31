@@ -1,4 +1,4 @@
-﻿@page "/catalog/products/{Slug}"
+@page "/catalog/products/{Slug}"
 @using Contracts.Requests.Catalog
 @using Contracts.Responses
 @using BlazorAdmin.Services
@@ -206,46 +206,89 @@ else
                 </Card>
             </AntDesign.Col>
 
-            <!-- Product Attributes -->
+            <!-- Attributes -->
             <AntDesign.Col Span="24">
-                <Card Title="@($"Thuộc tính sản phẩm ({_product.Attributes?.Count ?? 0})")">
-                    <Extra>
-                        <Button Type="@ButtonType.Primary" Size="ButtonSize.Small" OnClick="ShowAddAttributeModal">
-                            <Icon Type=@("plus") Theme="IconThemeType.Outline" /> Thêm thuộc tính
-                        </Button>
-                    </Extra>
+                <Card Title=@("Thuộc tính sản phẩm")>
                     <ChildContent>
-                        @if (_product.Attributes?.Any() == true)
-                        {
-                            <Table TItem="ProductAttributeDto" DataSource="@_product.Attributes" Bordered Size="@TableSize.Small">
-                                <PropertyColumn Property="c => c.DisplayOrder" Title=@("Thứ tự") Style="max-width:120px" />
-                                <PropertyColumn Property="c => c.AttributeName" Title=@("Tên thuộc tính") />
-                                <PropertyColumn Property="c => c.HasVariant" Title=@("Dùng cho biến thể")>
-                                    @if (context.HasVariant)
-                                    {
-                                        <Tag Color="TagColor.Green">Có</Tag>
-                                    }
-                                    else
-                                    {
-                                        <Tag>Không</Tag>
-                                    }
-                                </PropertyColumn>
-                                <ActionColumn Title=@("Thao tác")>
-                                    <Popconfirm Title=@("Xóa thuộc tính này?")
-                                                OnConfirm="() => HandleRemoveAttribute(context.AttributeId)"
-                                                OkText=@("Xóa")
-                                                CancelText=@("Hủy")>
-                                        <Button Size="@ButtonSize.Small" Danger>
-                                            <Icon Type=@("delete") /> Xóa
-                                        </Button>
-                                    </Popconfirm>
-                                </ActionColumn>
-                            </Table>
-                        }
-                        else
-                        {
-                            <Empty Description=@("Chưa có thuộc tính") />
-                        }
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                            <div style="flex: 1 1 320px; min-width: 280px;">
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 8px;">
+                                    <strong>Thuộc tính mặc định</strong>
+                                </div>
+                                @if (_categoryDefaultAttributes.Any())
+                                {
+                                    <Table TItem="CategoryDefaultAttributeDto" DataSource="@_categoryDefaultAttributes" Bordered Size="@TableSize.Small">
+                                        <PropertyColumn Property="c => c.DisplayOrder" Title=@("Thứ tự") Style="max-width:120px" />
+                                        <PropertyColumn Property="c => c.AttributeName" Title=@("Tên thuộc tính") />
+                                        <ColumnDefinition Title=@("Dùng cho biến thể")>
+                                            @{
+                                                var productAttr = _product?.Attributes.FirstOrDefault(a => a.AttributeId == context.AttributeId);
+                                                var hasVariant = productAttr?.HasVariant == true;
+                                                var canToggle = productAttr != null;
+                                            }
+                                            <Checkbox Checked="@hasVariant"
+                                                      Disabled="@(!canToggle)"
+                                                      CheckedChanged="@((bool value) => HandleUpdateAttributeHasVariant(context.AttributeId, value))">
+                                                Có
+                                            </Checkbox>
+                                        </ColumnDefinition>
+                                        <ColumnDefinition Title=@("Trạng thái")>
+                                            @if (IsDefaultAttributeAdded(context.AttributeId))
+                                            {
+                                                <Tag Color="TagColor.Green">Đã thêm</Tag>
+                                            }
+                                            else
+                                            {
+                                                <Tag>Chưa thêm</Tag>
+                                            }
+                                        </ColumnDefinition>
+                                    </Table>
+                                }
+                                else
+                                {
+                                    <Empty Description=@("Danh mục chưa có thuộc tính mặc định") />
+                                }
+                            </div>
+
+                            <div style="flex: 1 1 320px; min-width: 280px;">
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 8px;">
+                                    <strong>Thuộc tính tùy chỉnh</strong>
+                                    <Button Type="@ButtonType.Primary" Size="ButtonSize.Small" OnClick="ShowAddAttributeModal">
+                                        <Icon Type=@("plus") Theme="IconThemeType.Outline" /> Thêm thuộc tính
+                                    </Button>
+                                </div>
+                                @{
+                                    var customAttributes = GetCustomAttributes();
+                                }
+                                @if (customAttributes.Any())
+                                {
+                                    <Table TItem="ProductAttributeDto" DataSource="@customAttributes" Bordered Size="@TableSize.Small">
+                                        <PropertyColumn Property="c => c.DisplayOrder" Title=@("Thứ tự") Style="max-width:120px" />
+                                        <PropertyColumn Property="c => c.AttributeName" Title=@("Tên thuộc tính") />
+                                        <ColumnDefinition Title=@("Dùng cho biến thể")>
+                                            <Checkbox Checked="@context.HasVariant"
+                                                      CheckedChanged="@((bool value) => HandleUpdateAttributeHasVariant(context.AttributeId, value))">
+                                                Có
+                                            </Checkbox>
+                                        </ColumnDefinition>
+                                        <ActionColumn Title=@("Thao tác")>
+                                            <Popconfirm Title=@("Xóa thuộc tính này?")
+                                                        OnConfirm="() => HandleRemoveAttribute(context.AttributeId)"
+                                                        OkText=@("Xóa")
+                                                        CancelText=@("Hủy")>
+                                                <Button Size="@ButtonSize.Small" Danger>
+                                                    <Icon Type=@("delete") /> Xóa
+                                                </Button>
+                                            </Popconfirm>
+                                        </ActionColumn>
+                                    </Table>
+                                }
+                                else
+                                {
+                                    <Empty Description=@("Chưa có thuộc tính tùy chỉnh") />
+                                }
+                            </div>
+                        </div>
                     </ChildContent>
                 </Card>
             </AntDesign.Col>
@@ -492,10 +535,10 @@ else
         </FormItem>
         
         @* Attribute Values - Dynamic based on product attributes with HasVariant=true *@
-        @if (_product?.Attributes?.Any(a => a.HasVariant) == true)
+        @if (_product?.Attributes?.Any() == true)
         {
             <Divider>Giá trị thuộc tính</Divider>
-            @foreach (var attr in _product.Attributes.Where(a => a.HasVariant))
+            @foreach (var attr in _product.Attributes)
             {
                 var attributeFromList = _allAttributes.FirstOrDefault(a => a.Id == attr.AttributeId);
                 if (attributeFromList != null)
@@ -570,6 +613,7 @@ else
     private List<CategoryDto> _categories = [];
     private List<BrandDto> _brands = [];
     private List<AttributeDto> _allAttributes = [];
+    private List<CategoryDefaultAttributeDto> _categoryDefaultAttributes = [];
 
     public RenderFragment GetPageTitle()
     {
@@ -597,12 +641,40 @@ else
         try
         {
             _product = await ProductService.GetProductBySlugAsync(Slug);
+            await LoadCategoryDefaultAttributesAsync();
         }
         finally
         {
             UpdateTitle();
             _loading = false;
         }
+    }
+
+    private async Task LoadCategoryDefaultAttributesAsync()
+    {
+        if (_product?.Category?.Id == Guid.Empty || _product?.Category == null)
+        {
+            _categoryDefaultAttributes = [];
+            return;
+        }
+
+        _categoryDefaultAttributes = await ProductService.GetCategoryDefaultAttributesAsync(_product.Category.Id);
+    }
+
+    private List<ProductAttributeDto> GetCustomAttributes()
+    {
+        if (_product == null)
+        {
+            return [];
+        }
+
+        var defaultIds = _categoryDefaultAttributes.Select(a => a.AttributeId).ToHashSet();
+        return _product.Attributes.Where(a => !defaultIds.Contains(a.AttributeId)).ToList();
+    }
+
+    private bool IsDefaultAttributeAdded(Guid attributeId)
+    {
+        return _product?.Attributes.Any(a => a.AttributeId == attributeId) == true;
     }
 
     private async Task HandlePublish()
@@ -697,14 +769,37 @@ else
         MessageService.Success("Đã thêm thuộc tính!");
         _showAddAttribute = false;
         await LoadProduct(); // Reload to show new attribute
+        await LoadCategoryDefaultAttributesAsync();
     }
     
     private async Task HandleRemoveAttribute(Guid attributeId)
     {
         if (_product == null) return;
+
+        if (_categoryDefaultAttributes.Any(a => a.AttributeId == attributeId))
+        {
+            MessageService.Warning("Thuộc tính mặc định là bắt buộc và không thể xóa.");
+            return;
+        }
         
         await ProductService.RemoveProductAttributeAsync(Slug, attributeId);
         MessageService.Success("Đã xóa thuộc tính!");
+        await LoadProduct();
+        await LoadCategoryDefaultAttributesAsync();
+    }
+
+    private async Task HandleUpdateAttributeHasVariant(Guid attributeId, bool hasVariant)
+    {
+        if (_product == null) return;
+
+        if (!IsDefaultAttributeAdded(attributeId))
+        {
+            MessageService.Warning("Thuộc tính chưa được thêm vào sản phẩm.");
+            return;
+        }
+
+        await ProductService.UpdateProductAttributeAsync(Slug, attributeId, hasVariant);
+        MessageService.Success("Đã cập nhật thuộc tính.");
         await LoadProduct();
     }
 
@@ -769,14 +864,17 @@ else
     private async Task HandleUpdatePricing()
     {
         if (_product == null) return;
-
-        _product.Cost = new MoneyDto(Amount : _pricingModel.CostAmount, Currency : "VND" );
-        _product.Price = new MoneyDto ( Amount : _pricingModel.PriceAmount, Currency : "VND" );
-        _product.UpdatedAt = DateTimeOffset.Now;
-
-        MessageService.Success("Pricing updated successfully!");
-        _showUpdatePricing = false;
-        await InvokeAsync(StateHasChanged);
+        try
+        {
+            await ProductService.UpdateProductPricingAsync(_product.Id, _pricingModel.CostAmount, _pricingModel.PriceAmount);
+            MessageService.Success("Pricing updated successfully!");
+            _showUpdatePricing = false;
+            await LoadProduct();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể cập nhật giá: {ex.Message}");
+        }
     }
 
     private async Task HandleUpdateDimensions()
@@ -846,6 +944,12 @@ else
 
     private void ShowAddVariantModal()
     {
+        if (_product?.Attributes?.Any() != true)
+        {
+            MessageService.Warning("Cần thêm ít nhất 1 thuộc tính trước khi tạo biến thể.");
+            return;
+        }
+
         _isEditingVariant = false;
         _editingVariantId = null;
         _variantModel = new VariantModel();
@@ -856,6 +960,16 @@ else
     {
         _isEditingVariant = true;
         _editingVariantId = variant.Id;
+        var attributeValues = new Dictionary<Guid, Guid>();
+        foreach (var attrValue in variant.AttributeValues)
+        {
+            var attributeId = _product.Attributes.FirstOrDefault(a => a.AttributeName == attrValue.AttributeName)?.AttributeId;
+            if (attributeId.HasValue)
+            {
+                attributeValues[attributeId.Value] = attrValue.ValueId;
+            }
+        }
+
         _variantModel = new VariantModel
         {
             Name = variant.Name,
@@ -863,10 +977,7 @@ else
             OverrideCostAmount = variant.OverrideCost?.Amount,
             OverridePriceAmount = variant.OverridePrice?.Amount,
             MainImage = variant.MainImage,
-            AttributeValues = variant.AttributeValues.ToDictionary(
-                av => av.ProductAttributeId,
-                av => av.ValueId
-            )
+            AttributeValues = attributeValues
         };
         _showVariantModal = true;
     }
@@ -874,6 +985,12 @@ else
     private async Task HandleSaveVariant()
     {
         if (_product == null) return;
+
+        if (_product.Attributes.Any() && !_product.Attributes.All(a => _variantModel.AttributeValues.ContainsKey(a.AttributeId)))
+        {
+            MessageService.Warning("Vui lòng chọn đầy đủ giá trị cho tất cả thuộc tính.");
+            return;
+        }
         
         if (_isEditingVariant && _editingVariantId.HasValue)
         {
@@ -888,7 +1005,7 @@ else
                 AttributeValues = _variantModel.AttributeValues
             };
             
-            await ProductService.UpdateVariantAsync(Slug, _editingVariantId.Value, request);
+            await ProductService.UpdateVariantAsync(_product.Id, _editingVariantId.Value, request);
             MessageService.Success("Đã cập nhật biến thể!");
         }
         else
@@ -904,7 +1021,7 @@ else
                 AttributeValues = _variantModel.AttributeValues
             };
             
-            await ProductService.AddVariantAsync(Slug, request);
+            await ProductService.AddVariantAsync(_product.Id, request);
             MessageService.Success("Đã thêm biến thể!");
         }
         
@@ -916,7 +1033,7 @@ else
     {
         if (_product == null) return;
         
-        await ProductService.RemoveVariantAsync(Slug, variantId);
+        await ProductService.RemoveVariantAsync(_product.Id, variantId);
         MessageService.Success("Đã xóa biến thể!");
         await LoadProduct();
     }

@@ -1,4 +1,4 @@
-﻿using Contracts.Responses;
+using Contracts.Responses;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -8,11 +8,7 @@ namespace Catalog.Application;
 
 public class GetProductDetails
 {
-    public record Query(Guid Id) : IQuery<ProductDto>
-    {
-        public string CacheKey => $"product_{Id}";
-        public TimeSpan? ExpirationSliding => TimeSpan.FromMinutes(30);
-    }
+    public record Query(Guid Id) : IRequest<ProductDto>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -29,7 +25,9 @@ public class GetProductDetails
         {
             var product = await uow.Products.LoadFullAggregate(query.Id, changeTracking: false);
 
-            return mapper.Map<ProductDto>(product);
+            var result = mapper.Map<ProductDto>(product);
+
+            return result;
         }
     }
 

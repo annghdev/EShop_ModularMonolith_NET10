@@ -4,6 +4,12 @@ Accept: application/json
 
 ###
 
+### Get Product Details - Shirt (Fashion) - Slug
+GET http://localhost:5000/api/products/by-slug/dddddddd-dddd-dddd-dddd-dddddddddd13
+Accept: application/json
+
+###
+
 ### Get Product Details - Smartphone (Device)
 GET http://localhost:5000/api/products/dddddddd-dddd-dddd-dddd-dddddddddd14
 Accept: application/json

@@ -11,9 +11,9 @@ namespace Catalog.Application;
 /// </summary>
 public class GetProductBySlug
 {
-    public record Query(string Slug) : IQuery<ProductDto>
+    public record Query(string Slug) : IRequest<ProductDto>
     {
-        public string CacheKey => $"product_slug_{Slug}";
+        public string CacheKey => $"product_slug:{Slug}";
         public TimeSpan? ExpirationSliding => TimeSpan.FromMinutes(30);
     }
 
@@ -31,12 +31,7 @@ public class GetProductBySlug
     {
         public async Task<ProductDto> Handle(Query query, CancellationToken cancellationToken)
         {
-            var product = await uow.Products.LoadFullAggregateBySlug(query.Slug);
-
-            if (product == null)
-            {
-                throw new NotFoundException("Product", query.Slug);
-            }
+            var product = await uow.Products.LoadFullAggregateBySlug(query.Slug, changeTracking: false);
 
             return mapper.Map<ProductDto>(product);
         }

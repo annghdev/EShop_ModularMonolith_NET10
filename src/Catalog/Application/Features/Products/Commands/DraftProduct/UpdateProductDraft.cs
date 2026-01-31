@@ -10,7 +10,7 @@ namespace Catalog.Application;
 /// <summary>
 /// Update an existing product draft with basic info, pricing, and images.
 /// </summary>
-public class UpdateDraft
+public class UpdateProductDraft
 {
     public record Command(Guid ProductId, UpdateProductDraftRequest Request) : ICommand
     {
@@ -100,13 +100,38 @@ public class UpdateDraft
                 product.SetCategory(request.CategoryId);
             }
 
+            // Update brand
+            if (product.BrandId != request.BrandId)
+            {
+                product.SetBrand(request.BrandId);
+            }
+
             // Update thumbnail
             if (!string.IsNullOrEmpty(request.Thumbnail))
             {
                 product.UpdateThumbnail(new ImageUrl(request.Thumbnail), raiseEvent: false);
             }
 
-            // Note: Brand update would require a domain method - skipping for now as domain doesn't support it
+            // Ensure category default attributes exist on draft
+            var category = await uow.Categories.GetByIdWithHierarchyAsync(request.CategoryId, cancellationToken)
+                ?? throw new NotFoundException("Category", request.CategoryId);
+
+            foreach (var defaultAttr in category.GetAllDefaultAttributesFromHierarchy())
+            {
+                if (product.Attributes.Any(a => a.AttributeId == defaultAttr.AttributeId))
+                {
+                    continue;
+                }
+
+                var attribute = await uow.Attributes.FindAsync([defaultAttr.AttributeId], cancellationToken);
+                if (attribute == null)
+                {
+                    throw new NotFoundException("Attribute", defaultAttr.AttributeId);
+                }
+
+                var defaultValueId = attribute.Values.FirstOrDefault()?.Id ?? Guid.Empty;
+                product.AddAttribute(defaultAttr.AttributeId, defaultValueId, defaultAttr.DisplayOrder, false);
+            }
 
             await uow.CommitAsync(cancellationToken);
         }

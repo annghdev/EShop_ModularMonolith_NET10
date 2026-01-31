@@ -41,6 +41,7 @@ public class Variant : BaseEntity
             _attributeValues.Add(new VariantAttributeValue
             {
                 ProductAttribute = attr,
+                ProductAttributeId = attr.Id,
                 ValueId = val
             });
         }
@@ -106,6 +107,7 @@ public class Variant : BaseEntity
             _attributeValues.Add(new VariantAttributeValue
             {
                 ProductAttribute = attr,
+                ProductAttributeId = attr.Id,
                 ValueId = val
             });
         }

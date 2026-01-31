@@ -1,4 +1,4 @@
-﻿namespace Catalog.Domain;
+namespace Catalog.Domain;
 
 public sealed class ProductBuilder
 {
@@ -47,9 +47,10 @@ public sealed class ProductBuilder
     public ProductBuilder AddAttribute(
         Guid attributeId,
         Guid defaultValueId,
-        int displayOrder)
+        int displayOrder,
+        bool hasVariant = false)
     {
-        _product.AddAttribute(attributeId, defaultValueId, displayOrder);
+        _product.AddAttribute(attributeId, defaultValueId, displayOrder, hasVariant);
         return this;
     }
 
@@ -94,6 +95,10 @@ public sealed class ProductBuilder
         return this;
     }
 
+    /// <summary>
+    /// Build the product with full validation (requires variants).
+    /// Use this when publishing a product.
+    /// </summary>
     public Product Build()
     {
         if (_product.Category != null && _product.Category.DefaultAttributes.Any() && !_product.Attributes.Any())
@@ -104,6 +109,22 @@ public sealed class ProductBuilder
 
         _product.ValidateCategoryDefaultAttributes();
         _product.ValidateVariants();
+        return _product;
+    }
+
+    /// <summary>
+    /// Build as draft without requiring variants.
+    /// Variants can be added later before publishing.
+    /// </summary>
+    public Product BuildDraft()
+    {
+        // Draft products don't require variants - they can be added later
+        // Only validate attributes if there are any
+        if (_product.Attributes.Any())
+        {
+            _product.ValidateCategoryDefaultAttributes();
+        }
+        
         return _product;
     }
 }

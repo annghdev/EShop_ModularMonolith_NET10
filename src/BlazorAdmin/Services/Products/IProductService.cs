@@ -1,4 +1,5 @@
-﻿using Contracts.Requests.Catalog;
+using Contracts;
+using Contracts.Requests.Catalog;
 using Contracts.Responses;
 
 namespace BlazorAdmin.Services;
@@ -24,11 +25,12 @@ public interface IProductService
     // Attributes Management
     Task AddProductAttributeAsync(string slug, Guid attributeId, int displayOrder, bool hasVariant);
     Task RemoveProductAttributeAsync(string slug, Guid attributeId);
+    Task UpdateProductAttributeAsync(string slug, Guid attributeId, bool hasVariant);
     
     // Variants Management
-    Task<Guid> AddVariantAsync(string slug, AddVariantRequest request);
-    Task UpdateVariantAsync(string slug, Guid variantId, UpdateVariantRequest request);
-    Task RemoveVariantAsync(string slug, Guid variantId);
+    Task<Guid> AddVariantAsync(Guid productId, AddVariantRequest request);
+    Task UpdateVariantAsync(Guid productId, Guid variantId, UpdateVariantRequest request);
+    Task RemoveVariantAsync(Guid productId, Guid variantId);
     
     // Images Management
     Task UpdateThumbnailAsync(string slug, string thumbnailUrl);
@@ -40,26 +42,28 @@ public interface IProductService
     Task<ProductDto> CreateNewDraftAsync();
     Task UpdateDraftAsync(Guid productId, UpdateProductDraftRequest request);
     Task DiscardDraftAsync(Guid productId);
+    Task UpdateProductPricingAsync(Guid productId, decimal costAmount, decimal priceAmount);
     
     // Helper methods for dropdowns
     Task<List<CategoryDto>> GetCategoriesAsync();
+    Task<List<CategoryDefaultAttributeDto>> GetCategoryDefaultAttributesAsync(Guid categoryId);
     Task<List<BrandDto>> GetBrandsAsync();
     Task<List<AttributeDto>> GetAttributesAsync();
 }
 
 // PaginatedResult helper class
-public class PaginatedResult<T>
-{
-    public int Page { get; set; }
-    public int PageSize { get; set; }
-    public int Total { get; set; }
-    public List<T> Items { get; set; } = [];
+//public class PaginatedResult<T>
+//{
+//    public int Page { get; set; }
+//    public int PageSize { get; set; }
+//    public int Total { get; set; }
+//    public List<T> Items { get; set; } = [];
     
-    public PaginatedResult(int page, int pageSize, List<T> items, int total)
-    {
-        Page = page;
-        PageSize = pageSize;
-        Items = items;
-        Total = total;
-    }
-}
+//    public PaginatedResult(int page, int pageSize, List<T> items, int total)
+//    {
+//        Page = page;
+//        PageSize = pageSize;
+//        Items = items;
+//        Total = total;
+//    }
+//}

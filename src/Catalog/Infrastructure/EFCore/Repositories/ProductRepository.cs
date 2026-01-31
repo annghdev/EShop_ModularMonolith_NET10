@@ -1,4 +1,4 @@
-﻿using Catalog.Domain;
+using Catalog.Domain;
 
 namespace Catalog.Infrastructure.EFCore.Repositories;
 
@@ -29,9 +29,11 @@ public class ProductRepository(CatalogDbContext db)
 
     }
 
-    public async Task<Product> LoadFullAggregateBySlug(string slug)
+    public async Task<Product> LoadFullAggregateBySlug(string slug, bool changeTracking = true)
     {
-        return await dbSet
+        var query = changeTracking ? dbSet : dbSet.AsNoTracking();
+
+        return await query
             .Include(p => p.Category)
             .Include(p => p.Brand)
             .Include(p => p.Attributes)
