@@ -1,4 +1,4 @@
-﻿using Catalog.Application;
+using Catalog.Application;
 using Catalog.Domain;
 using Catalog.Domain.CategoryAggregate;
 using Catalog.Infrastructure.EFCore.Repositories;
@@ -15,5 +15,6 @@ public sealed class CatalogUnitOfWork(CatalogDbContext context, IUserContext use
     public ICategoryRepository Categories => categoryRepository ??= new CategoryRepository(context);
     public DbSet<Brand> Brands => context.Brands;
     public DbSet<Domain.Attribute> Attributes => context.Attributes;
+    public DbSet<VariantAttributeValue> VariantAttributeValues => context.VariantAttributeValues;
     public DbSet<Collection> Collections => context.Collections;
 }
