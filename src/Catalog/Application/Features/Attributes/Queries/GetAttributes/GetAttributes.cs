@@ -10,7 +10,7 @@ namespace Catalog.Application;
 /// </summary>
 public class GetAttributes
 {
-    public record Query() : IQuery<List<AttributeDto>>
+    public record Query() : IRequest<List<AttributeDto>>
     {
         public string CacheKey => "attributes_all";
         public TimeSpan? ExpirationSliding => TimeSpan.FromHours(1);
@@ -21,6 +21,7 @@ public class GetAttributes
         public async Task<List<AttributeDto>> Handle(Query query, CancellationToken cancellationToken)
         {
             var attributes = await uow.Attributes
+                .Where(a => !a.IsDeleted)
                 .Include(a => a.Values)
                 .OrderBy(a => a.Name)
                 .AsNoTracking()
@@ -31,6 +32,8 @@ public class GetAttributes
                 Id = a.Id,
                 Name = a.Name,
                 Icon = a.Icon,
+                ValueStyleCss = a.ValueStyleCss,
+                DisplayText = a.DisplayText,
                 Values = a.Values.Select(v => new AttributeValueDto
                 {
                     Id = v.Id,

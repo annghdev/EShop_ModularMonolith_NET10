@@ -1,4 +1,4 @@
-﻿using BlazorAdmin.Auth;
+using BlazorAdmin.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorAdmin;
@@ -17,6 +17,9 @@ public static class DependencyInjection
 
         // Product services - HttpClient with JWT auth
         services.AddHttpClient<IProductService, ProductApiService>(c => c.BaseAddress = new Uri("http+https://api"))
+            .AddHttpMessageHandler<JwtAuthorizationHandler>();
+
+        services.AddHttpClient<IAttributeService, AttributeApiService>(c => c.BaseAddress = new Uri("http+https://api"))
             .AddHttpMessageHandler<JwtAuthorizationHandler>();
     }
 }

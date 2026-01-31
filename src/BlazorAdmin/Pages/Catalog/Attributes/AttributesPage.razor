@@ -1,0 +1,378 @@
+@page "/catalog/product-attributes"
+@using Contracts.Requests.Catalog
+@using Contracts.Responses
+@using BlazorAdmin.Services
+@inject IAttributeService AttributeService
+@inject IMessageService MessageService
+@implements IReuseTabsPage
+@attribute [ReuseTabsPage(Singleton = false)]
+@inject ReuseTabsService ReuseTabsService
+
+<Card>
+    <TitleTemplate>
+        <Space Style="width: 100%; justify-content: space-between">
+            <SpaceItem>
+                <Title Level="4">Bảng thuộc tính sản phẩm</Title>
+            </SpaceItem>
+            <SpaceItem>
+                <Button Type="@ButtonType.Primary" OnClick="ShowCreateAttributeModal">
+                    <Icon Type=@("plus") Theme="IconThemeType.Outline" />
+                    Thêm thuộc tính
+                </Button>
+            </SpaceItem>
+        </Space>
+    </TitleTemplate>
+    <Body>
+        <Table TItem="AttributeDto"
+               DataSource="@_attributes"
+               Loading="@_loading"
+               RowKey="x => x.Id.ToString()">
+            <PropertyColumn Property="c => c.Name" Title=@("Tên thuộc tính") />
+            <PropertyColumn Property="c => c.Icon" Title=@("Icon")>
+                <Text>@context.Icon</Text>
+            </PropertyColumn>
+            <PropertyColumn Property="c => c.DisplayText" Title=@("Hiển thị text")>
+                @if (context.DisplayText)
+                {
+                    <Tag Color="TagColor.Green">Có</Tag>
+                }
+                else
+                {
+                    <Tag>Không</Tag>
+                }
+            </PropertyColumn>
+            <PropertyColumn Property="c => c.ValueStyleCss" Title=@("Style CSS")>
+                <Text>@context.ValueStyleCss</Text>
+            </PropertyColumn>
+            <ColumnDefinition Title=@("Giá trị")>
+                @if (context.Values?.Any() == true)
+                {
+                    <Space Size="@("small")">
+                        @foreach (var value in context.Values)
+                        {
+                            <SpaceItem>
+                                <span style="cursor: pointer;" @onclick="() => ShowEditValueModal(context.Id, value)">
+                                    @if (!string.IsNullOrEmpty(value.ColorCode))
+                                    {
+                                        @if (IsWhiteColor(value.ColorCode))
+                                        {
+                                            <Tag Color="@value.ColorCode" Style="border:1px solid grey; color: black">@value.Value</Tag>
+                                        }
+                                        else
+                                        {
+                                            <Tag Color="@value.ColorCode">@value.Value</Tag>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Tag>@value.Value</Tag>
+                                    }
+                                </span>
+                            </SpaceItem>
+                        }
+                    </Space>
+                }
+                else
+                {
+                    <Tag>Chưa có</Tag>
+                }
+            </ColumnDefinition>
+            <ActionColumn Title=@("Thao tác")>
+                <Space>
+                    <SpaceItem>
+                        <Button Size="@ButtonSize.Small" OnClick="() => ShowAddValueModal(context.Id)">
+                            <Icon Type=@("plus") Theme="IconThemeType.Outline" /> Giá trị
+                        </Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Size="@ButtonSize.Small" OnClick="() => ShowEditAttributeModal(context)">
+                            <Icon Type=@("edit") Theme="IconThemeType.Outline" /> Sửa
+                        </Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Popconfirm Title=@("Xóa thuộc tính này?")
+                                    OnConfirm="() => HandleDeleteAttribute(context.Id)"
+                                    OkText=@("Xóa")
+                                    CancelText=@("Hủy")>
+                            <Button Size="@ButtonSize.Small" Danger>
+                                <Icon Type=@("delete") /> Xóa
+                            </Button>
+                        </Popconfirm>
+                    </SpaceItem>
+                </Space>
+            </ActionColumn>
+        </Table>
+    </Body>
+</Card>
+
+@* Create/Edit Attribute Modal *@
+<Modal Title="@(_isEditingAttribute ? "Cập nhật thuộc tính" : "Thêm thuộc tính")"
+       @bind-Visible="_showAttributeModal"
+       OnOk="HandleSaveAttribute"
+       OnCancel="() => _showAttributeModal = false"
+       Width="600">
+    <Form Model="@_attributeForm" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("Tên thuộc tính") Required>
+            <Input @bind-Value="_attributeForm.Name" Placeholder=@("Nhập tên thuộc tính") />
+        </FormItem>
+        <FormItem Label=@("Icon")>
+            <Input @bind-Value="_attributeForm.Icon" Placeholder=@("https://example.com/icon.svg") />
+        </FormItem>
+        <FormItem Label=@("Hiển thị text")>
+            <Checkbox @bind-Checked="_attributeForm.DisplayText">Có</Checkbox>
+        </FormItem>
+        <FormItem Label=@("Style CSS")>
+            <TextArea @bind-Value="_attributeForm.ValueStyleCss" Rows="3" Placeholder=@("Ví dụ: background:#000;color:#fff") />
+        </FormItem>
+    </Form>
+</Modal>
+
+@* Add/Edit Value Modal *@
+<Modal Title="@(_isEditingValue ? "Cập nhật giá trị" : "Thêm giá trị")"
+       @bind-Visible="_showValueModal"
+       OnOk="HandleSaveValue"
+       OnCancel="() => _showValueModal = false"
+       Width="500">
+    <Form Model="@_valueForm" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("Giá trị") Required>
+            <Input @bind-Value="_valueForm.Value" Placeholder=@("Ví dụ: Red") />
+        </FormItem>
+        <FormItem Label=@("Màu")>
+            <Input @bind-Value="_valueForm.ColorCode" Placeholder=@("#FF0000") />
+        </FormItem>
+        @if (_isEditingValue)
+        {
+            <FormItem Label=@("Xóa giá trị")>
+                <Popconfirm Title=@("Xóa giá trị này?")
+                            OnConfirm="HandleRemoveValue"
+                            OkText=@("Xóa")
+                            CancelText=@("Hủy")>
+                    <Button Danger>
+                        <Icon Type=@("delete") /> Xóa giá trị
+                    </Button>
+                </Popconfirm>
+            </FormItem>
+        }
+    </Form>
+</Modal>
+
+@code {
+    private List<AttributeDto> _attributes = [];
+    private bool _loading;
+
+    private bool _showAttributeModal;
+    private bool _isEditingAttribute;
+    private Guid? _editingAttributeId;
+    private AttributeFormModel _attributeForm = new();
+
+    private bool _showValueModal;
+    private bool _isEditingValue;
+    private Guid? _editingValueId;
+    private Guid? _valueAttributeId;
+    private ValueFormModel _valueForm = new();
+
+    private string pageTitle = "Thuộc tính";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAttributes();
+    }
+
+    private async Task LoadAttributes()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            _attributes = await AttributeService.GetAttributesAsync();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void ShowCreateAttributeModal()
+    {
+        _isEditingAttribute = false;
+        _editingAttributeId = null;
+        _attributeForm = new AttributeFormModel();
+        _showAttributeModal = true;
+    }
+
+    private void ShowEditAttributeModal(AttributeDto attribute)
+    {
+        _isEditingAttribute = true;
+        _editingAttributeId = attribute.Id;
+        _attributeForm = new AttributeFormModel
+        {
+            Name = attribute.Name,
+            Icon = attribute.Icon,
+            DisplayText = attribute.DisplayText,
+            ValueStyleCss = attribute.ValueStyleCss
+        };
+        _showAttributeModal = true;
+    }
+
+    private async Task HandleSaveAttribute()
+    {
+        try
+        {
+            if (_isEditingAttribute && _editingAttributeId.HasValue)
+            {
+                var request = new UpdateAttributeRequest
+                {
+                    Name = _attributeForm.Name,
+                    Icon = _attributeForm.Icon,
+                    DisplayText = _attributeForm.DisplayText,
+                    ValueStyleCss = _attributeForm.ValueStyleCss
+                };
+                await AttributeService.UpdateAttributeAsync(_editingAttributeId.Value, request);
+                MessageService.Success("Đã cập nhật thuộc tính!");
+            }
+            else
+            {
+                var request = new CreateAttributeRequest
+                {
+                    Name = _attributeForm.Name,
+                    Icon = _attributeForm.Icon,
+                    DisplayText = _attributeForm.DisplayText,
+                    ValueStyleCss = _attributeForm.ValueStyleCss
+                };
+                await AttributeService.CreateAttributeAsync(request);
+                MessageService.Success("Đã thêm thuộc tính!");
+            }
+
+            _showAttributeModal = false;
+            await LoadAttributes();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể lưu thuộc tính: {ex.Message}");
+        }
+    }
+
+    private async Task HandleDeleteAttribute(Guid id)
+    {
+        try
+        {
+            await AttributeService.DeleteAttributeAsync(id);
+            MessageService.Success("Đã xóa thuộc tính!");
+            await LoadAttributes();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể xóa thuộc tính: {ex.Message}");
+        }
+    }
+
+    private void ShowAddValueModal(Guid attributeId)
+    {
+        _valueAttributeId = attributeId;
+        _isEditingValue = false;
+        _editingValueId = null;
+        _valueForm = new ValueFormModel();
+        _showValueModal = true;
+    }
+
+    private void ShowEditValueModal(Guid attributeId, AttributeValueDto value)
+    {
+        _valueAttributeId = attributeId;
+        _isEditingValue = true;
+        _editingValueId = value.Id;
+        _valueForm = new ValueFormModel
+        {
+            Value = value.Value,
+            ColorCode = value.ColorCode
+        };
+        _showValueModal = true;
+    }
+
+    private async Task HandleSaveValue()
+    {
+        if (!_valueAttributeId.HasValue)
+        {
+            MessageService.Error("Không xác định được thuộc tính.");
+            return;
+        }
+
+        try
+        {
+            if (_isEditingValue && _editingValueId.HasValue)
+            {
+                var request = new UpdateAttributeValueRequest
+                {
+                    Value = _valueForm.Value,
+                    ColorCode = _valueForm.ColorCode
+                };
+                await AttributeService.UpdateAttributeValueAsync(_valueAttributeId.Value, _editingValueId.Value, request);
+                MessageService.Success("Đã cập nhật giá trị!");
+            }
+            else
+            {
+                var request = new AddAttributeValueRequest
+                {
+                    Value = _valueForm.Value,
+                    ColorCode = _valueForm.ColorCode
+                };
+                await AttributeService.AddAttributeValueAsync(_valueAttributeId.Value, request);
+                MessageService.Success("Đã thêm giá trị!");
+            }
+
+            _showValueModal = false;
+            await LoadAttributes();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể lưu giá trị: {ex.Message}");
+        }
+    }
+
+    private async Task HandleRemoveValue()
+    {
+        if (!_valueAttributeId.HasValue || !_editingValueId.HasValue)
+        {
+            MessageService.Error("Không xác định được giá trị.");
+            return;
+        }
+
+        try
+        {
+            await AttributeService.RemoveAttributeValueAsync(_valueAttributeId.Value, _editingValueId.Value);
+            MessageService.Success("Đã xóa giá trị!");
+            _showValueModal = false;
+            await LoadAttributes();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể xóa giá trị: {ex.Message}");
+        }
+    }
+
+    RenderFragment IReuseTabsPage.GetPageTitle()
+    {
+        ReuseTabsService.Update();
+        return @<span>@pageTitle</span>;
+    }
+
+    private static bool IsWhiteColor(string color)
+    {
+        return color.Equals("#ffffff", StringComparison.OrdinalIgnoreCase)
+               || color.Equals("#fff", StringComparison.OrdinalIgnoreCase)
+               || color.Equals("white", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private class AttributeFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string? Icon { get; set; }
+        public bool DisplayText { get; set; }
+        public string? ValueStyleCss { get; set; }
+    }
+
+    private class ValueFormModel
+    {
+        public string Value { get; set; } = string.Empty;
+        public string? ColorCode { get; set; }
+    }
+}

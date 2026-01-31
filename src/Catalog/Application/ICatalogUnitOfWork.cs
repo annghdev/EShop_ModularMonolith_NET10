@@ -1,4 +1,4 @@
-﻿using Catalog.Domain;
+using Catalog.Domain;
 using Catalog.Domain.CategoryAggregate;
 using Kernel.Application.Interfaces;
 
@@ -10,5 +10,6 @@ public interface ICatalogUnitOfWork : IUnitOfWork
     public ICategoryRepository Categories { get; }
     public DbSet<Brand> Brands { get; }
     public DbSet<Domain.Attribute> Attributes { get; }
+    public DbSet<VariantAttributeValue> VariantAttributeValues { get; }
     public DbSet<Collection> Collections { get; }
 }
