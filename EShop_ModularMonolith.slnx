@@ -3,6 +3,14 @@
     <File Path="assets/aspire-dashboard-table.png" />
     <File Path="assets/aspire-dashboard.png" />
   </Folder>
+  <Folder Name="/assets/catalog/">
+    <File Path="assets/catalog/catalog-attribute-table.png" />
+    <File Path="assets/catalog/catalog-category-table.png" />
+    <File Path="assets/catalog/catalog-product-create-draft.png" />
+    <File Path="assets/catalog/catalog-product-details-2.png" />
+    <File Path="assets/catalog/catalog-product-details.png" />
+    <File Path="assets/catalog/catalog-product-table.png" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".gitattributes" />
     <File Path=".gitignore" />

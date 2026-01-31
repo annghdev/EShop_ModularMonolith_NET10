@@ -12,6 +12,7 @@ The **E-Shop Modular Monolith** project is a comprehensive e-commerce system des
 - [Technologies Used](#technologies-used)
 - [Architecture & Design Patterns](#architecture--design-patterns)
 - [Module Roles](#module-roles)
+- [Module ERDs](#module-erds)
 - [Installation & Setup Guide](#installation--setup-guide)
 - [Demo](#demo)
 - [Sample Images](#sample-images)
@@ -137,12 +138,21 @@ Each module follows **Clean Architecture** principles:
 | **Kernel** | Base classes, abstractions, extensions, utilities |
 | **Infrastructure** | Caching, File Storage, Notification, EventBus, EF Base classes|
 
+## Module ERDs
+
+Entity-Relationship diagrams for each module (Catalog, Inventory, Orders, Payment, Pricing, Shipping, ShoppingCart, Users) are documented in a separate file:
+
+**[→ Module ERDs (documents/erd.md)](documents/erd.md)**
+
+Diagrams reflect each module's domain (aggregates and entities). References to IDs from other modules (e.g. `ProductId`, `OrderId`) are logical; each module uses its own database.
+
 ## Installation & Setup Guide
 
 ### Prerequisites
 
 - [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - **Visual Studio 2022+**
+- **DockerDesktop** (for running dependent services like PostgreSQL, RabbitMQ, Elasticsearch)
 
 ### 1. Clone Repository
 
@@ -161,7 +171,8 @@ Create `appsettings.Development.json` file in the `src/API/` directory, override
 
 ### 4. Run Application
 
-Select Aspire.AppHost as the startup project and Run
+- Ensure Docker Desktop is running
+- Select Aspire.AppHost as the startup project and Run
 
 ### 5. Access Aspire Dashboard
 
@@ -172,12 +183,24 @@ Select Aspire.AppHost as the startup project and Run
 
 ## Sample Images
 
-### Database Schema
-![Database Schema](docs/images/database-schema.png)
-
 ### Aspire Dashboard
 ![Aspire Dashboard](assets/aspire-dashboard.png)
 ![Aspire Dashboard Table](assets/aspire-dashboard-table.png)
+
+### Blazor Admin Panel
+
+| Product table | Create Product (draft) |
+| :---: | :---: |
+| <img src="assets/catalog/catalog-product-table.png" /> | <img src="assets/catalog/catalog-product-create-draft.png" /> |
+
+| Product detail | Product detail (scroll down) |
+| :---: | :---: |
+| <img src="assets/catalog/catalog-product-details.png" /> | <img src="assets/catalog/catalog-product-details-2.png" /> |
+
+| Category tree | Attribute Table |
+| :---: | :---: |
+| <img src="assets/catalog/catalog-category-table.png" /> | <img src="assets/catalog/catalog-attribute-table.png" /> |
+
 
 ---
 

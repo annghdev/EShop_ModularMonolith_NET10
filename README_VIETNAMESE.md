@@ -12,6 +12,7 @@ Dự án **E-Shop Modular Monolith** là một hệ thống thương mại đi�
 - [Công nghệ áp dụng](#công-nghệ-áp-dụng)
 - [Mẫu kiến trúc và triết lý thiết kế](#mẫu-kiến-trúc-và-triết-lý-thiết-kế)
 - [Vai trò các module](#vai-trò-các-module)
+- [ERD các module](#erd-các-module)
 - [Hướng dẫn cài đặt và chạy dự án](#hướng-dẫn-cài-đặt-và-chạy-dự-án)
 - [Link Demo](#demo)
 - [Hình ảnh mẫu](#hình-ảnh-mẫu)
@@ -137,12 +138,21 @@ Mỗi module tuân theo nguyên tắc **Clean Architecture**:
 | **Kernel** | Base classes, abstractions, extensions, tiện ích |
 | **Infrastructure** | Caching, File Storage, Notification, EventBus, EF Base classes |
 
+## ERD các module
+
+Sơ đồ quan hệ thực thể (ERD) của từng module (Catalog, Inventory, Orders, Payment, Pricing, Shipping, ShoppingCart, Users) được mô tả trong file riêng:
+
+**[→ ERD các module (documents/erd.md)](documents/erd.md)**
+
+Các sơ đồ phản ánh domain của từng module (aggregates và entities). Các tham chiếu ID sang module khác (ví dụ `ProductId`, `OrderId`) mang tính logic; mỗi module dùng database riêng.
+
 ## Hướng dẫn cài đặt và chạy dự án
 
 ### Prerequisites
 
 - [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - **Visual studio 2022+**
+- **Docker Desktop** (để chạy các dịch vụ hạ tầng như Postgresql, RabbitMQ, Elasticsearch)
 
 ### 1. Clone Repository
 
@@ -158,8 +168,8 @@ mở file **EShop_ModularMonolith.slnx**
 Tạo file `appsettings.Development.json` trong thư mục `src/API/`, ghi đè các ApiKey và secret
 
 ### 4. Chạy ứng dụng
-
-Chọn Aspire.AppHost làm startup project và Run
+- Đảm bảo Docker Desktop đang chạy
+- Chọn Aspire.AppHost làm startup project và Run
 
 ### 5. Truy cập Aspire dashboard
 
@@ -177,6 +187,20 @@ Chọn Aspire.AppHost làm startup project và Run
 ### Aspire Dashboard
 ![Aspire Dashboard](assets/aspire-dashboard.png)
 ![Aspire Dashboard Table](assets/aspire-dashboard-table.png)
+
+### Blazor Admin Panel
+
+| Bảng sản phẩm | Tạo sản phẩm (draft) |
+| :---: | :---: |
+| <img src="assets/catalog/catalog-product-table.png" /> | <img src="assets/catalog/catalog-product-create-draft.png" /> |
+
+| Chi tiết sản phẩm | tiết sản phẩm (cuộn xuống) |
+| :---: | :---: |
+| <img src="assets/catalog/catalog-product-details.png" /> | <img src="assets/catalog/catalog-product-details-2.png" /> |
+
+| Cây danh mục | Bảng thuộc tính |
+| :---: | :---: |
+| <img src="assets/catalog/catalog-category-table.png" /> | <img src="assets/catalog/catalog-attribute-table.png" /> |
 
 ---
 
