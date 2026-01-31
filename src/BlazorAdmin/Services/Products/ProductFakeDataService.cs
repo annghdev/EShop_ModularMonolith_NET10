@@ -1,4 +1,4 @@
-﻿using Contracts.Requests.Catalog;
+using Contracts.Requests.Catalog;
 using Contracts.Responses;
 using Contracts;
 
@@ -295,6 +295,12 @@ public class ProductFakeDataService : IProductService
         return _categories.ToList();
     }
 
+    public async Task<List<CategoryDefaultAttributeDto>> GetCategoryDefaultAttributesAsync(Guid categoryId)
+    {
+        await Task.Delay(100);
+        return [];
+    }
+
     public async Task<List<BrandDto>> GetBrandsAsync()
     {
         await Task.Delay(100);
@@ -345,15 +351,29 @@ public class ProductFakeDataService : IProductService
         }
     }
 
-    // === Variants Management ===
-
-    public async Task<Guid> AddVariantAsync(string slug, AddVariantRequest request)
+    public async Task UpdateProductAttributeAsync(string slug, Guid attributeId, bool hasVariant)
     {
         await Task.Delay(300);
         var product = _products.FirstOrDefault(p => p.Slug == slug);
+        if (product == null) return;
+
+        var attr = product.Attributes.FirstOrDefault(a => a.AttributeId == attributeId);
+        if (attr != null)
+        {
+            attr.HasVariant = hasVariant;
+            product.UpdatedAt = DateTimeOffset.Now;
+        }
+    }
+
+    // === Variants Management ===
+
+    public async Task<Guid> AddVariantAsync(Guid productId, AddVariantRequest request)
+    {
+        await Task.Delay(300);
+        var product = _products.FirstOrDefault(p => p.Id == productId);
         if (product == null) return Guid.Empty;
 
-        var variantId = Guid.NewGuid();
+        var variantId = Guid.CreateVersion7();
         var variant = new VariantDto
         {
             Id = variantId,
@@ -387,10 +407,10 @@ public class ProductFakeDataService : IProductService
         return variantId;
     }
 
-    public async Task UpdateVariantAsync(string slug, Guid variantId, UpdateVariantRequest request)
+    public async Task UpdateVariantAsync(Guid productId, Guid variantId, UpdateVariantRequest request)
     {
         await Task.Delay(300);
-        var product = _products.FirstOrDefault(p => p.Slug == slug);
+        var product = _products.FirstOrDefault(p => p.Id == productId);
         if (product == null) return;
 
         var variant = product.Variants.FirstOrDefault(v => v.Id == variantId);
@@ -423,10 +443,10 @@ public class ProductFakeDataService : IProductService
         product.UpdatedAt = DateTimeOffset.Now;
     }
 
-    public async Task RemoveVariantAsync(string slug, Guid variantId)
+    public async Task RemoveVariantAsync(Guid productId, Guid variantId)
     {
         await Task.Delay(300);
-        var product = _products.FirstOrDefault(p => p.Slug == slug);
+        var product = _products.FirstOrDefault(p => p.Id == productId);
         if (product == null) return;
 
         var variant = product.Variants.FirstOrDefault(v => v.Id == variantId);
@@ -581,6 +601,17 @@ public class ProductFakeDataService : IProductService
         {
             _products.Remove(product);
         }
+    }
+
+    public async Task UpdateProductPricingAsync(Guid productId, decimal costAmount, decimal priceAmount)
+    {
+        await Task.Delay(300);
+        var product = _products.FirstOrDefault(p => p.Id == productId);
+        if (product == null) return;
+
+        product.Cost = new MoneyDto(costAmount, "VND");
+        product.Price = new MoneyDto(priceAmount, "VND");
+        product.UpdatedAt = DateTimeOffset.Now;
     }
 
     private string GenerateSlug(string name)

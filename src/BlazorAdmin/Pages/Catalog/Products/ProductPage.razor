@@ -259,8 +259,8 @@
                 pageSize: _pageSize
             );
 
-            _products = result.Items;
-            _totalCount = result.Total;
+            _products = result.Items.ToList();
+            _totalCount = result.TotalItems;
         }
         finally
         {

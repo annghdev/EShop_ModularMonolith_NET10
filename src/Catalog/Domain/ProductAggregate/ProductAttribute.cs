@@ -1,4 +1,4 @@
-﻿namespace Catalog.Domain;
+namespace Catalog.Domain;
 
 public class ProductAttribute : BaseEntity
 {
@@ -15,10 +15,12 @@ public class ProductAttribute : BaseEntity
 
     public ProductAttribute(
         Guid attributeId,
-        int displayOrder)
+        int displayOrder,
+        bool hasVariant = false)
     {
         AttributeId = attributeId;
         DisplayOrder = displayOrder;
+        HasVariant = hasVariant;
     }
 
     public void UpdateDisplayOrder(int order)

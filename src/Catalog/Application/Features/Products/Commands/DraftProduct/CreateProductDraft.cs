@@ -1,4 +1,5 @@
 ﻿using Catalog.Domain;
+using Contracts.Requests.Catalog;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,43 +7,9 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Catalog.Application;
 
-public class DraftProduct
+public class CreateProductDraft
 {
-    public record Request
-    {
-        public Guid Id { get; init; }
-        public string Name { get; init; }
-        public string? Description { get; init; }
-        public string Sku { get; init; }
-        public MoneyDto Cost { get; init; }
-        public MoneyDto Price { get; init; }
-        public DimensionsDto Dimensions { get; init; }
-        public bool HasStockQuantity { get; init; }
-        public Guid CategoryId { get; init; }
-        public Guid BrandId { get; init; }
-        public int DisplayPriority { get; set; }
-        public string? Thumbnail { get; set; }
-        public IEnumerable<string> Images { get; init; } = [];
-        public IEnumerable<AddProductAttributeDto> Attributes { get; init; } = [];
-        public IEnumerable<AddVariantDto> Variants { get; init; } = [];
-    }
-
-    public record AddVariantDto(
-        string Name,
-        string Sku,
-        MoneyDto OverrideCost,
-        MoneyDto OverridePrice,
-        DimensionsDto Dimensions,
-        string? MainImage,
-        IEnumerable<string> Images,
-        Dictionary<Guid, Guid> AttributeValues);
-
-    public record AddProductAttributeDto(
-        Guid AttributeId,
-        Guid Value,
-        int DisplayOrder);
-
-    public record Command(Request Request) : ICommand
+    public record Command(CreateProductDraftRequest Request) : ICommand
     {
         public IEnumerable<string> CacheKeysToInvalidate => ["product_all"];
         public IEnumerable<string> CacheKeyPrefix => ["product"];
@@ -166,9 +133,8 @@ public class DraftProduct
                 })
                 .WithMessage("Each variant must have attribute values for all product attributes");
 
-            // Business rule: At least one variant is required
-            RuleFor(c => c.Request.Variants)
-                .Must(variants => variants.Any()).WithMessage("At least one variant is required");
+            // Note: Variants are not required for drafts - they can be added later
+            // Validation for variants happens when publishing the product
         }
 
         private static bool BeValidUrl(string url)
@@ -222,7 +188,7 @@ public class DraftProduct
                     );
             }
 
-            var product = buider.Build();
+            var product = buider.BuildDraft();
 
             uow.Products.Add(product);
             await uow.CommitAsync(cancellationToken);
@@ -235,7 +201,7 @@ public class DraftProduct
     {
         public void Map(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/products", async (Request request, ISender sender) =>
+            app.MapPost("api/products", async (CreateProductDraftRequest request, ISender sender) =>
             {
                 await sender.Send(new Command(request));
                 return Results.Accepted();

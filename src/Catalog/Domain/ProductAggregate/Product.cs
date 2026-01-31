@@ -1,4 +1,4 @@
-﻿namespace Catalog.Domain;
+namespace Catalog.Domain;
 
 public class Product : AggregateRoot
 {
@@ -93,6 +93,15 @@ public class Product : AggregateRoot
         IncreaseVersion();
     }
 
+    public void SetBrand(Guid brandId)
+    {
+        if (brandId == Guid.Empty)
+            throw new DomainException("Brand ID cannot be empty");
+
+        BrandId = brandId;
+        IncreaseVersion();
+    }
+
     public void Publish()
     {
         if (Status == ProductStatus.Discarded)
@@ -153,12 +162,12 @@ public class Product : AggregateRoot
         IncreaseVersion();
     }
 
-    public void AddAttribute(Guid attributeId, Guid defaultValueId, int displayOrder, bool raiseEvent = true)
+    public void AddAttribute(Guid attributeId, Guid defaultValueId, int displayOrder, bool hasVariant = false, bool raiseEvent = true)
     {
         if (_attributes.Any(a => a.AttributeId == attributeId))
             throw new DomainException("Attribute already exists in product");
 
-        var productAttribute = new ProductAttribute(attributeId, displayOrder);
+        var productAttribute = new ProductAttribute(attributeId, displayOrder, hasVariant);
         _attributes.Add(productAttribute);
 
         if(raiseEvent)
@@ -185,6 +194,16 @@ public class Product : AggregateRoot
         IncreaseVersion();
     }
 
+    public void UpdateAttributeVariantUsage(Guid attributeId, bool hasVariant)
+    {
+        var attribute = _attributes.FirstOrDefault(a => a.AttributeId == attributeId);
+        if (attribute == null)
+            throw new DomainException("Attribute not found");
+
+        attribute.HasVariant = hasVariant;
+        IncreaseVersion();
+    }
+
     public void AddVariant(Variant variant, bool raiseEvent = true)
     {
         if (variant == null)
@@ -205,7 +224,11 @@ public class Product : AggregateRoot
     {
         foreach (var attrValue in variant.AttributeValues)
         {
-            if (!_attributes.Any(a => a.Id == attrValue.ProductAttributeId))
+            var hasMatchById = _attributes.Any(a => a.Id == attrValue.ProductAttributeId);
+            var hasMatchByAttribute = attrValue.ProductAttribute != null
+                && _attributes.Any(a => a.AttributeId == attrValue.ProductAttribute.AttributeId);
+
+            if (!hasMatchById && !hasMatchByAttribute)
                 throw new DomainException("Variant contains attribute not defined in product");
         }
     }

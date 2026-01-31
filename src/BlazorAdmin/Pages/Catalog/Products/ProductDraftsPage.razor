@@ -117,8 +117,7 @@
 
     private async Task CreateNew()
     {
-        var draft = await ProductService.CreateNewDraftAsync();
-        NavigationManager.NavigateTo($"/catalog/products/create/{draft.Id}");
+        NavigationManager.NavigateTo($"/catalog/products/create");
     }
 
     private void ContinueEditing(Guid productId)

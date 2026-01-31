@@ -1,3 +1,4 @@
+using BlazorAdmin;
 using BlazorAdmin.Auth;
 using BlazorAdmin.Components;
 using BlazorAdmin.Services.Auth;
@@ -33,9 +34,6 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddRefitClient<IAuthApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("http+https://api"));
 
-
-builder.Services.AddScoped<IJwtParser, JwtParser>();
-
 // Authentication scheme (required for [Authorize] attribute, but NO redirect)
 builder.Services.AddAuthentication(options =>
 {
@@ -61,10 +59,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-
-// Product services
-builder.Services.AddScoped<BlazorAdmin.Services.IProductService, BlazorAdmin.Services.ProductFakeDataService>();
+builder.Services.AddServices(builder.Configuration);
 
 var app = builder.Build();
 
