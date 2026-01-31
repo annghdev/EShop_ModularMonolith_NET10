@@ -1,0 +1,186 @@
+@page "/catalog/brands"
+@using Contracts.Requests.Catalog
+@using Contracts.Responses
+@using BlazorAdmin.Services
+@inject IBrandService BrandService
+@inject IMessageService MessageService
+@implements IReuseTabsPage
+@attribute [ReuseTabsPage(Singleton = false)]
+@inject ReuseTabsService ReuseTabsService
+
+<Card>
+    <TitleTemplate>
+        <Space Style="width: 100%; justify-content: space-between">
+            <SpaceItem>
+                <Title Level="4">Bảng thương hiệu</Title>
+            </SpaceItem>
+            <SpaceItem>
+                <Button Type="@ButtonType.Primary" OnClick="ShowCreateBrandModal">
+                    <Icon Type=@("plus") Theme="IconThemeType.Outline" />
+                    Thêm thương hiệu
+                </Button>
+            </SpaceItem>
+        </Space>
+    </TitleTemplate>
+    <Body>
+        <Table TItem="BrandDto"
+               DataSource="@_brands"
+               Loading="@_loading"
+               RowKey="x => x.Id.ToString()">
+            <ColumnDefinition Title=@("Logo")>
+                <Image Src="@(string.IsNullOrWhiteSpace(context.Logo) ? "logo.png" : context.Logo)"
+                       Width="60"
+                       Height="45"
+                       Style="object-fit: cover; border-radius: 4px;" />
+            </ColumnDefinition>
+            <PropertyColumn Property="c => c.Name" Title=@("Tên thương hiệu") />
+            <ActionColumn Title=@("Thao tác")>
+                <Space>
+                    <SpaceItem>
+                        <Button Size="@ButtonSize.Small" OnClick="() => ShowEditBrandModal(context)">
+                            <Icon Type=@("edit") Theme="IconThemeType.Outline" />
+                            Sửa
+                        </Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Popconfirm Title=@("Xóa thương hiệu này?")
+                                    OnConfirm="() => HandleDeleteBrand(context.Id)"
+                                    OkText=@("Xóa")
+                                    CancelText=@("Hủy")>
+                            <Button Size="@ButtonSize.Small" Danger>
+                                <Icon Type=@("delete") Theme="IconThemeType.Outline" />
+                                Xóa
+                            </Button>
+                        </Popconfirm>
+                    </SpaceItem>
+                </Space>
+            </ActionColumn>
+        </Table>
+    </Body>
+</Card>
+
+<Modal Title="@(_isEditingBrand ? "Cập nhật thương hiệu" : "Thêm thương hiệu")"
+       @bind-Visible="_showBrandModal"
+       OnOk="HandleSaveBrand"
+       OnCancel="() => _showBrandModal = false"
+       Width="600">
+    <Form Model="@_brandForm" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("Tên thương hiệu") Required>
+            <Input @bind-Value="_brandForm.Name" Placeholder=@("Nhập tên thương hiệu") />
+        </FormItem>
+        <FormItem Label=@("Logo")>
+            <Input @bind-Value="_brandForm.Logo" Placeholder=@("https://example.com/logo.png") />
+        </FormItem>
+    </Form>
+</Modal>
+
+@code {
+    private List<BrandDto> _brands = [];
+    private bool _loading;
+
+    private bool _showBrandModal;
+    private bool _isEditingBrand;
+    private Guid? _editingBrandId;
+    private BrandFormModel _brandForm = new();
+
+    private string pageTitle = "Thương hiệu";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBrands();
+    }
+
+    private async Task LoadBrands()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            _brands = await BrandService.GetBrandsAsync();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void ShowCreateBrandModal()
+    {
+        _isEditingBrand = false;
+        _editingBrandId = null;
+        _brandForm = new BrandFormModel();
+        _showBrandModal = true;
+    }
+
+    private void ShowEditBrandModal(BrandDto brand)
+    {
+        _isEditingBrand = true;
+        _editingBrandId = brand.Id;
+        _brandForm = new BrandFormModel
+        {
+            Name = brand.Name,
+            Logo = brand.Logo
+        };
+        _showBrandModal = true;
+    }
+
+    private async Task HandleSaveBrand()
+    {
+        try
+        {
+            if (_isEditingBrand && _editingBrandId.HasValue)
+            {
+                var request = new UpdateBrandRequest
+                {
+                    Name = _brandForm.Name,
+                    Logo = _brandForm.Logo
+                };
+                await BrandService.UpdateBrandAsync(_editingBrandId.Value, request);
+                MessageService.Success("Đã cập nhật thương hiệu!");
+            }
+            else
+            {
+                var request = new CreateBrandRequest
+                {
+                    Name = _brandForm.Name,
+                    Logo = _brandForm.Logo
+                };
+                await BrandService.CreateBrandAsync(request);
+                MessageService.Success("Đã thêm thương hiệu!");
+            }
+
+            _showBrandModal = false;
+            await LoadBrands();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể lưu thương hiệu: {ex.Message}");
+        }
+    }
+
+    private async Task HandleDeleteBrand(Guid id)
+    {
+        try
+        {
+            await BrandService.DeleteBrandAsync(id);
+            MessageService.Success("Đã xóa thương hiệu!");
+            await LoadBrands();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể xóa thương hiệu: {ex.Message}");
+        }
+    }
+
+    RenderFragment IReuseTabsPage.GetPageTitle()
+    {
+        ReuseTabsService.Update();
+        return @<span>@pageTitle</span>;
+    }
+
+    private class BrandFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string? Logo { get; set; }
+    }
+}
