@@ -193,7 +193,7 @@ Create `appsettings.Development.json` file in the `src/API/` directory, override
 | :---: | :---: |
 | <img src="assets/catalog/catalog-product-table.png" /> | <img src="assets/catalog/catalog-product-create-draft.png" /> |
 
-| Product detail | Product detail (scroll down) |
+| Product details | Product details (scroll down) |
 | :---: | :---: |
 | <img src="assets/catalog/catalog-product-details.png" /> | <img src="assets/catalog/catalog-product-details-2.png" /> |
 
