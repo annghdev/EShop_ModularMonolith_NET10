@@ -19,16 +19,16 @@
   <ItemGroup>
     <ProjectReference Include="..\Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Auth\Auth.csproj" />
-    <ProjectReference Include="..\Catalog\Catalog.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\Inventory\Inventory.csproj" />
-    <ProjectReference Include="..\Orders\Orders.csproj" />
-    <ProjectReference Include="..\Payment\Payment.csproj" />
-    <ProjectReference Include="..\Pricing\Pricing.csproj" />
-    <ProjectReference Include="..\Report\Report.csproj" />
-    <ProjectReference Include="..\Shipping\Shipping.csproj" />
-    <ProjectReference Include="..\ShoppingCart\ShoppingCart.csproj" />
-    <ProjectReference Include="..\Users\Users.csproj" />
+    <ProjectReference Include="..\Modules\Catalog\Catalog.csproj" />
+    <ProjectReference Include="..\Shared\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Inventory\Inventory.csproj" />
+    <ProjectReference Include="..\Modules\Orders\Orders.csproj" />
+    <ProjectReference Include="..\Modules\Payment\Payment.csproj" />
+    <ProjectReference Include="..\Modules\Pricing\Pricing.csproj" />
+    <ProjectReference Include="..\Modules\Report\Report.csproj" />
+    <ProjectReference Include="..\Modules\Shipping\Shipping.csproj" />
+    <ProjectReference Include="..\Modules\ShoppingCart\ShoppingCart.csproj" />
+    <ProjectReference Include="..\Modules\Users\Users.csproj" />
   </ItemGroup>
 
   <ItemGroup>

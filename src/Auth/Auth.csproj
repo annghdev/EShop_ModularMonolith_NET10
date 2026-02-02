@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\Kernel\Kernel.csproj" />
+    <ProjectReference Include="..\Shared\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Shared\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Shared\Kernel\Kernel.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Application\Features\Products\Commands\UpdateDraft\**" />
+    <EmbeddedResource Remove="Application\Features\Products\Commands\UpdateDraft\**" />
+    <None Remove="Application\Features\Products\Commands\UpdateDraft\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\Features\Brands\" />
+    <Folder Include="Application\Features\Categories\" />
+    <Folder Include="Application\Features\Collections\" />
+    <Folder Include="Application\Features\Attributes\" />
+    <Folder Include="Application\Features\Products\Commands\ProductAttributes\" />
+    <Folder Include="Application\IntegrationHandlers\EventHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\CommandHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\QueryHandlers\" />
+    <Folder Include="Infrastructure\EFCore\Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Shared\Kernel\Kernel.csproj" />
+  </ItemGroup>
+
+</Project>

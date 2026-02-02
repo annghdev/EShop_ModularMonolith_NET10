@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Shared\Kernel\Kernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\IntegrationHandlers\CommandHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\EventHandlers\" />
+    <Folder Include="Application\IntegrationHandlers\QueryHandlers\" />
+    <Folder Include="Application\Features\" />
+  </ItemGroup>
+
+</Project>
