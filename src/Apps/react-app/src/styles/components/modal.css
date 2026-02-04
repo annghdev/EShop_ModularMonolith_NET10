@@ -1,0 +1,618 @@
+/* ========================================
+   Radix Modal & Drawer Styles
+   ======================================== */
+
+.radix-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 7, 12, 0.6);
+    backdrop-filter: blur(6px);
+    z-index: 50;
+}
+
+body.light-theme .radix-overlay {
+    background: rgba(245, 245, 245, 0.65);
+}
+
+/* Drawer */
+.radix-drawer {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    bottom: 16px;
+    width: min(420px, 92vw);
+    background: var(--noel-card-bg, rgba(7, 12, 22, 0.95));
+    border: 1px solid var(--noel-card-border, rgba(244, 93, 72, 0.35));
+    border-radius: 28px;
+    padding: 16px 18px;
+    box-shadow: var(--noel-card-shadow, 0 35px 60px rgba(0, 0, 0, 0.6));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 60;
+}
+
+.radix-drawer[data-state='open'] {
+    animation: drawerSlideIn 0.2s ease-in-out;
+}
+
+.radix-drawer[data-state='closed'] {
+    animation: drawerSlideOut 0.2s ease-in-out;
+}
+
+.radix-overlay[data-state='open'] {
+    animation: overlayShow 0.2s ease-in-out;
+}
+
+.radix-overlay[data-state='closed'] {
+    animation: overlayHide 0.2s ease-in-out;
+}
+
+@keyframes drawerSlideIn {
+    from {
+        transform: translateX(110%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes drawerSlideOut {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(110%);
+    }
+}
+
+@keyframes overlayShow {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes overlayHide {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.drawer-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.drawer-subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.drawer-select-all {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+    padding-right: 21px;
+}
+
+.drawer-select-all .checkbox-line {
+    flex-direction: row-reverse;
+    gap: 10px;
+}
+
+.drawer-items {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item img {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: var(--glass-border);
+}
+
+.cart-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cart-item-info h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.cart-item-info p {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.cart-qty {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.cart-qty span {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.qty-controls {
+    margin-right: 84px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qty-controls button {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.qty-controls button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.cart-item-remove {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    margin-left: 20px;
+}
+
+.cart-item-remove:hover {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.drawer-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.drawer-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.drawer-total span {
+    color: var(--muted);
+}
+
+.drawer-total strong {
+    font-size: 1.2rem;
+    color: var(--accent);
+}
+
+body.light-theme .radix-drawer {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(244, 93, 72, 0.25);
+}
+
+/* Modal */
+.radix-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(920px, 92vw);
+    max-height: 92vh;
+    background: var(--noel-card-bg, rgba(7, 12, 22, 0.95));
+    border: 1px solid var(--noel-card-border, rgba(244, 93, 72, 0.35));
+    border-radius: 28px;
+    padding: 26px;
+    box-shadow: var(--noel-card-shadow, 0 35px 60px rgba(0, 0, 0, 0.6));
+    overflow: hidden;
+    z-index: 60;
+    transition: height 0.35s ease;
+}
+
+/* Different heights for login vs register */
+.radix-modal[data-mode="login"] {
+    height: min(580px, 90vh);
+}
+
+.radix-modal[data-mode="register"] {
+    height: min(720px, 90vh);
+}
+
+body.light-theme .radix-modal {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(244, 93, 72, 0.25);
+}
+
+.modal-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100%;
+    min-height: 580px;
+}
+
+.modal-left {
+    display: flex;
+    flex-direction: column;
+    padding: 50px 40px 50px 30px;
+    order: 2;
+}
+
+.modal-right {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 40px 30px 40px 50px;
+    border-right: 1px solid var(--glass-border);
+    order: 1;
+    position: relative;
+}
+
+/* Modal Header with Close Button */
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.modal-header .icon-button {
+    display: none;
+    /* Removed - now using modal-close-btn */
+}
+
+/* Modal Close Button - anchored to modal top-right */
+.modal-close-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 10;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.modal-subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+/* Modal Form - Fixed Height */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 360px;
+    margin: 0 auto;
+    width: 100%;
+    justify-content: center;
+    flex: 1;
+}
+
+.modal-form.register {
+    gap: 14px;
+}
+
+.modal-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.modal-form input {
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--noel-search-border, rgba(244, 93, 72, 0.3));
+    background: var(--noel-search-bg, rgba(5, 11, 20, 0.65));
+    color: var(--text);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.modal-form input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(244, 93, 72, 0.2);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+/* Modal Switch - Animation only on indicator */
+.modal-switch {
+    display: flex;
+    gap: 0;
+    background: rgba(5, 11, 20, 0.65);
+    border: 1px solid var(--noel-chip-border, rgba(244, 93, 72, 0.35));
+    border-radius: 999px;
+    padding: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-switch button {
+    flex: 1;
+    padding: 11px 16px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    z-index: 1;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.modal-switch button.active {
+    color: #050b14;
+    font-weight: 600;
+}
+
+.switch-indicator {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: calc(50% - 5px);
+    height: calc(100% - 10px);
+    background: linear-gradient(120deg, #ff9a8b, #ff6a88, #ff99ac);
+    border-radius: 999px;
+    transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    box-shadow: 0 10px 22px rgba(255, 106, 136, 0.35);
+}
+
+.modal-switch[data-mode='register'] .switch-indicator {
+    transform: translateX(100%);
+}
+
+body.light-theme .modal-switch {
+    background: rgba(244, 93, 72, 0.08);
+    border-color: rgba(244, 93, 72, 0.25);
+}
+
+body.light-theme .modal-switch button {
+    color: #735046;
+}
+
+body.light-theme .modal-switch button.active {
+    color: #050b14;
+}
+
+/* Modal Divider */
+.modal-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+.modal-divider::before,
+.modal-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+}
+
+/* Social Buttons */
+.social-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.social-row button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 22px;
+    border-radius: 14px;
+    font-weight: 600;
+}
+
+.social-row .social-google {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fecaca;
+}
+
+.social-row .social-facebook {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: rgba(59, 130, 246, 0.55);
+    color: #bfdbfe;
+}
+
+/* Filter Modal Inputs */
+.filter-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: var(--noel-search-bg, rgba(5, 11, 20, 0.65));
+    color: var(--text);
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.filter-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255, 154, 139, 0.2);
+}
+
+body.light-theme .filter-input {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(13, 16, 34, 0.15);
+    color: var(--text);
+}
+
+/* Hide number input spinners */
+.filter-input::-webkit-outer-spin-button,
+.filter-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.filter-input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Filter Chips */
+.filter-chip {
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--muted);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    transform: translateY(-1px);
+}
+
+.filter-chip.solid.active {
+    background: linear-gradient(120deg, #ff9a8b, #ff6a88, #ff99ac);
+    color: #050b14;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 8px 16px rgba(255, 106, 136, 0.3);
+}
+
+.filter-chip.outline.active {
+    border-color: var(--accent);
+    background: rgba(255, 154, 139, 0.15);
+    color: var(--accent);
+}
+
+body.light-theme .filter-chip {
+    background: rgba(13, 16, 34, 0.04);
+    border-color: rgba(13, 16, 34, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.light-theme .filter-chip:not(.active):hover {
+    background: rgba(13, 16, 34, 0.08);
+}
+
+/* Color Swatches */
+.color-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+}
+
+.color-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--bg-dark);
+}
+
+.color-swatch-check {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

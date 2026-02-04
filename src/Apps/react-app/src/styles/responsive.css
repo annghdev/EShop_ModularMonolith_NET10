@@ -1,0 +1,77 @@
+/* ========================================
+   Responsive Breakpoints
+   ======================================== */
+
+@media (max-width: 640px) {
+    .top-nav {
+        flex-direction: column;
+        position: static;
+        border-radius: 30px;
+    }
+
+    .nav-links {
+        justify-content: center;
+    }
+
+    .nav-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .floating-notice {
+        width: 100%;
+        border-radius: 24px;
+        letter-spacing: 0.08em;
+    }
+
+    header {
+        gap: 30px;
+    }
+
+    .hero-cta {
+        flex-direction: column;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+        gap: 18px;
+    }
+
+    .product-card {
+        padding: 18px;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+    }
+
+    .modal-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .modal-left {
+        order: 1;
+        padding: 30px 20px;
+    }
+
+    .modal-right {
+        order: 2;
+        padding: 30px 20px;
+        border-right: none;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .radix-modal {
+        width: 95vw;
+        height: auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 420px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+}

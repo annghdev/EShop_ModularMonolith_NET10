@@ -1,0 +1,107 @@
+/* ========================================
+   Design Tokens - CSS Custom Properties
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Core Colors */
+    --bg-dark: #050b14;
+    --bg-card: rgba(14, 21, 32, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --accent: #f45d48;
+    --accent-2: #58d6a0;
+    --text: #fdfcf7;
+    --muted: #d7e2ff;
+    --footer-bg: rgba(5, 9, 16, 0.9);
+
+    /* Noel Theme Tokens */
+    --noel-hero-kicker: rgba(255, 214, 110, 0.85);
+    --noel-hero-text: rgba(215, 226, 255, 0.9);
+    --noel-chip-border: rgba(244, 93, 72, 0.45);
+    --noel-chip-bg: rgba(5, 11, 20, 0.65);
+    --noel-chip-text: #fdfcf7;
+    --noel-chip-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+    --noel-notice-bg: rgba(5, 11, 20, 0.75);
+    --noel-notice-border: rgba(244, 93, 72, 0.45);
+    --noel-notice-color: rgba(215, 226, 255, 0.9);
+    --noel-card-bg: linear-gradient(140deg, rgba(7, 12, 22, 0.95), rgba(13, 20, 32, 0.85));
+    --noel-card-border: rgba(244, 93, 72, 0.35);
+    --noel-card-border-hover: rgba(255, 214, 110, 0.55);
+    --noel-card-shadow: 0 35px 60px rgba(0, 0, 0, 0.6);
+    --noel-search-bg: rgba(5, 11, 20, 0.75);
+    --noel-search-border: rgba(244, 93, 72, 0.35);
+    --noel-search-icon: rgba(255, 214, 110, 0.85);
+    --noel-empty-bg: rgba(5, 11, 20, 0.7);
+    --noel-empty-border: rgba(244, 93, 72, 0.35);
+    --noel-pagination-bg: rgba(5, 11, 20, 0.6);
+    --noel-pagination-border: rgba(244, 93, 72, 0.35);
+    --noel-pagination-active-shadow: 0 16px 26px rgba(244, 93, 72, 0.4);
+    --noel-footer-bg: rgba(5, 11, 20, 0.9);
+    --noel-footer-border: rgba(244, 93, 72, 0.35);
+    --noel-category-color: rgba(255, 214, 110, 0.85);
+    --noel-price-note-color: rgba(255, 214, 110, 0.65);
+    --noel-rating-color: #ffd66e;
+    --noel-secondary-btn-bg: rgba(5, 11, 20, 0.7);
+    --noel-secondary-btn-border: rgba(244, 93, 72, 0.35);
+    --noel-secondary-btn-hover: rgba(5, 11, 20, 0.85);
+    --noel-secondary-btn-text: rgba(215, 226, 255, 0.9);
+    --noel-primary-btn-shadow: 0 20px 35px rgba(244, 93, 72, 0.4);
+    --noel-icon-border: rgba(244, 93, 72, 0.35);
+    --noel-icon-bg: rgba(5, 11, 20, 0.45);
+    --noel-icon-active-bg: linear-gradient(120deg, #f45d48, #58d6a0);
+    --noel-icon-active-color: #050b14;
+    --noel-icon-shadow: 0 18px 30px rgba(244, 93, 72, 0.35);
+}
+
+/* Light Theme Override */
+body.light-theme {
+    --bg-dark: #fff7f2;
+    --bg-card: rgba(255, 255, 255, 0.96);
+    --glass-border: rgba(244, 93, 72, 0.2);
+    --text: #2b1c1a;
+    --muted: #735046;
+    --accent: #e6544f;
+    --accent-2: #48b087;
+    --footer-bg: rgba(255, 255, 255, 0.92);
+    --noel-hero-kicker: #b04136;
+    --noel-hero-text: #6d4339;
+    --noel-chip-border: rgba(244, 93, 72, 0.25);
+    --noel-chip-bg: rgba(255, 255, 255, 0.9);
+    --noel-chip-text: #2b1c1a;
+    --noel-chip-shadow: 0 16px 26px rgba(244, 93, 72, 0.25);
+    --noel-notice-bg: rgba(255, 255, 255, 0.95);
+    --noel-notice-border: rgba(244, 93, 72, 0.25);
+    --noel-notice-color: #5b3d35;
+    --noel-card-bg: linear-gradient(140deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 242, 0.92));
+    --noel-card-border: rgba(244, 93, 72, 0.25);
+    --noel-card-border-hover: rgba(244, 93, 72, 0.5);
+    --noel-card-shadow: 0 25px 40px rgba(244, 93, 72, 0.15);
+    --noel-search-bg: rgba(255, 255, 255, 0.95);
+    --noel-search-border: rgba(244, 93, 72, 0.25);
+    --noel-search-icon: rgba(244, 93, 72, 0.8);
+    --noel-empty-bg: rgba(255, 255, 255, 0.95);
+    --noel-empty-border: rgba(244, 93, 72, 0.3);
+    --noel-pagination-bg: rgba(255, 255, 255, 0.9);
+    --noel-pagination-border: rgba(244, 93, 72, 0.3);
+    --noel-pagination-active-shadow: 0 14px 22px rgba(244, 93, 72, 0.3);
+    --noel-footer-bg: rgba(255, 255, 255, 0.94);
+    --noel-footer-border: rgba(244, 93, 72, 0.25);
+    --noel-category-color: #d15646;
+    --noel-price-note-color: #b55546;
+    --noel-rating-color: #d58b21;
+    --noel-secondary-btn-bg: rgba(255, 255, 255, 0.92);
+    --noel-secondary-btn-border: rgba(244, 93, 72, 0.3);
+    --noel-secondary-btn-hover: rgba(255, 255, 255, 1);
+    --noel-secondary-btn-text: #b04136;
+    --noel-primary-btn-shadow: 0 18px 28px rgba(244, 93, 72, 0.25);
+    --noel-icon-border: rgba(244, 93, 72, 0.3);
+    --noel-icon-bg: rgba(255, 255, 255, 0.95);
+    --noel-icon-active-bg: linear-gradient(120deg, #f45d48, #58d6a0);
+    --noel-icon-active-color: #2b1c1a;
+    --noel-icon-shadow: 0 16px 24px rgba(244, 93, 72, 0.25);
+    background:
+        radial-gradient(circle at 20% 20%, rgba(244, 93, 72, 0.22), transparent 45%),
+        radial-gradient(circle at 80% 0%, rgba(88, 214, 160, 0.18), transparent 55%),
+        linear-gradient(160deg, #fff1e3 0%, #fff9f1 50%, #fffdf8 100%);
+}

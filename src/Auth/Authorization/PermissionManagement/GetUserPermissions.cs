@@ -1,4 +1,4 @@
-﻿using Auth.Authorization.DTOs;
+using Auth.Authorization.DTOs;
 using Auth.Constants;
 using Kernel;
 using Microsoft.AspNetCore.Builder;
@@ -89,7 +89,7 @@ public class GetUserPermissions
     {
         public void Map(IEndpointRouteBuilder app)
         {
-            app.MapGet("", async (Guid userId, bool includeRolePermissions, ISender sender) =>
+            app.MapGet("auth/users/{userId:guid}/permissions", async (Guid userId, bool includeRolePermissions, ISender sender) =>
             {
                 var result = await sender.Send(new GetPermissionsQuery(userId, includeRolePermissions));
                 return Results.Ok(result);
