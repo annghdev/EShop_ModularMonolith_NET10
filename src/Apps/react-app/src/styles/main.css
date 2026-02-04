@@ -1,0 +1,25 @@
+/* ========================================
+   Main CSS Entry Point
+   Imports all modular CSS files
+   ======================================== */
+
+/* Foundation */
+@import './tokens.css';
+@import './base.css';
+@import './animations.css';
+
+/* Components */
+@import './components/header.css';
+@import './components/buttons.css';
+@import './components/modal.css';
+@import './components/cart.css';
+@import './components/toast.css';
+@import './components/select.css';
+@import './components/footer.css';
+
+/* Pages */
+@import './pages/home.css';
+@import './pages/products.css';
+
+/* Responsive */
+@import './responsive.css';

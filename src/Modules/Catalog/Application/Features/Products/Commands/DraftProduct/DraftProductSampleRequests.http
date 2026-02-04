@@ -89,12 +89,12 @@ Content-Type: application/json
   "description": "Latest flagship smartphone with advanced features",
   "sku": "PHONE001",
   "cost": {
-    "amount": 400.00,
-    "currency": "USD"
+    "amount": 400000,
+    "currency": "VND"
   },
   "price": {
-    "amount": 899.99,
-    "currency": "USD"
+    "amount": 899990,
+    "currency": "VND"
   },
   "dimensions": {
     "width": 7.5,

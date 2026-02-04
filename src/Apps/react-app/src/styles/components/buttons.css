@@ -1,0 +1,104 @@
+/* ========================================
+   Button Styles
+   ======================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(120deg, #ff9a8b, #ff6a88, #ff99ac);
+    color: #050b14;
+    box-shadow: 0 20px 40px rgba(255, 106, 136, 0.45);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 25px 45px rgba(255, 106, 136, 0.5);
+}
+
+.btn-ghost {
+    background: var(--noel-secondary-btn-bg, rgba(5, 11, 20, 0.7));
+    color: var(--noel-secondary-btn-text, rgba(215, 226, 255, 0.9));
+    border: 1px solid var(--noel-secondary-btn-border, rgba(244, 93, 72, 0.35));
+}
+
+.btn-ghost:hover {
+    transform: translateY(-3px);
+    background: var(--noel-secondary-btn-hover, rgba(5, 11, 20, 0.85));
+}
+
+body.light-theme .btn-primary {
+    box-shadow: 0 18px 35px rgba(255, 106, 136, 0.35);
+}
+
+body.light-theme .btn-ghost {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(244, 93, 72, 0.3);
+    color: #b04136;
+}
+
+body.light-theme .btn-ghost:hover {
+    background: rgba(255, 255, 255, 1);
+}
+
+/* Chip Buttons */
+.chip {
+    border: 1px solid var(--noel-chip-border, rgba(244, 93, 72, 0.45));
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-weight: 600;
+    background: var(--noel-chip-bg, rgba(5, 11, 20, 0.65));
+    color: var(--noel-chip-text, var(--text));
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: var(--noel-chip-shadow, 0 20px 45px rgba(0, 0, 0, 0.45));
+}
+
+.chip:hover {
+    transform: translateY(-2px);
+}
+
+.chip.primary {
+    background: linear-gradient(120deg, #ff9a8b, #ff6a88, #ff99ac);
+    color: #050b14;
+    border-color: transparent;
+    box-shadow: 0 25px 45px rgba(255, 106, 136, 0.45);
+}
+
+.chip.ghost {
+    background: transparent;
+}
+
+body.light-theme .chip {
+    border-color: rgba(13, 16, 34, 0.08);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text);
+    box-shadow: 0 12px 22px rgba(13, 16, 34, 0.06);
+}
+
+/* Link Button */
+.link-button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 600;
+    text-align: left;
+    transition: color 0.2s ease;
+}
+
+.link-button:hover {
+    color: var(--text);
+}

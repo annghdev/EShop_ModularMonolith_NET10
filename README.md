@@ -64,9 +64,11 @@ The **E-Shop Modular Monolith** project is a comprehensive e-commerce system des
 ```
 📁 src/
 ├── API/                    # API Gateway (ASP.NET Core)
+├── Apps/                   # UI Webs/Apps
+│   ├── BlazorAdmin         # Admin panel
+│   └── react-app/			# Website
 ├── Aspire/                 # Infrastructure resource environment setup, application orchestration and centralized management
-├── Auth/					# Authentication/Authorization
-├── BlazorAdmin/            # Admin management frontend
+├── Auth/					# Authentication/Authorization 
 ├── Modules/                # Business modules
 │   ├── Catalog/            # Product management
 │   ├── Inventory/          # Inventory management

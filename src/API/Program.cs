@@ -19,6 +19,14 @@ builder.AddElasticsearchClient(connectionName: "elasticsearch");
 // Add services to the container.
 
 builder.Services.AddControllers();
+// Configure CORS to allow all origins, methods and headers
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
+});
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -42,6 +50,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
+// Enable permissive CORS policy for all endpoints
+app.UseCors("AllowAll");
 
 app.MapGet("/", () =>
 {
@@ -64,8 +74,8 @@ try
     var catalogContext = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
     await catalogContext.Database.MigrateAsync();
 
-    var seeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
-    await seeder.SeedAsync();
+    //var seeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
+    //await seeder.SeedAsync();
 
     Console.WriteLine("Catalog database migrations applied and data seeded successfully.");
 
