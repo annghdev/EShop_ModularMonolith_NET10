@@ -11,6 +11,10 @@ using Microsoft.EntityFrameworkCore;
 using Orders.Infrastructure;
 using Payment.Infrastructure;
 using Shipping.Infrastructure;
+using Wolverine;
+using Wolverine.RabbitMQ;
+using Wolverine.Postgresql;
+using JasperFx;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +37,30 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddAuthModule(builder.Configuration);
+
+// Configure Wolverine messaging with RabbitMQ
+builder.Host.UseWolverine(opts =>
+{
+    // RabbitMQ Transport
+    opts.UseRabbitMq(new Uri(builder.Configuration.GetConnectionString("rabbitmq")!))
+        .AutoProvision();
+    // ...
+    // Transactional Outbox with PostgreSQL
+    opts.PersistMessagesWithPostgresql(builder.Configuration.GetConnectionString("infrasdb")!, "public");
+    opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
+    opts.AutoBuildMessageStorageOnStartup = AutoCreate.CreateOrUpdate;
+    // Auto-discover handlers from module assemblies
+    opts.Discovery.IncludeAssembly(typeof(Catalog.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Inventory.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Pricing.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Orders.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Payment.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(ShoppingCart.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Shipping.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Users.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Auth.DependencyInjection).Assembly);
+});
+
 
 var app = builder.Build();
 
@@ -74,8 +102,8 @@ try
     var catalogContext = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
     await catalogContext.Database.MigrateAsync();
 
-    //var seeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
-    //await seeder.SeedAsync();
+    var seeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
+    await seeder.SeedAsync();
 
     Console.WriteLine("Catalog database migrations applied and data seeded successfully.");
 
@@ -150,6 +178,12 @@ try
     await shippingSeeder.SeedAsync();
 
     Console.WriteLine("Shipping database migrations applied and data seeded successfully.");
+
+    // Migrate Shipping
+    var infrasConext = scope.ServiceProvider.GetRequiredService<InfrasDbContext>();
+    await infrasConext.Database.MigrateAsync();
+
+    Console.WriteLine("Infras database migrations applied and data seeded successfully.");
 }
 catch (Exception ex)
 {

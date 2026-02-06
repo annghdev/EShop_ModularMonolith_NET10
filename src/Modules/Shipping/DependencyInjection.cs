@@ -21,8 +21,6 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("shippingdb"));
         });
 
-        services.AddIntegrationEventHandlers(assembly);
-
         services.AddScoped<ShippingSeeder>();
         services.AddScoped<IShippingUnitOfWork, ShippingUnitOfWork>();
         services.AddScoped<IShipmentRepository, ShipmentRepository>();

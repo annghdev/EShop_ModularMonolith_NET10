@@ -20,8 +20,6 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("inventorydb"));
         });
 
-        services.AddIntegrationEventHandlers(assembly);
-
         // Repositories
         services.AddScoped<IWarehouseRepository, WarehouseRepository>();
         services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();

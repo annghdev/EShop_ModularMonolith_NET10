@@ -21,8 +21,6 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("usersdb"));
         });
 
-        services.AddIntegrationEventHandlers(assembly);
-
         services.AddScoped<UsersSeeder>();
         services.AddScoped<IUsersUnitOfWork, UsersUnitOfWork>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();

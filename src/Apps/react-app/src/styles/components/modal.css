@@ -132,10 +132,6 @@ body.light-theme .radix-overlay {
     border-bottom: 1px solid var(--glass-border);
 }
 
-.cart-item:last-child {
-    border-bottom: none;
-}
-
 .cart-item img {
     width: 70px;
     height: 70px;

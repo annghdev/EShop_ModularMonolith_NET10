@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Pricing\Pricing.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Pricing\Pricing.csproj" />
     <ProjectReference Include="..\SharedLibsForTests\SharedLibsForTests.csproj" />
   </ItemGroup>
 

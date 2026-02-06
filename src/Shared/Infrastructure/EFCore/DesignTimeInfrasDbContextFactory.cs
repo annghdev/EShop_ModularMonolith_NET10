@@ -7,7 +7,7 @@ namespace Infrastructure;
 /// Design-time factory for InfrasDbContext.
 /// This allows EF Core migrations to work without starting the full application.
 /// </summary>
-public class InfrasDbContextFactory : IDesignTimeDbContextFactory<InfrasDbContext>
+public class DesignTimeInfrasDbContextFactory : IDesignTimeDbContextFactory<InfrasDbContext>
 {
     public InfrasDbContext CreateDbContext(string[] args)
     {

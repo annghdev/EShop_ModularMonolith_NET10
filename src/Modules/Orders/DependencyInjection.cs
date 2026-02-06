@@ -21,8 +21,6 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("ordersdb"));
         });
 
-        services.AddIntegrationEventHandlers(assembly);
-
         services.AddScoped<OrdersSeeder>();
         services.AddScoped<IOrdersUnitOfWork, OrdersUnitOfWork>();
         services.AddScoped<IOrderRepository, OrderRepository>();

@@ -21,8 +21,6 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("pricingdb"));
         });
 
-        services.AddIntegrationEventHandlers(assembly);
-
         services.AddScoped<PricingSeeder>();
         services.AddScoped<IPricingUnitOfWork, PricingUnitOfWork>();
         services.AddScoped<IProductPriceRepository, ProductPriceRepository>();

@@ -16,16 +16,16 @@ public static class DependencyInjection
         //services.AddScoped<IProductService, ProductFakeDataService>();
 
         // Product services - HttpClient with JWT auth
-        services.AddHttpClient<IProductService, ProductApiService>(c => c.BaseAddress = new Uri("http+https://api"))
+        services.AddHttpClient<IProductService, ProductApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
             .AddHttpMessageHandler<JwtAuthorizationHandler>();
 
-        services.AddHttpClient<IAttributeService, AttributeApiService>(c => c.BaseAddress = new Uri("http+https://api"))
+        services.AddHttpClient<IAttributeService, AttributeApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
             .AddHttpMessageHandler<JwtAuthorizationHandler>();
 
-        services.AddHttpClient<IBrandService, BrandApiService>(c => c.BaseAddress = new Uri("http+https://api"))
+        services.AddHttpClient<IBrandService, BrandApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
             .AddHttpMessageHandler<JwtAuthorizationHandler>();
 
-        services.AddHttpClient<ICategoryService, CategoryApiService>(c => c.BaseAddress = new Uri("http+https://api"))
+        services.AddHttpClient<ICategoryService, CategoryApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
             .AddHttpMessageHandler<JwtAuthorizationHandler>();
     }
 }

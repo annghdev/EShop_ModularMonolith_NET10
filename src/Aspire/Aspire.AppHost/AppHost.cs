@@ -1,7 +1,5 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var rabbitMq = builder.AddRabbitMQ("rabbitmq");
-
 //var esPassword = builder.AddParameter("es-password", secret: true);
 //var elasticSearch = builder.AddElasticsearch("elasticsearch", esPassword);
 
@@ -9,6 +7,8 @@ var elasticSearch = builder.AddElasticsearch("elasticsearch")
 //.WithDataVolume(isReadOnly: false)
 //.WithLifetime(ContainerLifetime.Persistent)
 .WithContainerRuntimeArgs("--memory=512m");
+
+var rabbitMq = builder.AddRabbitMQ("rabbitmq");
 
 //var pgUsername = builder.AddParameter("db-username", secret: true);
 //var pgPassword = builder.AddParameter("db-password", secret: true);
@@ -27,8 +27,9 @@ var shoppingCartDb = postgres.AddDatabase("shoppingcartdb");
 var ordersDb = postgres.AddDatabase("ordersdb");
 var paymentDb = postgres.AddDatabase("paymentdb");
 var shippingDb = postgres.AddDatabase("shippingdb");
+var infrasDb = postgres.AddDatabase("infrasdb");
 
-var api = builder.AddProject<Projects.API>("api")
+var eshopApi = builder.AddProject<Projects.API>("eshop-api")
     .WithHttpHealthCheck("/health")
     .WithReference(catalogDb)
         .WaitFor(catalogDb)
@@ -48,15 +49,25 @@ var api = builder.AddProject<Projects.API>("api")
         .WaitFor(paymentDb)
     .WithReference(shippingDb)
         .WaitFor(shippingDb)
+    .WithReference(infrasDb)
+        .WaitFor(infrasDb)
     .WithReference(elasticSearch)
         .WaitFor(elasticSearch)
     .WithReference(rabbitMq)
         .WaitFor(rabbitMq);
 
-builder.AddProject<Projects.BlazorAdmin>("webadmin")
+builder.AddProject<Projects.BlazorAdmin>("eshop-admin")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
-    .WithReference(api)
-    .WaitFor(api);
+    .WithReference(eshopApi)
+    .WaitFor(eshopApi);
+
+builder.AddDockerfile("eshop-reactapp", "../../Apps/react-app")
+    .WithHttpEndpoint(port: 3002, targetPort: 80)
+    .WithExternalHttpEndpoints()
+    .WithHttpHealthCheck("/health")
+    .WithReference(eshopApi)
+    .WaitFor(eshopApi);
+
 
 builder.Build().Run();

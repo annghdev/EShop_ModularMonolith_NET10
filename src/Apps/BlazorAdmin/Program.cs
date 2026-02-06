@@ -32,7 +32,7 @@ builder.Services.AddScoped(sp =>
 
 // Configure Refit client for Auth API (using Aspire service discovery)
 builder.Services.AddRefitClient<IAuthApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri("http+https://api"));
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("http+https://eshop-api"));
 
 // Authentication scheme (required for [Authorize] attribute, but NO redirect)
 builder.Services.AddAuthentication(options =>
