@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Inventory\Inventory.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Inventory\Inventory.csproj" />
     <ProjectReference Include="..\SharedLibsForTests\SharedLibsForTests.csproj" />
   </ItemGroup>
 

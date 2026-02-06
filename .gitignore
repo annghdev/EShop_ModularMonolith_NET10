@@ -367,3 +367,6 @@ FodyWeavers.xsd
 .agent/
 .docs/
 /src/API/appsettings.Development.json
+/src/Apps/react-app/.env.development
+/src/Apps/react-app/.env.production
+/src/Aspire/Aspire.AppHost/aspire-output/.env.Production

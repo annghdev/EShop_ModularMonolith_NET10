@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { api, API_PREFIX } from '../config/api'
 import ProductCard, { type ProductCardData } from '../components/ProductCard'
 import RadixSelect from '../components/RadixSelect'
 import FilterModal, { type FilterValues } from '../components/FilterModal'
@@ -42,8 +42,6 @@ type ProductCardDto = {
   }>
   Status: string
 }
-
-const API_BASE_URL = 'http://localhost:5000'
 
 const PLACEHOLDER_IMAGES = [
   'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80',
@@ -96,7 +94,7 @@ function Products() {
       setLoading(true)
       setError(null)
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/products`, {
+          const response = await api.get(`${API_PREFIX}/products`, {
           params: {
             page,
             pageSize,
@@ -161,11 +159,8 @@ function Products() {
 
         setProductsResult(data)
       } catch (fetchError) {
-        if (axios.isAxiosError(fetchError)) {
-          setError(fetchError.message)
-        } else {
-          setError(fetchError instanceof Error ? fetchError.message : 'Có lỗi khi tải dữ liệu.')
-        }
+          const err = fetchError as Error;
+          setError(err.message || 'Có lỗi khi tải dữ liệu.');
       } finally {
         setLoading(false)
       }

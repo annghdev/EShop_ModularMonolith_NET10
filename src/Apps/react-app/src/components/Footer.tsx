@@ -5,7 +5,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="footer-grid">
         <div className="footer-brand">
-          <Link to="/">Andev EShop</Link>
+          <Link to="/">Andev Original</Link>
           <p>Thời thượng - bền vững</p>
           <p>Trao niềm tin - nhận tài lộc</p>
           <br />
@@ -74,7 +74,7 @@ function Footer() {
       <div className="footer-bottom">
         <div className="footer-bottom-left">
           <div className="copyright">
-            © 2026 Andev EShop
+            © 2026 Andev Original
           </div>
           <p className="footer-address">Địa chỉ: 470 Đường Trần Đại Nghĩa, Khu đô thị Đại học Quốc gia TP.HCM</p>
           <p className="footer-address">Hotline: 0867 662 945 &nbsp;|&nbsp; Email: annghdev@gmail.com</p>

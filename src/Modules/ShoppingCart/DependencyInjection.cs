@@ -21,8 +21,6 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("shoppingcartdb"));
         });
 
-        services.AddIntegrationEventHandlers(assembly);
-
         services.AddScoped<ShoppingCartSeeder>();
         services.AddScoped<IShoppingCartUnitOfWork, ShoppingCartUnitOfWork>();
         services.AddScoped<ICartRepository, CartRepository>();

@@ -20,7 +20,6 @@ public static class DependencyInjection
         {
             options.UseNpgsql(configuration.GetConnectionString("catalogdb"));
         });
-        services.AddIntegrationEventHandlers(assembly);
 
         services.AddScoped<CatalogSeeder>();
         services.AddScoped<ICatalogUnitOfWork, CatalogUnitOfWork>();

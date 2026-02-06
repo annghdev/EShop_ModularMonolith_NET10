@@ -23,19 +23,9 @@ public static class DependencyInjection
         services.AddScoped<IUserContext, UserContext>();
 
         services.AddInfrasServices(configuration);
-        services.AddMassTransitWithHandlers(
-            configuration,
-            typeof(Auth.DependencyInjection).Assembly,
-            typeof(Users.DependencyInjection).Assembly,
-            typeof(Catalog.DependencyInjection).Assembly,
-            typeof(Inventory.DependencyInjection).Assembly,
-            typeof(Pricing.DependencyInjection).Assembly,
-            typeof(Orders.DependencyInjection).Assembly,
-            typeof(Payment.DependencyInjection).Assembly,
-            typeof(ShoppingCart.DependencyInjection).Assembly,
-            typeof(Shipping.DependencyInjection).Assembly);
 
-        //services.AddInfrasDB(configuration);
+
+        services.AddInfrasDB(configuration);
         services.AddCatalogContainer(configuration);
         services.AddInventoryContainer(configuration);
         services.AddPricingContainer(configuration);

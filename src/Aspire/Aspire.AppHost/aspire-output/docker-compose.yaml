@@ -1,0 +1,188 @@
+services:
+  eshop-dashboard:
+    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
+    ports:
+      - "18888"
+    expose:
+      - "18889"
+      - "18890"
+    networks:
+      - "aspire"
+    restart: "always"
+  rabbitmq:
+    image: "docker.io/library/rabbitmq:4.2"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
+    expose:
+      - "5672"
+    networks:
+      - "aspire"
+  elasticsearch:
+    image: "docker.io/library/elasticsearch:8.17.3"
+    environment:
+      discovery.type: "single-node"
+      xpack.security.enabled: "true"
+      ELASTIC_PASSWORD: "${ELASTICSEARCH_PASSWORD}"
+    expose:
+      - "9200"
+      - "9300"
+    networks:
+      - "aspire"
+  postgres-eshop:
+    image: "docker.io/library/postgres:17.6"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+    expose:
+      - "5432"
+    networks:
+      - "aspire"
+  eshop-api:
+    image: "${ESHOP_API_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${ESHOP_API_PORT}"
+      ConnectionStrings__catalogdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=catalogdb"
+      CATALOGDB_HOST: "postgres-eshop"
+      CATALOGDB_PORT: "5432"
+      CATALOGDB_USERNAME: "postgres"
+      CATALOGDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      CATALOGDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/catalogdb"
+      CATALOGDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/catalogdb"
+      CATALOGDB_DATABASENAME: "catalogdb"
+      ConnectionStrings__inventorydb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=inventorydb"
+      INVENTORYDB_HOST: "postgres-eshop"
+      INVENTORYDB_PORT: "5432"
+      INVENTORYDB_USERNAME: "postgres"
+      INVENTORYDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      INVENTORYDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/inventorydb"
+      INVENTORYDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/inventorydb"
+      INVENTORYDB_DATABASENAME: "inventorydb"
+      ConnectionStrings__pricingdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=pricingdb"
+      PRICINGDB_HOST: "postgres-eshop"
+      PRICINGDB_PORT: "5432"
+      PRICINGDB_USERNAME: "postgres"
+      PRICINGDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      PRICINGDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/pricingdb"
+      PRICINGDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/pricingdb"
+      PRICINGDB_DATABASENAME: "pricingdb"
+      ConnectionStrings__authdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=authdb"
+      AUTHDB_HOST: "postgres-eshop"
+      AUTHDB_PORT: "5432"
+      AUTHDB_USERNAME: "postgres"
+      AUTHDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      AUTHDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/authdb"
+      AUTHDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/authdb"
+      AUTHDB_DATABASENAME: "authdb"
+      ConnectionStrings__usersdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=usersdb"
+      USERSDB_HOST: "postgres-eshop"
+      USERSDB_PORT: "5432"
+      USERSDB_USERNAME: "postgres"
+      USERSDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      USERSDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/usersdb"
+      USERSDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/usersdb"
+      USERSDB_DATABASENAME: "usersdb"
+      ConnectionStrings__shoppingcartdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=shoppingcartdb"
+      SHOPPINGCARTDB_HOST: "postgres-eshop"
+      SHOPPINGCARTDB_PORT: "5432"
+      SHOPPINGCARTDB_USERNAME: "postgres"
+      SHOPPINGCARTDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      SHOPPINGCARTDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/shoppingcartdb"
+      SHOPPINGCARTDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/shoppingcartdb"
+      SHOPPINGCARTDB_DATABASENAME: "shoppingcartdb"
+      ConnectionStrings__ordersdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=ordersdb"
+      ORDERSDB_HOST: "postgres-eshop"
+      ORDERSDB_PORT: "5432"
+      ORDERSDB_USERNAME: "postgres"
+      ORDERSDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      ORDERSDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/ordersdb"
+      ORDERSDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/ordersdb"
+      ORDERSDB_DATABASENAME: "ordersdb"
+      ConnectionStrings__paymentdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=paymentdb"
+      PAYMENTDB_HOST: "postgres-eshop"
+      PAYMENTDB_PORT: "5432"
+      PAYMENTDB_USERNAME: "postgres"
+      PAYMENTDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      PAYMENTDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/paymentdb"
+      PAYMENTDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/paymentdb"
+      PAYMENTDB_DATABASENAME: "paymentdb"
+      ConnectionStrings__shippingdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=shippingdb"
+      SHIPPINGDB_HOST: "postgres-eshop"
+      SHIPPINGDB_PORT: "5432"
+      SHIPPINGDB_USERNAME: "postgres"
+      SHIPPINGDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      SHIPPINGDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/shippingdb"
+      SHIPPINGDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/shippingdb"
+      SHIPPINGDB_DATABASENAME: "shippingdb"
+      ConnectionStrings__infrasdb: "Host=postgres-eshop;Port=5432;Username=postgres;Password=${POSTGRES_ESHOP_PASSWORD};Database=infrasdb"
+      INFRASDB_HOST: "postgres-eshop"
+      INFRASDB_PORT: "5432"
+      INFRASDB_USERNAME: "postgres"
+      INFRASDB_PASSWORD: "${POSTGRES_ESHOP_PASSWORD}"
+      INFRASDB_URI: "postgresql://postgres:${POSTGRES_ESHOP_PASSWORD}@postgres-eshop:5432/infrasdb"
+      INFRASDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres-eshop:5432/infrasdb"
+      INFRASDB_DATABASENAME: "infrasdb"
+      ConnectionStrings__elasticsearch: "http://elastic:${ELASTICSEARCH_PASSWORD}@elasticsearch:9200"
+      ConnectionStrings__rabbitmq: "amqp://guest:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USERNAME: "guest"
+      RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD}"
+      RABBITMQ_URI: "amqp://guest:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://eshop-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "eshop-api"
+    expose:
+      - "${ESHOP_API_PORT}"
+    depends_on:
+      postgres-eshop:
+        condition: "service_started"
+      elasticsearch:
+        condition: "service_started"
+      rabbitmq:
+        condition: "service_started"
+    networks:
+      - "aspire"
+  eshop-admin:
+    image: "${ESHOP_ADMIN_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${ESHOP_ADMIN_PORT}"
+      ESHOP_API_HTTP: "http://eshop-api:${ESHOP_API_PORT}"
+      services__eshop-api__http__0: "http://eshop-api:${ESHOP_API_PORT}"
+      ESHOP_API_HTTPS: "https://eshop-api:${ESHOP_API_PORT}"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://eshop-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "eshop-admin"
+    ports:
+      - "${ESHOP_ADMIN_PORT}"
+    depends_on:
+      eshop-api:
+        condition: "service_started"
+    networks:
+      - "aspire"
+  eshop-reactapp:
+    image: "${ESHOP_REACTAPP_IMAGE}"
+    environment:
+      ESHOP_API_HTTP: "http://eshop-api:${ESHOP_API_PORT}"
+      services__eshop-api__http__0: "http://eshop-api:${ESHOP_API_PORT}"
+      ESHOP_API_HTTPS: "https://eshop-api:${ESHOP_API_PORT}"
+    ports:
+      - "3000:80"
+    depends_on:
+      eshop-api:
+        condition: "service_started"
+    networks:
+      - "aspire"
+networks:
+  aspire:
+    driver: "bridge"

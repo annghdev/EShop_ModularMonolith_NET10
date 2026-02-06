@@ -21,8 +21,6 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("paymentdb"));
         });
 
-        services.AddIntegrationEventHandlers(assembly);
-
         services.AddScoped<PaymentSeeder>();
         services.AddScoped<IPaymentUnitOfWork, PaymentUnitOfWork>();
         services.AddScoped<IPaymentGatewayRepository, PaymentGatewayRepository>();

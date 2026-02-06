@@ -3,10 +3,16 @@ using Inventory.Domain;
 
 namespace Inventory.Application;
 
-public class ProductPublishedIntegrationEventHandler(IInventoryUnitOfWork uow)
-    : IIntegrationEventHandler<ProductPublishedIntegrationEvent>
+/// <summary>
+/// Wolverine handler for ProductPublishedIntegrationEvent.
+/// Automatically discovered by Wolverine due to naming convention (*Consumer).
+/// </summary>
+public class ProductPublishedEventConsumer
 {
-    public async Task HandleAsync(ProductPublishedIntegrationEvent @event, CancellationToken cancellationToken = default)
+    public async Task Handle(
+        ProductPublishedIntegrationEvent @event,
+        IInventoryUnitOfWork uow,
+        CancellationToken cancellationToken)
     {
         // Get or create default warehouse
         var defaultWarehouse = await uow.WarehouseRepository.GetDefaultWarehouseAsync(cancellationToken);

@@ -10,7 +10,10 @@
     <PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="13.0.0" />
     <PackageReference Include="CloudinaryDotNet" Version="1.27.9" />
     <PackageReference Include="MailKit" Version="4.14.1" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="9.0.0" />
+	<PackageReference Include="WolverineFx" Version="5.13.0" />
+	<PackageReference Include="WolverineFx.RabbitMQ" Version="5.13.0" />
+	<PackageReference Include="WolverineFx.Postgresql" Version="5.13.0" />
+	<PackageReference Include="WolverineFx.EntityFrameworkCore" Version="5.13.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
       <PrivateAssets>all</PrivateAssets>
