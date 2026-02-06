@@ -1,0 +1,21 @@
+﻿@page "/settings/seed-management"
+@inject ISeedManager seedManager
+@inject IMessageService MessageService
+
+
+<Button Type="ButtonType.Primary" Class="mb-3" OnClick="SeedProducts">Seed Data</Button>
+
+@code {
+    async Task SeedProducts()
+    {
+        try
+        {
+            await seedManager.SeedProducts();
+            MessageService.Success("Products seeded successfully.");
+        }
+        catch (Exception)
+        {
+            MessageService.Error("An error occurred while seeding products.");
+        }
+    }
+}
