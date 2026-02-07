@@ -102,8 +102,8 @@ try
     var catalogContext = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
     await catalogContext.Database.MigrateAsync();
 
-    var seeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
-    await seeder.SeedAsync();
+    //var catalogSeeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
+    //await catalogSeeder.SeedAsync();
 
     Console.WriteLine("Catalog database migrations applied and data seeded successfully.");
 

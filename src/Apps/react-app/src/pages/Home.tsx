@@ -1,50 +1,113 @@
 import { Link } from 'react-router'
+import { useState, useEffect } from 'react'
+
+const HERO_IMAGES = [
+    "https://images.unsplash.com/photo-1463107971871-fbac9ddb920f?auto=format&fit=crop&w=800&q=80", // Tech/Shoe
+    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80", // Fashion
+    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80", // Neon/Tech
+    "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80"  // Sneakers
+]
 
 function Home() {
+    const [currentSlide, setCurrentSlide] = useState(0)
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % HERO_IMAGES.length)
+        }, 4000)
+        return () => clearInterval(interval)
+    }, [])
+
     return (
         <>
+            <header>
+                <div>
+                    <p className="hero-kicker">BST Tết Nguyên Đán 2026</p>
+                    <h1>
+                        <span>Lunar Signature</span> Tuyển chọn bởi Andev Original
+                    </h1>
+                    <p className="hero-text">
+                        Thiết kế độc đáo, chất liệu thượng hạng, trải nghiệm giàu cảm hứng.
+                    </p>
+                    <div className="hero-cta">
+                        <Link to="/products" className="btn btn-primary">Khám phá ngay</Link>
+                        <button className="btn btn-ghost" type="button">Liên hệ tư vấn</button>
+                    </div>
+                </div>
+                <div className="hero-visual">
+                    <div className="hero-slideshow">
+                        {HERO_IMAGES.map((src, index) => {
+                            // Calculate position relative to currentSlide
+                            // 0 = active, 1 = next, 2 = next next, others hidden
+                            const length = HERO_IMAGES.length;
+                            const diff = (index - currentSlide + length) % length;
+
+                            let slideClass = '';
+                            if (diff === 0) slideClass = 'slide-active';
+                            else if (diff === 1) slideClass = 'slide-next';
+                            else if (diff === 2) slideClass = 'slide-next-2';
+
+                            return (
+                                <img
+                                    key={index}
+                                    src={src}
+                                    alt={`Hero visual ${index + 1}`}
+                                    className={`hero-slide-img ${slideClass}`}
+                                />
+                            )
+                        })}
+                    </div>
+
+                    <div className="hero-controls">
+                        <button
+                            onClick={() => setCurrentSlide((prev) => (prev - 1 + HERO_IMAGES.length) % HERO_IMAGES.length)}
+                            className="control-btn prev"
+                            aria-label="Previous slide"
+                        >
+                            ❮
+                        </button>
+                        <button
+                            onClick={() => setCurrentSlide((prev) => (prev + 1) % HERO_IMAGES.length)}
+                            className="control-btn next"
+                            aria-label="Next slide"
+                        >
+                            ❯
+                        </button>
+                    </div>
+
+                    <div className="hero-indicators">
+                        {HERO_IMAGES.map((_, index) => (
+                            <button
+                                key={index}
+                                className={`indicator-dot ${index === currentSlide ? 'active' : ''}`}
+                                onClick={() => setCurrentSlide(index)}
+                                aria-label={`Go to slide ${index + 1}`}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </header>
+
+            <div className="stats" style={{ marginBottom: '4rem' }}>
+                <div className="stat-item">
+                    <h3>36+</h3>
+                    <p>Nhà thiết kế độc quyền</p>
+                </div>
+                <div className="stat-item">
+                    <h3>3.6/5</h3>
+                    <p>Mức độ hài lòng</p>
+                </div>
+                <div className="stat-item">
+                    <h3>36h</h3>
+                    <p>Giao nhanh toàn quốc</p>
+                </div>
+            </div>
+
             <div className="floating-notice">
                 <span>
                     <strong>Cosmic Friday</strong> | Freeship toàn quốc + ưu đãi 15% smartwear.
                 </span>
             </div>
-
-            <header>
-                <div>
-                    <p className="hero-kicker">The Curated Edit</p>
-                    <h1>
-                        Bộ sưu tập <span>Siêu phẩm</span> được tuyển chọn bởi Andev Original Boutique
-                    </h1>
-                    <p className="hero-text">
-                        Thiết kế tương lai, chất liệu thượng hạng, trải nghiệm giàu cảm hứng.
-                    </p>
-                    <div className="hero-cta">
-                        <Link to="/products" className="btn btn-primary">Khám phá ngay</Link>
-                        <button className="btn btn-ghost" type="button">Trải nghiệm AR</button>
-                    </div>
-                    <div className="stats">
-                        <div className="stat-item">
-                            <h3>120+</h3>
-                            <p>Nhà thiết kế độc quyền</p>
-                        </div>
-                        <div className="stat-item">
-                            <h3>4.9/5</h3>
-                            <p>Mức độ hài lòng</p>
-                        </div>
-                        <div className="stat-item">
-                            <h3>48h</h3>
-                            <p>Giao nhanh toàn quốc</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="hero-visual">
-                    <div className="hero-pill">Bộ sưu tập Signature ✦</div>
-                    <img
-                        src="https://images.unsplash.com/photo-1463107971871-fbac9ddb920f?auto=format&fit=crop&w=800&q=80"
-                        alt="Hero product"
-                    />
-                </div>
-            </header>
 
             <section>
                 <p className="section-heading">Moodboard hôm nay</p>

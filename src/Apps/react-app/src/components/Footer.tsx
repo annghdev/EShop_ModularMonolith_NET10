@@ -66,7 +66,7 @@ function Footer() {
             <li><a href="#">Giới thiệu</a></li>
             <li><a href="#">Liên hệ</a></li>
             <li><a href="#">Chính sách bảo mật</a></li>
-            <li><a href="#">Điều khoản sử dụng</a></li>
+            {/* <li><a href="#">Điều khoản sử dụng</a></li> */}
             <li><a href="#">Chính sách đổi trả</a></li>
           </ul>
         </div>
@@ -84,7 +84,7 @@ function Footer() {
             Privacy · Terms · Cookies
           </div>
           <div className="payment-group">
-            <span className="payment-label">Hỗ trợ thanh toán</span>
+            {/* <span className="payment-label">Hỗ trợ thanh toán</span> */}
             <div className="payment-icons">
               <div className="payment-icon momo" title="Momo">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M12 8v8" /><path d="M8 12h8" /></svg>
