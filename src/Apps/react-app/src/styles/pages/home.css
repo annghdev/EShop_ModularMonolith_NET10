@@ -118,8 +118,8 @@ body.light-theme .hero-visual {
     transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 
     /* Default Dark Theme styles */
-    mix-blend-mode: lighten;
-    filter: saturate(1.2) contrast(1.1);
+    mix-blend-mode: normal;
+    filter: none;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
