@@ -158,8 +158,9 @@ body.light-theme .top-nav.scrolled {
 }
 
 body.light-theme .icon-toggle {
-    border-color: rgba(13, 16, 34, 0.08);
-    background: rgba(13, 16, 34, 0.04);
+    border-color: var(--noel-icon-border);
+    background: var(--noel-icon-bg);
+    box-shadow: none;
 }
 
 /* Avatar & Dropdown */

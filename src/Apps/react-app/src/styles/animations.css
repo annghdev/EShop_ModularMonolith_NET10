@@ -93,3 +93,51 @@
         transform: scaleX(0);
     }
 }
+
+/* ========================================
+   Lunar New Year Background Animations
+   ======================================== */
+
+/* Starry Night - Slow moving stars for dark theme */
+/* Starry Drift - Smooth linear loop for dark theme */
+@keyframes starryDrift {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 2000px 2000px;
+    }
+}
+
+/* Floating Clouds - Slow drift for light theme */
+@keyframes floatingClouds {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Swaying Envelopes - Gentle sway animation */
+@keyframes swayEnvelopes {
+
+    0%,
+    100% {
+        transform: rotate(-0.5deg) translateY(0);
+    }
+
+    25% {
+        transform: rotate(0.3deg) translateY(1px);
+    }
+
+    50% {
+        transform: rotate(0.5deg) translateY(2px);
+    }
+
+    75% {
+        transform: rotate(-0.3deg) translateY(1px);
+    }
+}
