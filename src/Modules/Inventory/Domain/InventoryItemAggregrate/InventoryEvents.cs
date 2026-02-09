@@ -1,4 +1,6 @@
-﻿namespace Inventory.Domain;
+﻿using Kernel.Domain;
+
+namespace Inventory.Domain;
 
 public record InventoryReceivedEvent(
     Guid InventoryItemId,

@@ -30,10 +30,10 @@ public class CreateProductDraft
                 .MaximumLength(1000).WithMessage("Description cannot be greater than 1000 characters")
                 .When(c => !string.IsNullOrEmpty(c.Request.Description));
 
-            RuleFor(c => c.Request.Sku)
-                .NotEmpty().WithMessage("SKU cannot be empty")
-                .MaximumLength(50).WithMessage("SKU cannot be greater than 50 characters")
-                .Matches(@"^[A-Za-z0-9\-_]+$").WithMessage("SKU can only contain letters, numbers, hyphens, and underscores");
+            RuleFor(c => c.Request.SkuPrefix)
+                .MaximumLength(20).WithMessage("SkuPrefix cannot be greater than 20 characters")
+                .Matches(@"^[A-Za-z0-9\-_]*$").WithMessage("SkuPrefix can only contain letters, numbers, hyphens, and underscores")
+                .When(c => !string.IsNullOrEmpty(c.Request.SkuPrefix));
 
             RuleFor(c => c.Request.Cost)
                 .NotNull().WithMessage("Cost cannot be null")
@@ -158,7 +158,7 @@ public class CreateProductDraft
                     request.Id,
                     request.Name,
                     request.Description,
-                    new Sku(request.Sku),
+                    request.SkuPrefix,
                     request.Cost.ToMoney(),
                     request.Price.ToMoney(),
                     request.Dimensions.ToDimensions(),

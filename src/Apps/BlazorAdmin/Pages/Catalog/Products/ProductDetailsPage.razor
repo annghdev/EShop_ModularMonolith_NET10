@@ -59,7 +59,7 @@ else
                     <ChildContent>
                         <Descriptions Bordered Column="2">
                             <DescriptionsItem Title=@("Tên sản phẩm")>@_product.Name</DescriptionsItem>
-                            <DescriptionsItem Title="SKU">@_product.Sku</DescriptionsItem>
+                            <DescriptionsItem Title="SKU">@_product.SkuPrefix</DescriptionsItem>
                             <DescriptionsItem Title=@("Trạng thái")>
                                 <Tag Color="@GetStatusColor(_product.Status)">@GetStatusText(_product.Status)</Tag>
                             </DescriptionsItem>
@@ -308,12 +308,12 @@ else
                                    DataSource="@_product.Variants"
                                    Bordered
                                    ExpandIconColumnIndex=0>
-                                <PropertyColumn Property="c => c.MainImage" Title="Image">
+                                <PropertyColumn Property="c => c.MainImage" Title=@("Hình ảnh")>
                                     <Image Src="@context.MainImage" Width="60" Height="45" Style="object-fit: cover; border-radius: 4px;" />
                                 </PropertyColumn>
-                                <PropertyColumn Property="c => c.Name" Title="Variant Name" />
+                                <PropertyColumn Property="c => c.Name" Title=@("Tên biến thể") />
                                 <PropertyColumn Property="c => c.Sku" Title="SKU" />
-                                <ColumnDefinition Title="Attributes">
+                                <ColumnDefinition Title=@("Thuộc tính")>
                                     <Space Size="@("small")">
                                         @foreach (var attr in context.AttributeValues)
                                         {
@@ -339,13 +339,13 @@ else
                                         }
                                     </Space>
                                 </ColumnDefinition>
-                                <ColumnDefinition Title="Price">
+                                <ColumnDefinition Title=@("Giá")>
                                     @{
                                         var price = context.OverridePrice ?? _product.Price;
                                     }
                                     @price?.Amount.ToString("N0") @price?.Currency
                                 </ColumnDefinition>
-                                <ColumnDefinition Title="Cost">
+                                <ColumnDefinition Title=@("Giá vốn")>
                                     @{
                                         var cost = context.OverrideCost ?? _product.Cost;
                                     }
@@ -374,7 +374,7 @@ else
                         }
                         else
                         {
-                            <Empty Description=@("No variants created yet") />
+                            <Empty Description=@("Chưa có biến thể") />
                         }
                     </ChildContent>
                 </Card>
@@ -396,7 +396,7 @@ else
             <Input @bind-Value="_basicInfoModel.Name" Placeholder="Product name" />
         </FormItem>
         <FormItem Label="SKU">
-            <Input @bind-Value="_basicInfoModel.Sku" Placeholder="Stock keeping unit" />
+            <Input @bind-Value="_basicInfoModel.SkuPrefix" Placeholder="Stock keeping unit" />
         </FormItem>
         <FormItem Label="Description">
             <TextArea @bind-Value="_basicInfoModel.Description" Rows="4" Placeholder="Product description" />
@@ -467,7 +467,7 @@ else
             <Select TItem="AttributeDto"
                     TItemValue="Guid?"
                     @bind-Value="_addAttributeModel.AttributeId"
-                    DataSource="@_allAttributes"
+                    DataSource="@GetAvailableAttributes()"
                     LabelName="@nameof(AttributeDto.Name)"
                     ValueName="@nameof(AttributeDto.Id)"
                     Placeholder=@("Chọn thuộc tính")
@@ -531,7 +531,7 @@ else
             <Input @bind-Value="_variantModel.Name" Placeholder=@("Ví dụ: iPhone 14 Pro Max - Gold - 256GB")" />
         </FormItem>
         <FormItem Label="SKU">
-            <Input @bind-Value="_variantModel.Sku" Placeholder="@($"{_product?.Sku}-VAR1")" />
+            <Input @bind-Value="_variantModel.Sku" Placeholder="@($"{_product?.SkuPrefix}-VAR1")" />
         </FormItem>
         
         @* Attribute Values - Dynamic based on product attributes with HasVariant=true *@
@@ -672,24 +672,65 @@ else
         return _product.Attributes.Where(a => !defaultIds.Contains(a.AttributeId)).ToList();
     }
 
+    private List<AttributeDto> GetAvailableAttributes()
+    {
+        if (_product == null)
+        {
+            return _allAttributes;
+        }
+
+        var usedAttributeIds = _product.Attributes.Select(a => a.AttributeId).ToHashSet();
+        return _allAttributes.Where(a => !usedAttributeIds.Contains(a.Id)).ToList();
+    }
+
     private bool IsDefaultAttributeAdded(Guid attributeId)
     {
         return _product?.Attributes.Any(a => a.AttributeId == attributeId) == true;
+    }
+
+    private bool HasMissingDefaultAttributes()
+    {
+        return GetMissingDefaultAttributes().Any();
+    }
+
+    private List<CategoryDefaultAttributeDto> GetMissingDefaultAttributes()
+    {
+        if (_product == null)
+        {
+            return [];
+        }
+
+        var productAttributeIds = _product.Attributes.Select(a => a.AttributeId).ToHashSet();
+        return _categoryDefaultAttributes
+            .Where(a => !productAttributeIds.Contains(a.AttributeId))
+            .ToList();
     }
 
     private async Task HandlePublish()
     {
         if (_product == null) return;
 
+        if (_product.Variants == null || !_product.Variants.Any())
+        {
+            MessageService.Warning("Cần tối thiểu 1 biến thể trước khi xuất bản.");
+            return;
+        }
+
+        if (HasMissingDefaultAttributes())
+        {
+            MessageService.Warning("Cần thêm đầy đủ thuộc tính mặc định của danh mục trước khi xuất bản.");
+            return;
+        }
+
         try
         {
             await ProductService.PublishProductAsync(_product.Id);
-            MessageService.Success("Product published successfully!");
+            MessageService.Success("Đã xuất bản sản phẩm!");
             await LoadProduct(); // Reload to get updated status
         }
         catch (Exception ex)
         {
-            MessageService.Error($"Failed to publish product: {ex.Message}");
+            MessageService.Error($"Không thể xuất bản: {ex.Message}");
         }
     }
 
@@ -700,12 +741,12 @@ else
         try
         {
             await ProductService.RepublishProductAsync(_product.Id);
-            MessageService.Success("Product republished successfully!");
+            MessageService.Success("Đã xuất bản lại sản phẩm!");
             await LoadProduct(); // Reload to get updated status
         }
         catch (Exception ex)
         {
-            MessageService.Error($"Failed to republish product: {ex.Message}");
+            MessageService.Error($"Không thể xuất bản lại: {ex.Message}");
         }
     }
 
@@ -810,7 +851,7 @@ else
         _basicInfoModel = new BasicInfoModel
         {
             Name = _product.Name,
-            Sku = _product.Sku,
+            SkuPrefix = _product.SkuPrefix,
             Description = _product.Description,
             CategoryId = _product.Category?.Id ?? Guid.Empty,
             BrandId = _product.Brand?.Id ?? Guid.Empty
@@ -848,17 +889,27 @@ else
     {
         if (_product == null) return;
 
-        // Update product (fake service will update in-memory)
-        _product.Name = _basicInfoModel.Name;
-        _product.Sku = _basicInfoModel.Sku;
-        _product.Description = _basicInfoModel.Description;
-        _product.Category = _categories.FirstOrDefault(c => c.Id == _basicInfoModel.CategoryId) ?? _product.Category;
-        _product.Brand = _brands.FirstOrDefault(b => b.Id == _basicInfoModel.BrandId) ?? _product.Brand;
-        _product.UpdatedAt = DateTimeOffset.Now;
+        try 
+        {
+            var request = new UpdateProductBasicInfoRequest
+            {
+                Id = _product.Id,
+                Name = _basicInfoModel.Name,
+                SkuPrefix = _basicInfoModel.SkuPrefix,
+                Description = _basicInfoModel.Description,
+                Dimensions = _product.Dimensions ?? new DimensionsDto(0,0,0,0) // We only update basic info here
+            };
 
-        MessageService.Success("Basic info updated successfully!");
-        _showUpdateBasicInfo = false;
-        await InvokeAsync(StateHasChanged);
+            await ProductService.UpdateProductBasicInfoAsync(_product.Id, request);
+
+            MessageService.Success("Basic info updated successfully!");
+            _showUpdateBasicInfo = false;
+            await LoadProduct();
+        }
+        catch (Exception ex)
+        {
+             MessageService.Error($"Failed to update basic info: {ex.Message}");
+        }
     }
 
     private async Task HandleUpdatePricing()
@@ -1056,7 +1107,7 @@ else
     private class BasicInfoModel
     {
         public string Name { get; set; } = string.Empty;
-        public string Sku { get; set; } = string.Empty;
+        public string SkuPrefix { get; set; } = string.Empty;
         public string? Description { get; set; }
         public Guid CategoryId { get; set; }
         public Guid BrandId { get; set; }

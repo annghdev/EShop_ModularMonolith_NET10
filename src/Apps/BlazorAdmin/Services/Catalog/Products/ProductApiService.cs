@@ -107,6 +107,11 @@ public class ProductApiService(HttpClient httpClient) : IProductService
         await PutAsync($"api/products/{productId}/pricing", request);
     }
 
+    public async Task UpdateProductBasicInfoAsync(Guid productId, UpdateProductBasicInfoRequest request)
+    {
+        await PutAsync($"api/products/{productId}/basic-info", request);
+    }
+
     /// <summary>
     /// Creates a new empty draft product.
     /// Loads default category and brand, then creates a minimal draft.
@@ -131,7 +136,7 @@ public class ProductApiService(HttpClient httpClient) : IProductService
         {
             Id = newId,
             Name = "New Product Draft",
-            Sku = $"DRAFT-{timestamp}",
+            SkuPrefix = $"DRAFT-{timestamp}",
             Cost = new MoneyDto(0, "VND"),
             Price = new MoneyDto(0, "VND"),
             Dimensions = new DimensionsDto(1, 1, 1, 1),
@@ -153,7 +158,7 @@ public class ProductApiService(HttpClient httpClient) : IProductService
         {
             Id = newId,
             Name = request.Name,
-            Sku = request.Sku,
+            SkuPrefix = request.SkuPrefix,
             Status = "Draft",
             Category = defaultCategory,
             Brand = defaultBrand

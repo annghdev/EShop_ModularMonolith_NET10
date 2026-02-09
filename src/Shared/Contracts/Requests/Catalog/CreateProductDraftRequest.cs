@@ -7,7 +7,7 @@ public class CreateProductDraftRequest
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public string Sku { get; set; } = string.Empty;
+    public string? SkuPrefix { get; set; }
     public MoneyDto Cost { get; set; } = new(0);
     public MoneyDto Price { get; set; } = new(0);
     public DimensionsDto Dimensions { get; set; } = new(0, 0, 0, 0);

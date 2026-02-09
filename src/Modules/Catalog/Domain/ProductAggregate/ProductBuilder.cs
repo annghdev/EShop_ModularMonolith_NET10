@@ -13,7 +13,7 @@ public sealed class ProductBuilder
         Guid id,
         string name,
         string? description,
-        Sku sku,
+        string? skuPrefix,
         Money cost,
         Money price,
         Dimensions dimensions,
@@ -22,7 +22,7 @@ public sealed class ProductBuilder
         Guid brandId)
     {
         var product = Product.CreateDraft(
-            id, name, description, sku, cost, price, dimensions, hasStockQuantity, category, brandId
+            id, name, description, skuPrefix, cost, price, dimensions, hasStockQuantity, category, brandId
         );
 
         return new ProductBuilder(product);

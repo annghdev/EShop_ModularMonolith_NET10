@@ -1,0 +1,211 @@
+@page "/inventory/movements"
+@using BlazorAdmin.Services
+@using Contracts.Responses.Inventory
+@inject IInventoryService InventoryService
+@inject IWarehouseService WarehouseService
+@inject IMessageService MessageService
+
+<Card>
+    <TitleTemplate>
+        <Space Style="width: 100%; justify-content: space-between">
+            <SpaceItem>
+                <Title Level="4">Lịch sử tồn kho</Title>
+            </SpaceItem>
+        </Space>
+    </TitleTemplate>
+    <Body>
+        <Space Direction="SpaceDirection.Vertical" Style="width: 100%">
+            <SpaceItem>
+                <Space Wrap Style="width: 100%">
+                    <SpaceItem>
+                        <Search Placeholder=@("Tìm theo SKU hoặc tên sản phẩm...")
+                                Style=@("width: 350px")
+                                @bind-Value="@_searchKeyword"
+                                OnSearch="HandleSearch"
+                                EnterButton="true" />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Select TItem="WarehouseSimpleDto"
+                                TItemValue="Guid?"
+                                @bind-Value="_selectedWarehouseId"
+                                DataSource="@_warehouses"
+                                LabelName="@nameof(WarehouseSimpleDto.Name)"
+                                ValueName="@nameof(WarehouseSimpleDto.Id)"
+                                Placeholder=@("Chọn kho")
+                                AllowClear
+                                Style="width: 220px" />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Select TItem="string"
+                                TItemValue="string"
+                                @bind-Value="_selectedType"
+                                DataSource="@_typeOptions"
+                                Placeholder=@("Loại biến động")
+                                AllowClear
+                                Style="width: 200px" />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" OnClick="HandleApplyFilter">
+                            <Icon Type=@("filter") Theme="IconThemeType.Outline" />
+                            Lọc
+                        </Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button OnClick="HandleReset">
+                            <Icon Type=@("reload") Theme="IconThemeType.Outline" />
+                            Reset
+                        </Button>
+                    </SpaceItem>
+                </Space>
+            </SpaceItem>
+            <SpaceItem>
+                <Table TItem="InventoryMovementDto"
+                       DataSource="@_movements"
+                       Loading="@_loading"
+                       PageIndex="_currentPage"
+                       PageSize="_pageSize"
+                       Total="_totalCount"
+                       OnPageIndexChange="@(async (args) => { _currentPage = args.Page; await LoadMovements(); })"
+                       OnPageSizeChange="@(async (args) => { _currentPage = 1; _pageSize = args.PageSize; await LoadMovements(); })"
+                       RowKey="x => x.Id.ToString()">
+                    <PropertyColumn Property="c => c.CreatedAt" Title=@("Thời gian") Format="yyyy-MM-dd HH:mm" />
+                    <PropertyColumn Property="c => c.WarehouseName" Title=@("Kho") />
+                    <PropertyColumn Property="c => c.ProductName" Title=@("Sản phẩm") />
+                    <PropertyColumn Property="c => c.Sku" Title="SKU" />
+                    <ColumnDefinition Title=@("Loại")>
+                        @if (TryGetTypeColor(context.Type, out var tagColor))
+                        {
+                            <Tag Color="@tagColor">@GetTypeText(context.Type)</Tag>
+                        }
+                        else
+                        {
+                            <Tag>@GetTypeText(context.Type)</Tag>
+                        }
+                    </ColumnDefinition>
+                    <PropertyColumn Property="c => c.Quantity" Title=@("Số lượng") />
+                    <PropertyColumn Property="c => c.SnapshotQuantity" Title=@("Tồn sau") />
+                    <PropertyColumn Property="c => c.Reference" Title=@("Tham chiếu") />
+                </Table>
+            </SpaceItem>
+        </Space>
+    </Body>
+</Card>
+
+@code {
+    private List<InventoryMovementDto> _movements = [];
+    private List<WarehouseSimpleDto> _warehouses = [];
+    private bool _loading = false;
+    private int _currentPage = 1;
+    private int _pageSize = 10;
+    private int _totalCount = 0;
+    private string? _searchKeyword;
+    private Guid? _selectedWarehouseId;
+    private string? _selectedType;
+
+    private readonly List<string> _typeOptions =
+    [
+        "Received",
+        "Shipped",
+        "Reserved",
+        "Released",
+        "Confirmed",
+        "Adjusted",
+        "Transferred"
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWarehouses();
+        await LoadMovements();
+    }
+
+    private async Task LoadWarehouses()
+    {
+        _warehouses = await WarehouseService.GetActiveAsync();
+    }
+
+    private async Task LoadMovements()
+    {
+        if (_loading) return;
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await InventoryService.GetInventoryMovementsAsync(
+                _searchKeyword,
+                _selectedWarehouseId,
+                _selectedType,
+                _currentPage,
+                _pageSize);
+
+            _movements = result.Items.ToList();
+            _totalCount = result.TotalItems;
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể tải lịch sử tồn kho: {ex.Message}");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task HandleSearch()
+    {
+        _currentPage = 1;
+        await LoadMovements();
+    }
+
+    private async Task HandleApplyFilter()
+    {
+        _currentPage = 1;
+        await LoadMovements();
+    }
+
+    private async Task HandleReset()
+    {
+        _searchKeyword = null;
+        _selectedWarehouseId = null;
+        _selectedType = null;
+        _currentPage = 1;
+        await LoadMovements();
+    }
+
+    private static string GetTypeText(string type)
+    {
+        return type switch
+        {
+            "Received" => "Nhập kho",
+            "Shipped" => "Xuất kho",
+            "Reserved" => "Đặt giữ",
+            "Released" => "Hủy giữ",
+            "Confirmed" => "Xác nhận",
+            "Adjusted" => "Điều chỉnh",
+            "Transferred" => "Chuyển kho",
+            _ => type
+        };
+    }
+
+    private static bool TryGetTypeColor(string type, out TagColor color)
+    {
+        switch (type)
+        {
+            case "Received":
+                color = TagColor.Green;
+                return true;
+            case "Shipped":
+                color = TagColor.Orange;
+                return true;
+            case "Reserved":
+            case "Adjusted":
+            case "Transferred":
+                color = TagColor.Blue;
+                return true;
+            default:
+                color = TagColor.Blue;
+                return false;
+        }
+    }
+}

@@ -26,4 +26,9 @@ public interface IInventoryItemRepository : IRepository<InventoryItem>
     /// Get inventory items with low stock below threshold
     /// </summary>
     Task<IEnumerable<InventoryItem>> GetLowStockItemsAsync(Guid? warehouseId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get inventory item by SKU and WarehouseId (for import by SKU)
+    /// </summary>
+    Task<InventoryItem?> GetBySkuAndWarehouseAsync(string sku, Guid warehouseId, CancellationToken cancellationToken = default);
 }

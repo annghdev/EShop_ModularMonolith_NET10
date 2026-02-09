@@ -36,6 +36,10 @@ public class InventoryItemConfiguration : IEntityTypeConfiguration<InventoryItem
             .HasDefaultValue(5)
             .IsRequired();
 
+        builder.Property(i => i.ProductName)
+            .HasMaxLength(200)
+            .IsRequired();
+
         // Relationships
         builder.HasOne(i => i.Warehouse)
             .WithMany(w => w.InventoryItems)

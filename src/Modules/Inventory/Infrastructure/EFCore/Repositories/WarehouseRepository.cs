@@ -50,6 +50,14 @@ public class WarehouseRepository(InventoryDbContext context) : IWarehouseReposit
             .FirstOrDefaultAsync(w => w.Code == code.ToUpperInvariant(), cancellationToken);
     }
 
+    public async Task<Warehouse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await context.Warehouses
+            .Include(w => w.InventoryItems)
+                .ThenInclude(i => i.Reservations)
+            .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
+    }
+
     public async Task<Warehouse?> GetDefaultWarehouseAsync(CancellationToken cancellationToken = default)
     {
         return await context.Warehouses

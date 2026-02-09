@@ -46,6 +46,11 @@ namespace Inventory.Infrastructure.EFCore.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<int>("QuantityOnHand")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")

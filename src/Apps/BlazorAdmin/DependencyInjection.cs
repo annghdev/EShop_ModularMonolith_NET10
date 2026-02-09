@@ -27,5 +27,11 @@ public static class DependencyInjection
 
         services.AddHttpClient<ICategoryService, CategoryApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
             .AddHttpMessageHandler<JwtAuthorizationHandler>();
+
+        services.AddHttpClient<IWarehouseService, WarehouseApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
+            .AddHttpMessageHandler<JwtAuthorizationHandler>();
+
+        services.AddHttpClient<IInventoryService, InventoryApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
+            .AddHttpMessageHandler<JwtAuthorizationHandler>();
     }
 }

@@ -4,7 +4,7 @@ public class UpdateProductDraftRequest
 {
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public string Sku { get; set; } = string.Empty;
+    public string SkuPrefix { get; set; } = string.Empty;
     public decimal CostAmount { get; set; }
     public decimal PriceAmount { get; set; }
     public decimal Width { get; set; }

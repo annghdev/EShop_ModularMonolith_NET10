@@ -6,7 +6,7 @@ public class ProductDto
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? Slug { get; set; }
-    public string Sku { get; set; } = string.Empty;
+    public string SkuPrefix { get; set; } = string.Empty;
     public MoneyDto? Cost { get; set; }
     public MoneyDto? Price { get; set; }
     public DimensionsDto? Dimensions { get; set; }

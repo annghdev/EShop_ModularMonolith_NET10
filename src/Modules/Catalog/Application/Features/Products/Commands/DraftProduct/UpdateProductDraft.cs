@@ -29,9 +29,9 @@ public class UpdateProductDraft
                 .NotEmpty().WithMessage("Name cannot be empty")
                 .MaximumLength(200).WithMessage("Name cannot exceed 200 characters");
 
-            RuleFor(c => c.Request.Sku)
-                .NotEmpty().WithMessage("SKU cannot be empty")
-                .MaximumLength(50).WithMessage("SKU cannot exceed 50 characters");
+            RuleFor(c => c.Request.SkuPrefix)
+                .NotEmpty().WithMessage("SKU prefix cannot be empty")
+                .MaximumLength(50).WithMessage("SKU prefix cannot exceed 50 characters");
 
             RuleFor(c => c.Request.CostAmount)
                 .GreaterThanOrEqualTo(0).WithMessage("Cost must be >= 0");
@@ -85,6 +85,7 @@ public class UpdateProductDraft
             product.UpdateBasicInfo(
                 request.Name,
                 request.Description,
+                request.SkuPrefix,
                 new Dimensions(request.Width, request.Height, request.Depth, request.Weight)
             );
 

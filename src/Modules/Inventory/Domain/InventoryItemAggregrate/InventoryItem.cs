@@ -1,3 +1,5 @@
+using Kernel.Domain;
+
 namespace Inventory.Domain;
 
 /// <summary>
@@ -13,6 +15,7 @@ public class InventoryItem : AggregateRoot
     public Guid ProductId { get; private set; }
     public Guid VariantId { get; private set; }
     public Sku Sku { get; private set; } = null!;
+    public string ProductName { get; private set; } = string.Empty;
 
     // Quantity tracking
     public int QuantityOnHand { get; private set; }
@@ -33,6 +36,7 @@ public class InventoryItem : AggregateRoot
         Guid productId,
         Guid variantId,
         Sku sku,
+        string productName,
         int initialQuantity = 0,
         int lowStockThreshold = 5)
     {
@@ -51,6 +55,7 @@ public class InventoryItem : AggregateRoot
             ProductId = productId,
             VariantId = variantId,
             Sku = sku ?? throw new DomainException("SKU cannot be null"),
+            ProductName = productName ?? string.Empty,
             QuantityOnHand = initialQuantity,
             LowStockThreshold = lowStockThreshold
         };

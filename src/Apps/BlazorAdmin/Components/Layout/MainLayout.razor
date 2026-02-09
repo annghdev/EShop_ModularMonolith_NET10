@@ -65,6 +65,10 @@
                         </MenuItem>
                     </SubMenu>
                     <SubMenu Key="sub3" TitleTemplate="@sub3Title" >
+                        <MenuItem Key="20" RouterLink="/inventory/items" RouterMatch="NavLinkMatch.Prefix">
+                            <Icon Type="@IconType.Outline.Appstore" />
+                            <span>Bảng lưu trữ</span>
+                        </MenuItem>
                         <MenuItem Key="9" RouterLink="/inventory/movements" RouterMatch="NavLinkMatch.Prefix">
                             <Icon Type="@IconType.Outline.Appstore" />
                             <span>Nhật ký</span>
