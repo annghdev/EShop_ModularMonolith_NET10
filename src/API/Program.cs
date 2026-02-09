@@ -49,6 +49,7 @@ builder.Host.UseWolverine(opts =>
     opts.PersistMessagesWithPostgresql(builder.Configuration.GetConnectionString("infrasdb")!, "public");
     opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
     opts.AutoBuildMessageStorageOnStartup = AutoCreate.CreateOrUpdate;
+
     // Auto-discover handlers from module assemblies
     opts.Discovery.IncludeAssembly(typeof(Catalog.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Inventory.DependencyInjection).Assembly);
@@ -93,6 +94,7 @@ app.MapControllers();
 
 app.MapEndpoints(typeof(Catalog.DependencyInjection).Assembly);
 app.MapEndpoints(typeof(Auth.DependencyInjection).Assembly);
+app.MapEndpoints(typeof(Inventory.DependencyInjection).Assembly);
 
 // Apply migrations and seed data
 using var scope = app.Services.CreateScope();
@@ -102,8 +104,8 @@ try
     var catalogContext = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
     await catalogContext.Database.MigrateAsync();
 
-    //var catalogSeeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
-    //await catalogSeeder.SeedAsync();
+    var catalogSeeder = scope.ServiceProvider.GetRequiredService<CatalogSeeder>();
+    await catalogSeeder.SeedAsync();
 
     Console.WriteLine("Catalog database migrations applied and data seeded successfully.");
 

@@ -11,6 +11,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.Property(p=>p.Name).HasMaxLength(200);
 
+        builder.Property(p => p.SkuPrefix)
+            .HasMaxLength(20)
+            .IsRequired(false);
+
         #region Map ValueObjects
 
         builder.OwnsOne(p => p.Slug, slug =>

@@ -43,6 +43,7 @@ public interface IProductService
     Task UpdateDraftAsync(Guid productId, UpdateProductDraftRequest request);
     Task DiscardDraftAsync(Guid productId);
     Task UpdateProductPricingAsync(Guid productId, decimal costAmount, decimal priceAmount);
+    Task UpdateProductBasicInfoAsync(Guid productId, UpdateProductBasicInfoRequest request);
     
     // Helper methods for dropdowns
     Task<List<CategoryDto>> GetCategoriesAsync();

@@ -1,0 +1,417 @@
+@page "/inventory/items"
+@using BlazorAdmin.Services
+@using Contracts.Responses.Inventory
+@using Contracts.Requests.Inventory
+@using System.Threading.Tasks
+@inject IInventoryService InventoryService
+@inject IWarehouseService WarehouseService
+@inject IMessageService MessageService
+
+<Card>
+    <TitleTemplate>
+        <Space Style="width: 100%; justify-content: space-between">
+            <SpaceItem>
+                <Title Level="4">Quản lý vật phẩm lưu trữ</Title>
+            </SpaceItem>
+            <SpaceItem>
+                <Button Type="@ButtonType.Primary" OnClick="ShowImportModal">
+                    <Icon Type=@("plus") Theme="IconThemeType.Outline" />
+                    Nhập vật phẩm
+                </Button>
+            </SpaceItem>
+        </Space>
+    </TitleTemplate>
+    <Body>
+        <Space Direction="SpaceDirection.Vertical" Style="width: 100%">
+            <SpaceItem>
+                <Space Wrap Style="width: 100%">
+                    <SpaceItem>
+                        <Search Placeholder=@("Tìm theo tên hoặc SKU...")
+                                Style=@("width: 350px")
+                                @bind-Value="@_searchKeyword"
+                                OnSearch="HandleQuickSearch"
+                                EnterButton="true" />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Switch Value="_inStockOnly" OnChange="OnSwitchInStockOnly" CheckedChildren=@("Còn hàng") UnCheckedChildren=@("Tất cả") />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button OnClick="HandleReset">
+                            <Icon Type=@("reload") Theme="IconThemeType.Outline" />
+                            Reset
+                        </Button>
+                    </SpaceItem>
+                </Space>
+            </SpaceItem>
+            <SpaceItem>
+                <Space Wrap>
+                    <SpaceItem>
+                        @if (_selectedWarehouseId == null)
+                        {
+                            <Tag Color="TagColor.Blue" Style="cursor: pointer" Onclick="() => SetWarehouseFilter(null)">
+                                Tất cả kho
+                            </Tag>
+                        }
+                        else
+                        {
+                            <Tag Style="cursor: pointer" Onclick="() => SetWarehouseFilter(null)">
+                                Tất cả kho
+                            </Tag>
+                        }
+                    </SpaceItem>
+                    @foreach (var warehouse in _warehouses)
+                    {
+                        <SpaceItem>
+                            @if (warehouse.Id == _selectedWarehouseId)
+                            {
+                                <Tag Color="TagColor.Blue" Style="cursor: pointer" Onclick="() => SetWarehouseFilter(warehouse.Id)">
+                                    @warehouse.Name
+                                </Tag>
+                            }
+                            else
+                            {
+                                <Tag Style="cursor: pointer" Onclick="() => SetWarehouseFilter(warehouse.Id)">
+                                    @warehouse.Name
+                                </Tag>
+                            }
+                        </SpaceItem>
+                    }
+                </Space>
+            </SpaceItem>
+            <SpaceItem>
+                <Space Style=@("width: 100%; justify-content: space-between; align-items: center;")>
+                    <SpaceItem>
+                        <Text Strong>Tổng số: @_totalCount sản phẩm</Text>
+                    </SpaceItem>
+                </Space>
+            </SpaceItem>
+            <SpaceItem>
+                <Table TItem="StockingProductDto"
+                       DataSource="@_products"
+                       Loading="@_loading"
+                       PageIndex="_currentPage"
+                       PageSize="_pageSize"
+                       Total="_totalCount"
+                       OnPageIndexChange="@(async (args) => { _currentPage = args.Page; await LoadProducts(); })"
+                       OnPageSizeChange="@(async (args) => { _currentPage = 1; _pageSize = args.PageSize; await LoadProducts(); })"
+                       RowKey="x => x.ProductId.ToString()">
+                    <PropertyColumn Property="c => c.Thumbnail" Title=@("Hình ảnh")>
+                        <Image Src="@GetProductThumbnail(context.Thumbnail)" Width="60" Height="45" Style="object-fit: cover; border-radius: 4px" />
+                    </PropertyColumn>
+                    <PropertyColumn Property="c => c.ProductName" Title=@("Tên sản phẩm") />
+                    <ColumnDefinition Title=@("Biến thể")>
+                        <Space Wrap>
+                            @foreach (var variant in context.Variants)
+                            {
+                                <SpaceItem>
+                                    <Tag>
+                                        <div style="display: flex; flex-direction: column; line-height: 1.2">
+                                            <Text>@variant.Sku</Text>
+                                            <Text Style="color: #8c8c8c">@($"{variant.TotalQuantity} tồn")</Text>
+                                        </div>
+                                    </Tag>
+                                </SpaceItem>
+                            }
+                        </Space>
+                    </ColumnDefinition>
+                    <ActionColumn Title=@("Thao tác")>
+                        <Space>
+                            <SpaceItem>
+                                <Button Size="@ButtonSize.Small" OnClick="() => ShowAdjustModal(context)">
+                                    Điều chỉnh
+                                </Button>
+                            </SpaceItem>
+                        </Space>
+                    </ActionColumn>
+                </Table>
+            </SpaceItem>
+        </Space>
+    </Body>
+</Card>
+
+@* Import Item Modal *@
+<Modal Title=@("Nhập vật phẩm")
+       @bind-Visible="_showImportModal"
+       OnOk="HandleImport"
+       OnCancel="() => _showImportModal = false"
+       Width="600">
+    <Form Model="@_importModel" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("Kho hàng") Required>
+            <Select TItem="WarehouseSimpleDto"
+                    TItemValue="Guid"
+                    @bind-Value="_importModel.WarehouseId"
+                    DataSource="@_warehouses"
+                    LabelName="@nameof(WarehouseSimpleDto.Name)"
+                    ValueName="@nameof(WarehouseSimpleDto.Id)"
+                    Placeholder=@("Chọn kho")
+                    Style="width: 100%" />
+        </FormItem>
+        <FormItem Label=@("SKU") Required>
+            <Search Placeholder=@("Nhập SKU")
+                    @bind-Value="_importModel.Sku"
+                    OnSearch="LookupImportSku"
+                    EnterButton="true" />
+        </FormItem>
+        @if (_importItemPreview != null)
+        {
+            <FormItem Label=@("Sản phẩm")>
+                <Text>@_importItemPreview.ProductName</Text>
+                <Text Style="margin-left: 8px; color: #8c8c8c">SKU: @_importItemPreview.Sku</Text>
+            </FormItem>
+        }
+        <FormItem Label=@("Số lượng nhập") Required>
+            <AntDesign.InputNumber @bind-Value="_importModel.Quantity"
+                                   Min="1"
+                                   Step="1"
+                                   Style="width: 100%" />
+        </FormItem>
+    </Form>
+</Modal>
+
+@* Adjust Quantity Modal *@
+<Modal Title=@("Điều chỉnh số lượng")
+       @bind-Visible="_showAdjustModal"
+       OnCancel="CloseAdjustModal"
+       Footer="@null"
+       Width="800">
+    @if (_adjustItems.Count == 0)
+    {
+        <Empty Description=@("Không có dữ liệu") />
+    }
+    else
+    {
+        <Table TItem="AdjustItemModel"
+               DataSource="@_adjustItems"
+               Bordered
+               Size="@TableSize.Small"
+               RowKey="x => x.ItemId.ToString()">
+            <PropertyColumn Property="c => c.WarehouseName" Title=@("Kho") />
+            <PropertyColumn Property="c => c.Sku" Title="SKU" />
+            <PropertyColumn Property="c => c.CurrentQuantity" Title=@("Tồn hiện tại") />
+            <ColumnDefinition Title=@("Tồn mới")>
+                <AntDesign.InputNumber @bind-Value="context.NewQuantity"
+                                       Min="0"
+                                       Step="1"
+                                       Style="width: 120px" />
+            </ColumnDefinition>
+            <ActionColumn Title=@("Xác nhận")>
+                <Button Size="@ButtonSize.Small" Type="@ButtonType.Primary" OnClick="() => HandleAdjustItem(context)">
+                    Cập nhật
+                </Button>
+            </ActionColumn>
+        </Table>
+    }
+</Modal>
+
+    @code {
+
+    private List<StockingProductDto> _products = [];
+    private List<WarehouseSimpleDto> _warehouses = [];
+    private bool _loading = false;
+    private int _currentPage = 1;
+    private int _pageSize = 10;
+    private int _totalCount = 0;
+    private string? _searchKeyword;
+    private Guid? _selectedWarehouseId;
+    private bool _inStockOnly;
+
+    private bool _showImportModal = false;
+    private ImportItemModel _importModel = new();
+    private InventoryItemDto? _importItemPreview;
+
+    private bool _showAdjustModal = false;
+    private StockingProductDto? _selectedProduct;
+    private List<AdjustItemModel> _adjustItems = [];
+
+    private async Task OnSwitchInStockOnly(bool value)
+    {
+        await LoadProducts();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWarehouses();
+        await LoadProducts();
+    }
+
+    private async Task LoadWarehouses()
+    {
+        _warehouses = await WarehouseService.GetActiveAsync();
+        if (_warehouses.Count > 0)
+        {
+            var defaultWarehouse = _warehouses.FirstOrDefault(w => w.IsDefault);
+
+            // optionally set default warehouse filter
+            // _selectedWarehouseId ??= defaultWarehouse?.Id;
+        }
+    }
+
+    private async Task LoadProducts()
+    {
+        if (_loading) return;
+        _loading = true;
+        // StateHasChanged();
+
+        try
+        {
+            var result = await InventoryService.GetStockingProductsAsync(
+                _searchKeyword,
+                _selectedWarehouseId,
+                _inStockOnly,
+                _currentPage,
+                _pageSize);
+
+            _products = result.Items.ToList();
+            _totalCount = result.TotalItems;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task SetWarehouseFilter(Guid? warehouseId)
+    {
+        _selectedWarehouseId = warehouseId;
+        _currentPage = 1;
+        await InvokeAsync(LoadProducts);
+    }
+
+    private async Task HandleQuickSearch()
+    {
+        _currentPage = 1;
+        await LoadProducts();
+    }
+
+    private async Task HandleReset()
+    {
+        _searchKeyword = null;
+        _selectedWarehouseId = null;
+        _inStockOnly = false;
+        _currentPage = 1;
+        await LoadProducts();
+    }
+
+    private void ShowImportModal()
+    {
+        _importModel = new ImportItemModel
+        {
+            WarehouseId = _selectedWarehouseId ?? _warehouses.FirstOrDefault()?.Id ?? Guid.Empty
+        };
+        _importItemPreview = null;
+        _showImportModal = true;
+    }
+
+    private async Task LookupImportSku()
+    {
+        if (_importModel.WarehouseId == Guid.Empty || string.IsNullOrWhiteSpace(_importModel.Sku))
+        {
+            MessageService.Warning("Vui lòng chọn kho và nhập SKU.");
+            return;
+        }
+
+        _importItemPreview = await InventoryService.GetItemBySkuAsync(_importModel.Sku, _importModel.WarehouseId);
+        if (_importItemPreview == null)
+        {
+            MessageService.Info("Không tìm thấy vật phẩm trong kho. Hệ thống sẽ tạo mới khi nhập.");
+        }
+    }
+
+    private async Task HandleImport()
+    {
+        if (_importModel.WarehouseId == Guid.Empty || string.IsNullOrWhiteSpace(_importModel.Sku))
+        {
+            MessageService.Warning("Vui lòng chọn kho và nhập SKU.");
+            return;
+        }
+
+        if (_importModel.Quantity <= 0)
+        {
+            MessageService.Warning("Số lượng nhập phải lớn hơn 0.");
+            return;
+        }
+
+        await InventoryService.ImportItemBySkuAsync(new ImportItemBySkuRequest(
+            _importModel.WarehouseId,
+            _importModel.Sku,
+            _importModel.Quantity));
+
+        MessageService.Success("Nhập vật phẩm thành công.");
+        _showImportModal = false;
+        await LoadProducts();
+    }
+
+    private async Task ShowAdjustModal(StockingProductDto product)
+    {
+        _selectedProduct = product;
+        _showAdjustModal = true;
+        await LoadAdjustItems(product.ProductId);
+    }
+
+    private async Task LoadAdjustItems(Guid productId)
+    {
+        _adjustItems = [];
+        var detail = await InventoryService.GetProductInventoryAsync(productId);
+        if (detail == null) return;
+
+        _adjustItems = detail.Variants.Select(v => new AdjustItemModel
+        {
+            ItemId = Guid.CreateVersion7(),
+            ProductId = detail.ProductId,
+            VariantId = v.VariantId,
+            WarehouseId = v.WarehouseId,
+            WarehouseName = v.WarehouseName,
+            Sku = v.Sku,
+            CurrentQuantity = v.QuantityOnHand,
+            NewQuantity = v.QuantityOnHand
+        }).ToList();
+    }
+
+    private async Task HandleAdjustItem(AdjustItemModel item)
+    {
+        var request = new AdjustVariantQuantityRequest(
+            item.WarehouseId,
+            item.ProductId,
+            item.VariantId,
+            item.NewQuantity,
+            "Điều chỉnh từ trang quản trị");
+
+        await InventoryService.AdjustItemQuantityAsync(request);
+        MessageService.Success("Cập nhật tồn kho thành công.");
+        await LoadAdjustItems(item.ProductId);
+        await LoadProducts();
+    }
+
+    private void CloseAdjustModal()
+    {
+        _showAdjustModal = false;
+        _selectedProduct = null;
+        _adjustItems = [];
+    }
+
+    private static string GetProductThumbnail(string? thumbnail)
+    {
+        return string.IsNullOrWhiteSpace(thumbnail)
+            ? "https://placehold.co/60x45?text=No+Image"
+            : thumbnail;
+    }
+
+    private sealed class ImportItemModel
+    {
+        public Guid WarehouseId { get; set; }
+        public string Sku { get; set; } = string.Empty;
+        public int Quantity { get; set; } = 1;
+    }
+
+    private sealed class AdjustItemModel
+    {
+        public Guid ItemId { get; set; }
+        public Guid ProductId { get; set; }
+        public Guid VariantId { get; set; }
+        public Guid WarehouseId { get; set; }
+        public string WarehouseName { get; set; } = string.Empty;
+        public string Sku { get; set; } = string.Empty;
+        public int CurrentQuantity { get; set; }
+        public int NewQuantity { get; set; }
+    }
+}

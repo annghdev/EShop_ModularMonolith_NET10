@@ -3,6 +3,7 @@ namespace Catalog.Domain;
 public class Product : AggregateRoot
 {
     public string Name { get; private set; }
+    public string? SkuPrefix { get; private set; }
     public string? Description { get; private set; }
     public Slug Slug { get; private set; }
     public Money Cost { get; private set; } = new(0);
@@ -30,7 +31,7 @@ public class Product : AggregateRoot
     private Product() { } // EF Core
 
     public static Product CreateDraft(
-        Guid Id, string name, string? description, Sku sku,
+        Guid Id, string name, string? description, string? skuPrefix,
         Money cost, Money price, Dimensions dimensions, bool hasStockQuantity,
         Category category, Guid brandId)
     {
@@ -38,6 +39,7 @@ public class Product : AggregateRoot
         {
             Id = Id,
             Name = name ?? throw new DomainException("Name cannot be null"),
+            SkuPrefix = skuPrefix,
             Description = description,
             Cost = cost ?? throw new DomainException("Cost cannot be null"),
             Price = price ?? throw new DomainException("Price cannot be null"),
@@ -52,12 +54,13 @@ public class Product : AggregateRoot
         return draft;
     }
 
-    public void UpdateBasicInfo(string name, string? description, Dimensions dimensions)
+    public void UpdateBasicInfo(string name, string? description, string? skuPrefix, Dimensions dimensions)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Product name is required");
 
         Name = name;
+        SkuPrefix = skuPrefix;
         Description = description;
         Slug = new(name);
         Dimensions = dimensions ?? throw new DomainException("Dimensions is required");

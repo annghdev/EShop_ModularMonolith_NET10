@@ -12,8 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Application\Features\InventoryItems\Commands\" />
+    <Folder Include="Application\Features\InventoryItems\" />
+    <Folder Include="Application\Features\InventoryItems\Queries\" />
+    <Folder Include="Application\Features\Movements\Queries\" />
+    <Folder Include="Application\Features\Warehouses\Commands\" />
+    <Folder Include="Application\Features\Warehouses\Queries\" />
     <Folder Include="Application\IntegrationHandlers\CommandHandlers\" />
-    <Folder Include="Application\Features\" />
   </ItemGroup>
 
 </Project>

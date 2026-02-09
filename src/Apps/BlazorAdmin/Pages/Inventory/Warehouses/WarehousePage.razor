@@ -1,7 +1,255 @@
-﻿@page "/inventory/warehouses"
+@page "/inventory/warehouses"
+@using BlazorAdmin.Services
+@using Contracts.Requests.Inventory
+@using Contracts.Responses.Inventory
+@inject IWarehouseService WarehouseService
+@inject IMessageService MessageService
 
-<h3>WarehousePage</h3>
+<Card>
+    <TitleTemplate>
+        <Space Style="width: 100%; justify-content: space-between">
+            <SpaceItem>
+                <Title Level="4">Quản lý kho hàng</Title>
+            </SpaceItem>
+            <SpaceItem>
+                <Button Type="@ButtonType.Primary" OnClick="ShowCreateModal">
+                    <Icon Type=@("plus") Theme="IconThemeType.Outline" />
+                    Tạo kho
+                </Button>
+            </SpaceItem>
+        </Space>
+    </TitleTemplate>
+    <Body>
+        <Space Direction="SpaceDirection.Vertical" Style="width: 100%">
+            <SpaceItem>
+                <Space>
+                    <SpaceItem>
+                        <Search Placeholder=@("Tìm theo mã hoặc tên kho...")
+                                Style=@("width: 350px")
+                                @bind-Value="@_searchKeyword"
+                                OnSearch="HandleSearch"
+                                EnterButton="true" />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button OnClick="HandleReset">
+                            <Icon Type=@("reload") Theme="IconThemeType.Outline" />
+                            Reset
+                        </Button>
+                    </SpaceItem>
+                </Space>
+            </SpaceItem>
+            <SpaceItem>
+                <Table TItem="WarehouseDto"
+                       DataSource="@_filteredWarehouses"
+                       Loading="@_loading"
+                       RowKey="x => x.Id.ToString()">
+                    <PropertyColumn Property="c => c.Code" Title=@("Mã kho") />
+                    <PropertyColumn Property="c => c.Name" Title=@("Tên kho")>
+                        @context.Name
+                        @if (context.IsDefault)
+                        {
+                            <Tag Icon="@IconType.Outline.Star" Color="TagColor.Orange">Mặc định</Tag>
+                        }
+                    </PropertyColumn>
+                    <PropertyColumn Property="c => c.IsActive" Title=@("Trạng thái")>
+                        @if (context.IsActive)
+                        {
+                            <Tag Color="TagColor.Green">Đang hoạt động</Tag>
+                        }
+                        else
+                        {
+                            <Tag>Ngừng hoạt động</Tag>
+                        }
+                    </PropertyColumn>
+                    <ActionColumn Title=@("Thao tác")>
+                        <Space>
+                            <SpaceItem>
+                                <Button Size="@ButtonSize.Small" OnClick="() => ShowEditModal(context)">
+                                    <Icon Type=@("edit") Theme="IconThemeType.Outline" /> Sửa
+                                </Button>
+                            </SpaceItem>
+                            <SpaceItem>
+                                <Popconfirm Title=@("Xóa kho này?")
+                                            OnConfirm="() => HandleDelete(context.Id)"
+                                            OkText=@("Xóa")
+                                            CancelText=@("Hủy")>
+                                    <Button Size="@ButtonSize.Small" Danger>
+                                        <Icon Type=@("delete") /> Xóa
+                                    </Button>
+                                </Popconfirm>
+                            </SpaceItem>
+                        </Space>
+                    </ActionColumn>
+                </Table>
+            </SpaceItem>
+        </Space>
+    </Body>
+</Card>
+
+@* Create/Edit Modal *@
+<Modal Title="@(_isEditing ? "Cập nhật kho" : "Tạo kho")"
+       @bind-Visible="_showModal"
+       OnOk="HandleSave"
+       OnCancel="CloseModal"
+       Width="600">
+    <Form Model="@_formModel" LabelColSpan="6" WrapperColSpan="18">
+        <FormItem Label=@("Mã kho") Required>
+            <Input @bind-Value="_formModel.Code"
+                   Placeholder=@("VD: WH-HCM")
+                   Disabled="@_isEditing" />
+        </FormItem>
+        <FormItem Label=@("Tên kho") Required>
+            <Input @bind-Value="_formModel.Name" Placeholder=@("VD: Kho Hồ Chí Minh") />
+        </FormItem>
+        @if (!_isEditing)
+        {
+            <FormItem Label=@("Đặt làm mặc định")>
+                <Checkbox @bind-Checked="_formModel.IsDefault">Có</Checkbox>
+            </FormItem>
+        }
+    </Form>
+</Modal>
 
 @code {
+    private List<WarehouseDto> _warehouses = [];
+    private List<WarehouseDto> _filteredWarehouses = [];
+    private bool _loading = false;
+    private string? _searchKeyword;
 
+    private bool _showModal = false;
+    private bool _isEditing = false;
+    private WarehouseFormModel _formModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWarehouses();
+    }
+
+    private async Task LoadWarehouses()
+    {
+        if (_loading) return;
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            _warehouses = await WarehouseService.GetAllAsync();
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể tải kho: {ex.Message}");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        if (string.IsNullOrWhiteSpace(_searchKeyword))
+        {
+            _filteredWarehouses = _warehouses.ToList();
+            return;
+        }
+
+        var keyword = _searchKeyword.Trim().ToLower();
+        _filteredWarehouses = _warehouses
+            .Where(w => w.Code.ToLower().Contains(keyword) || w.Name.ToLower().Contains(keyword))
+            .ToList();
+    }
+
+    private async Task HandleSearch()
+    {
+        ApplyFilter();
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleReset()
+    {
+        _searchKeyword = null;
+        ApplyFilter();
+        await Task.CompletedTask;
+    }
+
+    private void ShowCreateModal()
+    {
+        _isEditing = false;
+        _formModel = new WarehouseFormModel();
+        _showModal = true;
+    }
+
+    private void ShowEditModal(WarehouseDto warehouse)
+    {
+        _isEditing = true;
+        _formModel = new WarehouseFormModel
+        {
+            Id = warehouse.Id,
+            Code = warehouse.Code,
+            Name = warehouse.Name,
+            IsDefault = warehouse.IsDefault
+        };
+        _showModal = true;
+    }
+
+    private async Task HandleSave()
+    {
+        if (string.IsNullOrWhiteSpace(_formModel.Code) || string.IsNullOrWhiteSpace(_formModel.Name))
+        {
+            MessageService.Warning("Vui lòng nhập đầy đủ mã kho và tên kho.");
+            return;
+        }
+
+        try
+        {
+            if (_isEditing)
+            {
+                await WarehouseService.UpdateAsync(_formModel.Id, new UpdateWarehouseRequest(_formModel.Name));
+                MessageService.Success("Cập nhật kho thành công.");
+            }
+            else
+            {
+                await WarehouseService.CreateAsync(new CreateWarehouseRequest(
+                    _formModel.Code,
+                    _formModel.Name,
+                    IsDefault: _formModel.IsDefault));
+                MessageService.Success("Tạo kho thành công.");
+            }
+
+            _showModal = false;
+            await LoadWarehouses();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Thao tác thất bại: {ex.Message}");
+        }
+    }
+
+    private async Task HandleDelete(Guid warehouseId)
+    {
+        try
+        {
+            await WarehouseService.DeleteAsync(warehouseId);
+            MessageService.Success("Đã xóa kho.");
+            await LoadWarehouses();
+        }
+        catch (Exception ex)
+        {
+            MessageService.Error($"Không thể xóa kho: {ex.Message}");
+        }
+    }
+
+    private void CloseModal()
+    {
+        _showModal = false;
+    }
+
+    private sealed class WarehouseFormModel
+    {
+        public Guid Id { get; set; }
+        public string Code { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public bool IsDefault { get; set; }
+    }
 }

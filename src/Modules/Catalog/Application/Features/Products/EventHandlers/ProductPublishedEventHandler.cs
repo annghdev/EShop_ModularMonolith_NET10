@@ -39,6 +39,9 @@ public class ProductPublishedEventHandler(ElasticsearchClient elasticsearchClien
     {
         var integrationEvent = new ProductPublishedIntegrationEvent(
                 product.Id,
+                product.Name,
+                product.SkuPrefix,
+                product.Thumbnail?.Path,
                 product.Variants
                     .Select(v => new ProductVariantPublishDto(v.Id, v.Name, v.Sku.Value))
                     .ToList()

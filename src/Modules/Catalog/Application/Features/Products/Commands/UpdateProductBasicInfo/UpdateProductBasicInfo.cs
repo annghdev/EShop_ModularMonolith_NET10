@@ -12,6 +12,7 @@ public class UpdateProductBasicInfo
     {
         public Guid Id { get; init; }
         public string Name { get; init; }
+        public string? SkuPrefix { get; init; }
         public string? Description { get; init; }
         public DimensionsDto Dimensions { get; init; }
     }
@@ -55,7 +56,7 @@ public class UpdateProductBasicInfo
             var product = await uow.Products.LoadFullAggregate(request.Id)
                 ?? throw new NotFoundException("Product", request.Id);
 
-            product.UpdateBasicInfo(request.Name, request.Description, request.Dimensions.ToDimensions());
+            product.UpdateBasicInfo(request.Name, request.Description, request.SkuPrefix, request.Dimensions.ToDimensions());
 
             await uow.CommitAsync(cancellationToken);
         }

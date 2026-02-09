@@ -1,5 +1,7 @@
 using Contracts.IntegrationEvents.CatalogEvents;
 using Inventory.Domain;
+using Kernel.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace Inventory.Application;
 
@@ -12,39 +14,52 @@ public class ProductPublishedEventConsumer
     public async Task Handle(
         ProductPublishedIntegrationEvent @event,
         IInventoryUnitOfWork uow,
+        ILogger<ProductPublishedEventConsumer> logger,
         CancellationToken cancellationToken)
     {
-        // Get or create default warehouse
-        var defaultWarehouse = await uow.WarehouseRepository.GetDefaultWarehouseAsync(cancellationToken);
+        // Get ALL active warehouses
+        var activeWarehouses = await uow.WarehouseRepository.GetActiveWarehousesAsync(cancellationToken);
         
-        if (defaultWarehouse == null)
+        if (!activeWarehouses.Any())
         {
-            // Create default warehouse if not exists
-            defaultWarehouse = Warehouse.Create("DEFAULT", "Default Warehouse", null, isDefault: true);
+            logger.LogWarning("No active warehouses found. Creating default warehouse.");
+            
+            var defaultWarehouse = Warehouse.Create("WH-DEFAULT", "Default Warehouse", null, isDefault: true);
             uow.Warehouses.Add(defaultWarehouse);
-            await uow.CommitAsync(cancellationToken); // Save to get the warehouse ID
+            await uow.CommitAsync(cancellationToken);
+            activeWarehouses = [defaultWarehouse];
         }
 
-        // Add inventory items for each variant
-        foreach (var variant in @event.Payload)
+        logger.LogInformation("Creating inventory items for product {ProductId} ({ProductName}) in {WarehouseCount} warehouses",
+            @event.ProductId, @event.ProductName, activeWarehouses.Count());
+
+        // Add inventory items for each variant in EACH warehouse
+        foreach (var warehouse in activeWarehouses)
         {
-            // Check if already exists
-            var existingItem = await uow.InventoryItemRepository.GetByVariantIdAsync(
-                variant.Id, 
-                defaultWarehouse.Id, 
-                cancellationToken);
-
-            if (existingItem == null)
+            foreach (var variant in @event.Variants)
             {
-                var inventoryItem = InventoryItem.Create(
-                    defaultWarehouse.Id,
-                    @event.ProductId,
+                // Check if already exists
+                var existingItem = await uow.InventoryItemRepository.GetByVariantIdAsync(
                     variant.Id,
-                    new Sku(variant.Sku),
-                    initialQuantity: 0,
-                    lowStockThreshold: 5);
+                    warehouse.Id,
+                    cancellationToken);
 
-                uow.InventoryItems.Add(inventoryItem);
+                if (existingItem == null)
+                {
+                    var inventoryItem = InventoryItem.Create(
+                        warehouse.Id,
+                        @event.ProductId,
+                        variant.Id,
+                        new Sku(variant.Sku),
+                        @event.ProductName, // Use ProductName from event
+                        initialQuantity: 0,
+                        lowStockThreshold: 5);
+
+                    uow.InventoryItems.Add(inventoryItem);
+                    
+                    logger.LogDebug("Created inventory item for SKU {Sku} in warehouse {WarehouseCode}",
+                        variant.Sku, warehouse.Code);
+                }
             }
         }
 

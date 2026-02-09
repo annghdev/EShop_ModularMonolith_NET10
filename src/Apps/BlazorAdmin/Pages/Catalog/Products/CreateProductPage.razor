@@ -72,14 +72,14 @@ else
                             <Input @bind-Value="_form.Name" Placeholder=@("Nhập tên sản phẩm")" />
                         </FormItem>
                         <FormItem Label="SKU" Required>
-                            <Input @bind-Value="_form.Sku" Placeholder=@("Mã SKU duy nhất")" />
+                            <Input @bind-Value="_form.SkuPrefix" Placeholder=@("Mã SKU duy nhất")" />
                         </FormItem>
                         <FormItem Label=@("Mô tả")>
                             <TextArea @bind-Value="_form.Description" Rows="4" Placeholder=@("Mô tả sản phẩm...")" />
                         </FormItem>
                         <FormItem Label=@("Danh mục")>
                             <Select TItem="CategoryDto"
-                                    TItemValue="Guid?"
+                                    TItemValue="Guid ?"
                                     @bind-Value="_form.CategoryId"
                                     @bind-Value:after="HandleCategoryChanged"
                                     DataSource="@_categories"
@@ -90,7 +90,7 @@ else
                         </FormItem>
                         <FormItem Label=@("Thương hiệu")>
                             <Select TItem="BrandDto"
-                                    TItemValue="Guid?"
+                                    TItemValue="Guid ?"
                                     @bind-Value="_form.BrandId"
                                     DataSource="@_brands"
                                     LabelName="@nameof(BrandDto.Name)"
@@ -107,15 +107,15 @@ else
                 <Card Title=@("Giá cả")>
                     <Form Model="@_form" LabelColSpan="8" WrapperColSpan="16">
                         <FormItem Label=@("Giá vốn (VNĐ)")>
-                            <AntDesign.InputNumber @bind-Value="_form.CostAmount" 
-                                                   Step="10000" 
-                                                   Min="0" 
+                            <AntDesign.InputNumber @bind-Value="_form.CostAmount"
+                                                   Step="10000"
+                                                   Min="0"
                                                    Style=@("width: 100%") />
                         </FormItem>
                         <FormItem Label=@("Giá bán (VNĐ)")>
-                            <AntDesign.InputNumber @bind-Value="_form.PriceAmount" 
-                                                   Step="10000" 
-                                                   Min="0" 
+                            <AntDesign.InputNumber @bind-Value="_form.PriceAmount"
+                                                   Step="10000"
+                                                   Min="0"
                                                    Style=@("width: 100%") />
                         </FormItem>
                     </Form>
@@ -343,7 +343,7 @@ else
     <Form Model="@_addAttributeModel" LabelColSpan="8" WrapperColSpan="16">
         <FormItem Label=@("Thuộc tính")>
             <Select TItem="AttributeDto"
-                    TItemValue="Guid?"
+                    TItemValue="Guid ?"
                     @bind-Value="_addAttributeModel.AttributeId"
                     DataSource="@GetAvailableAttributes()"
                     LabelName="@nameof(AttributeDto.Name)"
@@ -371,7 +371,7 @@ else
             <Input @bind-Value="_variantModel.Name" Placeholder=@("Ví dụ: iPhone 14 Pro Max - Gold - 256GB")" />
         </FormItem>
         <FormItem Label="SKU">
-            <Input @bind-Value="_variantModel.Sku" Placeholder="@($"{_product?.Sku}-VAR1")" />
+            <Input @bind-Value="_variantModel.Sku" Placeholder="@($"{_product?.SkuPrefix}-VAR1")" />
         </FormItem>
 
         @if (_product?.Attributes?.Any() == true)
@@ -384,7 +384,7 @@ else
                 {
                     <FormItem Label="@attr.AttributeName">
                         <Select TItem="AttributeValueDto"
-                                TItemValue="Guid?"
+                                TItemValue="Guid ?"
                                 Value="@GetVariantAttributeValue(attr.AttributeId)"
                                 ValueChanged="@((Guid? val) => SetVariantAttributeValue(attr.AttributeId, val))"
                                 DataSource="@attributeFromList.Values"
@@ -505,7 +505,7 @@ else
         {
             Name = _product.Name,
             Description = _product.Description,
-            Sku = _product.Sku,
+            SkuPrefix = _product.SkuPrefix,
             CostAmount = _product.Cost?.Amount ?? _form.CostAmount,
             PriceAmount = _product.Price?.Amount ?? _form.PriceAmount,
             Width = _product.Dimensions?.Width ?? _form.Width,
@@ -608,7 +608,7 @@ else
             {
                 Name = _form.Name,
                 Description = _form.Description,
-                Sku = _form.Sku,
+                SkuPrefix = _form.SkuPrefix,
                 CostAmount = _form.CostAmount,
                 PriceAmount = _form.PriceAmount,
                 Width = _form.Width,
@@ -940,7 +940,7 @@ else
     {
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public string Sku { get; set; } = string.Empty;
+        public string SkuPrefix { get; set; } = string.Empty;
         public decimal CostAmount { get; set; }
         public decimal PriceAmount { get; set; }
         public decimal Width { get; set; } = 10;

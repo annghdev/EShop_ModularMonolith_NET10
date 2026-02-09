@@ -89,4 +89,13 @@ public class InventoryItemRepository(InventoryDbContext context)
         // Filter by calculated property client-side
         return items.Where(i => i.QuantityAvailable <= i.LowStockThreshold);
     }
+
+    public async Task<InventoryItem?> GetBySkuAndWarehouseAsync(string sku, Guid warehouseId, CancellationToken cancellationToken = default)
+    {
+        return await context.InventoryItems
+            .Include(i => i.Reservations)
+            .Include(i => i.Warehouse)
+            .Where(i => i.Sku.Value == sku && i.WarehouseId == warehouseId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

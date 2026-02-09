@@ -4,7 +4,7 @@ using Contracts;
 
 namespace BlazorAdmin.Services;
 
-public class ProductFakeDataService : IProductService
+public class ProductFakeDataService  : IProductService
 {
     private readonly List<ProductDto> _products = [];
     private readonly List<CategoryDto> _categories = [];
@@ -97,7 +97,7 @@ public class ProductFakeDataService : IProductService
                 Name = $"{brand.Name} {productNames[i]}",
                 Description = $"High quality {productNames[i].ToLower()} from {brand.Name}. Perfect for everyday use with excellent features and durability.",
                 Slug = $"{brand.Name.ToLower()}-{productNames[i].ToLower()}-{i}",
-                Sku = $"SKU-{i + 1:D4}",
+                SkuPrefix = $"SKU-{i + 1:D4}",
                 Cost = new MoneyDto(100000 + (i * 10000), "VND"),
                 Price = new MoneyDto(150000 + (i * 15000), "VND"),
                 Dimensions = new DimensionsDto(Width: 10 + i, Height: 5 + i, Depth: 3, Weight: 0.5m + (i * 0.1m)),
@@ -134,7 +134,7 @@ public class ProductFakeDataService : IProductService
                 {
                     Id = Guid.NewGuid(),
                     Name = $"{product.Name} - {colorValue.Value}/{sizeValue.Value}",
-                    Sku = $"{product.Sku}-{colorValue.Value.ToUpper()}-{sizeValue.Value}",
+                    Sku = $"{product.SkuPrefix}-{colorValue.Value.ToUpper()}-{sizeValue.Value}",
                     OverrideCost = v == 0 ? null : new MoneyDto(Amount: product.Cost!.Amount + 10000, Currency: "VND"),
                     OverridePrice = v == 0 ? null : new MoneyDto(Amount: product.Price!.Amount + 15000, Currency: "VND"),
                     Dimensions = null,
@@ -219,7 +219,7 @@ public class ProductFakeDataService : IProductService
                 Name = p.Name,
                 Description = p.Description,
                 Slug = p.Slug!,
-                Sku = p.Sku,
+                Sku = p.SkuPrefix,
                 Price = p.Price,
                 CategoryName = p.Category.Name,
                 BrandName = p.Brand.Name,
@@ -246,7 +246,7 @@ public class ProductFakeDataService : IProductService
             Name = request.Name,
             Description = request.Description,
             Slug = request.Name.ToLower().Replace(" ", "-"),
-            Sku = request.Sku,
+            SkuPrefix = request.SkuPrefix,
             Cost = request.Cost,
             Price = request.Price,
             Dimensions = request.Dimensions,
@@ -507,7 +507,7 @@ public class ProductFakeDataService : IProductService
                 Id = p.Id,
                 Name = p.Name,
                 Slug = p.Slug ?? "",
-                Sku = p.Sku,
+                Sku = p.SkuPrefix,
                 Thumbnail = p.Thumbnail,
                 CategoryName = p.Category.Name,
                 BrandName = p.Brand.Name,
@@ -533,7 +533,7 @@ public class ProductFakeDataService : IProductService
             Name = "",
             Description = null,
             Slug = $"draft-{newId.ToString()[..8]}",
-            Sku = $"SKU-{newId.ToString()[..8].ToUpper()}",
+            SkuPrefix = $"SKU-{newId.ToString()[..8].ToUpper()}",
             Cost = new MoneyDto(Amount: 0, Currency: "VND"),
             Price = new MoneyDto(Amount: 0, Currency: "VND"),
             Dimensions = new DimensionsDto(Width: 10, Height: 10, Depth: 10, Weight: 1),
@@ -562,7 +562,7 @@ public class ProductFakeDataService : IProductService
 
         product.Name = request.Name;
         product.Description = request.Description;
-        product.Sku = request.Sku;
+        product.SkuPrefix = request.SkuPrefix;
         product.Cost = new MoneyDto (Amount: request.CostAmount, Currency: "VND");
         product.Price = new MoneyDto (Amount: request.PriceAmount, Currency: "VND");
         product.Dimensions = new DimensionsDto
@@ -631,5 +631,10 @@ public class ProductFakeDataService : IProductService
             .Replace("ú", "u").Replace("ù", "u").Replace("ủ", "u").Replace("ũ", "u").Replace("ụ", "u")
             .Replace("ư", "u").Replace("ứ", "u").Replace("ừ", "u").Replace("ử", "u").Replace("ữ", "u").Replace("ự", "u")
             .Replace("ý", "y").Replace("ỳ", "y").Replace("ỷ", "y").Replace("ỹ", "y").Replace("ỵ", "y");
+    }
+
+    public Task UpdateProductBasicInfoAsync(Guid productId, UpdateProductBasicInfoRequest request)
+    {
+        throw new NotImplementedException();
     }
 }
