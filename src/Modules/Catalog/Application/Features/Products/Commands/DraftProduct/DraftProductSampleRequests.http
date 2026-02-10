@@ -6,14 +6,14 @@ Content-Type: application/json
   "id": "dddddddd-dddd-dddd-dddd-dddddddddd13",
   "name": "Classic Cotton Shirt",
   "description": "Comfortable cotton shirt perfect for everyday wear",
-  "sku": "SHIRT001",
+  "skuPrefix": "SHIRT001",
   "cost": {
-    "amount": 25.00,
-    "currency": "USD"
+    "amount": 250000,
+    "currency": "VND"
   },
   "price": {
-    "amount": 49.99,
-    "currency": "USD"
+    "amount": 490000,
+    "currency": "VND"
   },
   "dimensions": {
     "width": 50,
@@ -24,10 +24,10 @@ Content-Type: application/json
   "categoryId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbc",
   "brandId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
   "displayPriority": 1,
-  "thumbnail": "https://example.com/shirt-thumbnail.jpg",
+  "thumbnail": "https://picsum.photos/seed/shirt1/400/400.jpg",
   "images": [
-    "https://example.com/shirt-1.jpg",
-    "https://example.com/shirt-2.jpg"
+    "https://picsum.photos/seed/shirt2/400/400.jpg",
+    "https://picsum.photos/seed/shirt3/400/400.jpg"
   ],
   "attributes": [
     {
@@ -46,8 +46,8 @@ Content-Type: application/json
       "overrideCost": null,
       "overridePrice": null,
       "dimensions": null,
-      "mainImage": "https://example.com/shirt-blue-m.jpg",
-      "images": ["https://example.com/shirt-blue-m.jpg"],
+      "mainImage": "https://picsum.photos/seed/shirt4/400/400.jpg",
+      "images": ["https://picsum.photos/seed/shirt5/400/400.jpg"],
       "attributeValues": {
         "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111113",
         "22222222-2222-2222-2222-222222222222": "22222222-2222-2222-2222-222222222225"
@@ -59,8 +59,8 @@ Content-Type: application/json
       "overrideCost": null,
       "overridePrice": null,
       "dimensions": null,
-      "mainImage": "https://example.com/shirt-red-l.jpg",
-      "images": ["https://example.com/shirt-red-l.jpg"],
+      "mainImage": "https://picsum.photos/seed/laptop1/400/400.jpg",
+      "images": ["https://picsum.photos/seed/laptop2/400/400.jpg"],
       "attributeValues": {
         "11111111-1111-1111-1111-111111111111": "11111111-1111-1111-1111-111111111112",
         "22222222-2222-2222-2222-222222222222": "22222222-2222-2222-2222-222222222226"

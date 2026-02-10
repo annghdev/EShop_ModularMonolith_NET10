@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router'
 
 type VariantDotValue = {
   Id: string
@@ -93,6 +94,7 @@ const getColorValues = (product: ProductCardData) => {
 }
 
 function ProductCard({ product, imageUrl }: ProductCardProps) {
+  const navigate = useNavigate()
   const colorDots = useMemo(() => getColorValues(product), [product])
   const textDots = useMemo(() => {
     return (
@@ -205,7 +207,13 @@ function ProductCard({ product, imageUrl }: ProductCardProps) {
         <span>({product.FeedbackCount}) đánh giá</span>
       </div>
       <div className="product-actions">
-        <button className="secondary" type="button">Xem chi tiết</button>
+        <button
+          className="secondary"
+          type="button"
+          onClick={() => navigate(`/products/${product.Slug}`)}
+        >
+          Xem chi tiết
+        </button>
         <button className="primary" type="button">Thêm giỏ</button>
       </div>
     </article>
