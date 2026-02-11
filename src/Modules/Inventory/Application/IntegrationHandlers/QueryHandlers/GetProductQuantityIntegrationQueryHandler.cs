@@ -1,16 +1,28 @@
-﻿using Contracts;
+using Contracts;
 
 namespace Inventory.Application;
 
-public class GetProductQuantityIntegrationQueryHandler
+public class GetProductQuantityIntegrationQueryHandler(IInventoryUnitOfWork uow)
     : IRequestHandler<GetProductQuantityIntegrationQuery, ProductQuantityResponse>
 {
-    public Task<ProductQuantityResponse> Handle(GetProductQuantityIntegrationQuery request, CancellationToken cancellationToken)
+    public async Task<ProductQuantityResponse> Handle(GetProductQuantityIntegrationQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new ProductQuantityResponse
+        var items = await uow.InventoryItems
+            .AsNoTracking()
+            .Where(i => i.ProductId == request.ProductId)
+            .ToListAsync(cancellationToken);
+
+        var variants = items
+            .GroupBy(i => i.VariantId)
+            .Select(g => new VariantQuantityResponse(
+                g.Key,
+                g.Sum(i => i.QuantityAvailable)))
+            .ToList();
+
+        return new ProductQuantityResponse
         {
             ProductId = request.ProductId,
-            Variants = new List<VariantQuantityResponse>() { new VariantQuantityResponse(Guid.NewGuid(), 100) }
-        });
+            Variants = variants
+        };
     }
 }

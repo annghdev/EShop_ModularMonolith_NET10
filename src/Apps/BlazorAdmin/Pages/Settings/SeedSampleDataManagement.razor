@@ -1,9 +1,9 @@
-﻿@page "/settings/seed-management"
+﻿@page "/settings/sample-data"
 @inject ISeedManager seedManager
 @inject IMessageService MessageService
 
 
-<Button Type="ButtonType.Primary" Class="mb-3" OnClick="SeedProducts">Seed Data</Button>
+<Button Type="ButtonType.Primary" Class="mb-3" OnClick="SeedProducts">Create Sample Products</Button>
 
 @code {
     async Task SeedProducts()

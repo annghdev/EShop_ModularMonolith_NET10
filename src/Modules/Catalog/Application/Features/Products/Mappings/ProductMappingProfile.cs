@@ -32,13 +32,16 @@ public class ProductMappingProfile : Profile
             .ForMember(dest => dest.Sku, opt => opt.MapFrom(src => src.Sku.Value))
             .ForMember(dest => dest.OverrideCost, opt => opt.MapFrom(src => src.OverrideCost.ToMoneyDto()))
             .ForMember(dest => dest.OverridePrice, opt => opt.MapFrom(src => src.OverridePrice.ToMoneyDto()))
-            .ForMember(dest => dest.Dimensions, opt => opt.MapFrom(src => src.OverrideDimensions.ToDimensionsDto()));
+            .ForMember(dest => dest.Dimensions, opt => opt.MapFrom(src => src.OverrideDimensions.ToDimensionsDto()))
+            .ForMember(dest => dest.MainImage, opt => opt.MapFrom(src => src.MainImage != null ? src.MainImage.Path : null))
+            .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Path)));
 
         CreateMap<VariantAttributeValue, VariantAttributeValueDto>()
             .ForMember(dest => dest.ProductAttributeId, opt => opt.MapFrom(src => src.ProductAttributeId))
             .ForMember(dest => dest.AttributeName, opt => opt.MapFrom(src => src.ProductAttribute!.Attribute!.Name))
             .ForMember(dest => dest.ValueId, opt => opt.MapFrom(src => src.ValueId))
-            .ForMember(dest => dest.ValueName, opt => opt.MapFrom(src => src.Value!.Name));
+            .ForMember(dest => dest.ValueName, opt => opt.MapFrom(src => src.Value!.Name))
+            .ForMember(dest => dest.ColorCode, opt => opt.MapFrom(src => src.Value!.ColorCode));
     }
 
     public static ProductProjection MapToProjection(Product product)

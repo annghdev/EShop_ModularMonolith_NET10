@@ -20,6 +20,7 @@
 /* Pages */
 @import './pages/home.css';
 @import './pages/products.css';
+@import './pages/product-details.css';
 
 /* Responsive */
 @import './responsive.css';

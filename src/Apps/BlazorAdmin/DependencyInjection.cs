@@ -1,4 +1,5 @@
 using BlazorAdmin.Auth;
+using BlazorAdmin.Pages.Settings;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorAdmin;
@@ -14,6 +15,9 @@ public static class DependencyInjection
         services.AddTransient<JwtAuthorizationHandler>();
 
         //services.AddScoped<IProductService, ProductFakeDataService>();
+
+        services.AddHttpClient<ISeedManager, SeedManager>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
+            .AddHttpMessageHandler<JwtAuthorizationHandler>();
 
         // Product services - HttpClient with JWT auth
         services.AddHttpClient<IProductService, ProductApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
@@ -33,5 +37,6 @@ public static class DependencyInjection
 
         services.AddHttpClient<IInventoryService, InventoryApiService>(c => c.BaseAddress = new Uri("http+https://eshop-api"))
             .AddHttpMessageHandler<JwtAuthorizationHandler>();
+
     }
 }
