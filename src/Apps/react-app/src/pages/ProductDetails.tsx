@@ -135,6 +135,44 @@ const uniqueImages = (images: Array<string | null | undefined>) => {
   return Array.from(set)
 }
 
+const COLOR_ALIASES: Record<string, string> = {
+  black: '#111827',
+  white: '#f5f5f7',
+  gray: '#9ca3af',
+  grey: '#9ca3af',
+  silver: '#cbd5f5',
+  gold: '#f2c94c',
+  beige: '#d6c2a6',
+  brown: '#8b5e34',
+  red: '#ef4444',
+  orange: '#f97316',
+  yellow: '#facc15',
+  green: '#22c55e',
+  teal: '#14b8a6',
+  blue: '#3b82f6',
+  navy: '#1e3a8a',
+  purple: '#8b5cf6',
+  pink: '#ec4899',
+}
+
+const isValidCssColor = (value: string) => {
+  if (typeof window === 'undefined') return true
+  const style = new Option().style
+  style.color = value
+  return style.color !== ''
+}
+
+const normalizeColor = (value: string) => {
+  const normalized = value.trim().toLowerCase()
+  if (COLOR_ALIASES[normalized]) {
+    return COLOR_ALIASES[normalized]
+  }
+  if (isValidCssColor(normalized)) {
+    return normalized
+  }
+  return '#d1d5db'
+}
+
 function ProductDetails() {
   const { slug } = useParams<{ slug: string }>()
   const [product, setProduct] = useState<Product | null>(null)
@@ -322,7 +360,7 @@ function ProductDetails() {
     if (!product || product.Variants.length === 0 || product.Attributes.length === 0) {
       return map
     }
-    
+
     // Use first variant to establish mapping by position
     const firstVariant = product.Variants[0]
     if (firstVariant.AttributeValues.length === product.Attributes.length) {
@@ -347,17 +385,17 @@ function ProductDetails() {
 
   const attributeGroups = useMemo(() => {
     if (!product) return []
-    
+
     // Group variant values by AttributeId (resolved from ProductAttributeId)
     const valueMap = new Map<string, Map<string, VariantAttributeValue>>()
-    
+
     product.Variants.forEach((variant) => {
       variant.AttributeValues.forEach((value) => {
         // Resolve AttributeId from ProductAttributeId
         const attributeId = productAttributeIdToAttributeIdMap.get(value.ProductAttributeId) || ''
         const productAttr = product.Attributes.find(attr => attr.AttributeId === attributeId)
         const attributeName = value.AttributeName || productAttr?.AttributeName || 'Thuộc tính'
-        
+
         // Use AttributeId as key to ensure correct grouping
         const key = attributeId || attributeName
         const attrMap = valueMap.get(key) ?? new Map<string, VariantAttributeValue>()
@@ -370,7 +408,7 @@ function ProductDetails() {
 
     // Build attributes list from product.Attributes (only those with variant values)
     const attributes: Array<{ AttributeId: string; AttributeName: string; DisplayOrder: number; HasVariant: boolean }> = []
-    
+
     product.Attributes.forEach((attr) => {
       // Check if this attribute has values in variants
       const hasValues = product.Variants.some(variant =>
@@ -379,7 +417,7 @@ function ProductDetails() {
           return mappedAttributeId === attr.AttributeId
         })
       )
-      
+
       if (hasValues) {
         attributes.push(attr)
       }
@@ -396,7 +434,7 @@ function ProductDetails() {
 
   const matchingVariants = useMemo(() => {
     if (!product) return []
-    
+
     const selectedEntries = Object.entries(selectedAttributes)
     if (selectedEntries.length === 0) return product.Variants
     return product.Variants.filter((variant) =>
@@ -412,13 +450,13 @@ function ProductDetails() {
 
   const selectedVariant = useMemo(() => {
     if (!product) return null
-    
+
     // If variant is explicitly selected by clicking variant tag, use it
     if (selectedVariantId) {
       const explicitVariant = product.Variants.find(v => v.Id === selectedVariantId)
       if (explicitVariant) return explicitVariant
     }
-    
+
     // Otherwise, use attribute-based selection
     if (attributeGroups.length === 0) return product.Variants[0] ?? null
     if (Object.keys(selectedAttributes).length < attributeGroups.length) return null
@@ -516,17 +554,17 @@ function ProductDetails() {
 
   const specAttributes = useMemo(() => {
     if (!product) return []
-    
+
     // Group variant values by AttributeId (resolved from ProductAttributeId)
     const valueMap = new Map<string, Map<string, string>>()
-    
+
     product.Variants.forEach((variant) => {
       variant.AttributeValues.forEach((value) => {
         // Resolve AttributeId from ProductAttributeId
         const attributeId = productAttributeIdToAttributeIdMap.get(value.ProductAttributeId) || ''
         const productAttr = product.Attributes.find(attr => attr.AttributeId === attributeId)
         const attributeName = value.AttributeName || productAttr?.AttributeName || 'Thuộc tính'
-        
+
         // Use AttributeId as key to ensure correct grouping
         const key = attributeId || attributeName
         const attrMap = valueMap.get(key) ?? new Map<string, string>()
@@ -539,7 +577,7 @@ function ProductDetails() {
 
     // Build attributes list from product.Attributes (only those with variant values)
     const attributes: Array<{ AttributeId: string; AttributeName: string; DisplayOrder: number; HasVariant: boolean }> = []
-    
+
     product.Attributes.forEach((attr) => {
       // Check if this attribute has values in variants
       const hasValues = product.Variants.some(variant =>
@@ -548,7 +586,7 @@ function ProductDetails() {
           return mappedAttributeId === attr.AttributeId
         })
       )
-      
+
       if (hasValues) {
         attributes.push(attr)
       }
@@ -669,7 +707,7 @@ function ProductDetails() {
                         const otherSelections = Object.entries(selectedAttributes).filter(
                           ([attrName]) => attrName !== group.name,
                         )
-                        
+
                         const hasMatch = product.Variants.some((variant) => {
                           const matchesOther = otherSelections.every(([attrName, valueId]) =>
                             variant.AttributeValues.some((attrValue) => {
@@ -685,6 +723,29 @@ function ProductDetails() {
                             return resolvedAttributeName === group.name && attrValue.ValueId === value.ValueId
                           })
                         })
+
+                        // Check if this is a color attribute (case-insensitive)
+                        const isColorAttribute = group.name.toLowerCase() === 'color' || group.name.toLowerCase() === 'màu sắc'
+
+                        if (isColorAttribute) {
+                          const colorValue = value.ColorCode ? normalizeColor(value.ColorCode) : normalizeColor(value.ValueName)
+                          return (
+                            <button
+                              key={value.ValueId}
+                              type="button"
+                              className={`color-dot ${isSelected ? 'active' : ''}`}
+                              onClick={() => handleSelectAttribute(group.name, value.ValueId)}
+                              disabled={!hasMatch}
+                              title={value.ValueName}
+                              style={{
+                                backgroundColor: colorValue,
+                                opacity: !hasMatch ? 0.3 : 1,
+                                cursor: !hasMatch ? 'not-allowed' : 'pointer',
+                              }}
+                            />
+                          )
+                        }
+
                         return (
                           <button
                             key={value.ValueId}
@@ -717,7 +778,7 @@ function ProductDetails() {
                         onClick={() => {
                           // Set explicit variant selection
                           setSelectedVariantId(option.id)
-                          
+
                           // Also update selectedAttributes for consistency
                           const nextSelected: Record<string, string> = {}
                           option.variant.AttributeValues.forEach((value) => {
@@ -728,7 +789,7 @@ function ProductDetails() {
                             }
                           })
                           setSelectedAttributes(nextSelected)
-                          
+
                           // Jump to variant's main image
                           if (option.variant.MainImage) {
                             const mainImageIndex = displayedImages.findIndex((img) => img === option.variant.MainImage)
@@ -756,16 +817,15 @@ function ProductDetails() {
               >
                 <div
                   ref={actionsRef}
-                  className={`product-actions${stickyMode === 'top' ? ' is-fixed-top' : ''}${
-                    stickyMode === 'bottom' ? ' is-fixed-bottom' : ''
-                  }`}
+                  className={`product-actions${stickyMode === 'top' ? ' is-fixed-top' : ''}${stickyMode === 'bottom' ? ' is-fixed-bottom' : ''
+                    }`}
                   style={
                     stickyMode === 'normal'
                       ? undefined
                       : {
-                          width: `${stickyStyle.width}px`,
-                          left: `${stickyStyle.left}px`,
-                        }
+                        width: `${stickyStyle.width}px`,
+                        left: `${stickyStyle.left}px`,
+                      }
                   }
                 >
                   <button className="secondary" type="button" disabled={!isPurchasable}>

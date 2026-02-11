@@ -296,9 +296,9 @@ public class CreateSampleData
     {
         public void Map(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/products/create-sample-data", async (Command command, ISender sender) =>
+            app.MapPost("api/products/create-sample-data", async (ISender sender) =>
             {
-                await sender.Send(command);
+                await sender.Send(new Command());
                 return Results.Ok(new { Message = "Sample data creation initiated." });
             })
             .WithTags("Products")

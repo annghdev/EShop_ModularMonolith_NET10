@@ -287,6 +287,28 @@ body.light-theme .color-dot {
     border-color: rgba(13, 16, 34, 0.15);
 }
 
+/* Interactive Color Dot for Product Details */
+.product-details .color-dot {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-details .color-dot:hover {
+    transform: scale(1.1);
+}
+
+.product-details .color-dot.active {
+    box-shadow: 0 0 0 2px var(--noel-card-bg, #0d1022), 0 0 0 4px var(--accent);
+    border-color: transparent;
+}
+
+body.light-theme .product-details .color-dot.active {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent);
+}
+
 .variant-groups {
     display: grid;
     gap: 10px;
