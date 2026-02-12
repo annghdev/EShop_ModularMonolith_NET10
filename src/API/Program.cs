@@ -23,13 +23,23 @@ builder.AddElasticsearchClient(connectionName: "elasticsearch");
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Configure CORS to allow all origins, methods and headers
+// Configure CORS for browser clients that need credentials (cookies)
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>();
+
+if (allowedOrigins is null || allowedOrigins.Length == 0)
+{
+    allowedOrigins = ["http://localhost:3000", "https://localhost:3000", "http://localhost:5173", "https://localhost:5173"];
+}
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-        policy.AllowAnyOrigin()
+    options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyMethod()
-              .AllowAnyHeader());
+              .AllowAnyHeader()
+              .AllowCredentials());
 });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -79,8 +89,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
-// Enable permissive CORS policy for all endpoints
-app.UseCors("AllowAll");
+app.UseCors("Frontend");
 
 app.MapGet("/", () =>
 {
@@ -95,6 +104,7 @@ app.MapControllers();
 app.MapEndpoints(typeof(Catalog.DependencyInjection).Assembly);
 app.MapEndpoints(typeof(Auth.DependencyInjection).Assembly);
 app.MapEndpoints(typeof(Inventory.DependencyInjection).Assembly);
+app.MapEndpoints(typeof(API.DependencyInjection).Assembly);
 
 // Apply migrations and seed data
 using var scope = app.Services.CreateScope();

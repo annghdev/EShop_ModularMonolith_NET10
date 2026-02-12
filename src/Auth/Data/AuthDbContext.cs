@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Auth.Data;
@@ -7,6 +7,7 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options)
     : IdentityDbContext<Account, Role, Guid>(options)
 {
     public DbSet<ExternalAccount> ExternalAccounts { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
