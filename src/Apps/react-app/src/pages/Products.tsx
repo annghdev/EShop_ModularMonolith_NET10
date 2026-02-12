@@ -41,6 +41,7 @@ type ProductCardDto = {
     }>
   }>
   Status: string
+  BrandName?: string
 }
 
 const PLACEHOLDER_IMAGES = [
@@ -94,7 +95,7 @@ function Products() {
       setLoading(true)
       setError(null)
       try {
-          const response = await api.get(`${API_PREFIX}/products`, {
+        const response = await api.get(`${API_PREFIX}/products`, {
           params: {
             page,
             pageSize,
@@ -144,6 +145,7 @@ function Products() {
             SecondaryImage: (item.SecondaryImage ?? item.secondaryImage ?? null) as string | null,
             VariantDots: variantDots,
             Status: String(item.Status ?? item.status ?? ''),
+            BrandName: String(item.BrandName ?? item.brandName ?? item.Brand ?? item.brand ?? ''),
           }
         })
 
@@ -159,8 +161,8 @@ function Products() {
 
         setProductsResult(data)
       } catch (fetchError) {
-          const err = fetchError as Error;
-          setError(err.message || 'Có lỗi khi tải dữ liệu.');
+        const err = fetchError as Error;
+        setError(err.message || 'Có lỗi khi tải dữ liệu.');
       } finally {
         setLoading(false)
       }

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useToast } from './Toast'
 
 type VariantDotValue = {
@@ -31,6 +31,7 @@ export type ProductCardData = {
   Thumbnail?: string | null
   SecondaryImage?: string | null
   VariantDots?: VariantDot[]
+  BrandName?: string
 }
 
 type ProductCardProps = {
@@ -98,15 +99,8 @@ function ProductCard({ product, imageUrl }: ProductCardProps) {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const colorDots = useMemo(() => getColorValues(product), [product])
-  const textDots = useMemo(() => {
-    return (
-      product.VariantDots?.filter((dot) => {
-        const type = dot.DisplayType?.toLowerCase()
-        const name = dot.AttributeName?.toLowerCase()
-        return type === 'text' || (type !== 'color' && name !== 'color')
-      }) ?? []
-    )
-  }, [product.VariantDots])
+  // Removed textDots as per requirement to only show color attributes
+
 
   const formattedPrice = useMemo(() => {
     const currency = product.Currency || 'VND'
@@ -139,15 +133,17 @@ function ProductCard({ product, imageUrl }: ProductCardProps) {
   return (
     <article className="product-card">
       <figure className="product-media">
-        <img src={imageUrl} alt={product.Name} loading="lazy" />
-        {product.SecondaryImage && (
-          <img
-            src={product.SecondaryImage}
-            alt={`${product.Name} alternate`}
-            className="secondary"
-            loading="lazy"
-          />
-        )}
+        <Link to={`/products/${product.Slug}`} aria-label={`Xem chi tiết ${product.Name}`}>
+          <img src={imageUrl} alt={product.Name} loading="lazy" />
+          {product.SecondaryImage && (
+            <img
+              src={product.SecondaryImage}
+              alt={`${product.Name} alternate`}
+              className="secondary"
+              loading="lazy"
+            />
+          )}
+        </Link>
         {showFeatured && (
           <span className={`badge ${featuredTag}`}>{product.FeaturedTag}</span>
         )}
@@ -155,7 +151,10 @@ function ProductCard({ product, imageUrl }: ProductCardProps) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
         </button>
       </figure>
-      <h3 className="product-title">{product.Name}</h3>
+      {product.BrandName && <div className="product-category" style={{ marginBottom: '4px' }}>{product.BrandName}</div>}
+      <h3 className="product-title">
+        <Link to={`/products/${product.Slug}`}>{product.Name}</Link>
+      </h3>
       {/* <p className="product-desc">
         {product.Description || 'Thiết kế tinh tế, vật liệu cao cấp, nâng tầm trải nghiệm.'}
       </p> */}
@@ -171,25 +170,7 @@ function ProductCard({ product, imageUrl }: ProductCardProps) {
           ))}
         </div>
       )}
-      {textDots.length > 0 && (
-        <div className="variant-groups" aria-label="Tùy chọn biến thể">
-          {textDots.map((dot) => (
-            <div key={`${product.Id}-${dot.AttributeName}`} className="variant-group">
-              <span className="variant-label">{dot.AttributeName}</span>
-              <div className="variant-tags inline">
-                {dot.Values.map((value) => (
-                  <span
-                    key={`${product.Id}-${dot.AttributeName}-${value.Id}`}
-                    className="variant-tag"
-                  >
-                    {value.Value}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+
       <div className="product-meta">
         <div className="price">
           {formattedPrice}
@@ -210,21 +191,29 @@ function ProductCard({ product, imageUrl }: ProductCardProps) {
       </div>
       <div className="product-actions">
         <button
-          className="secondary"
+          className="primary"
           type="button"
           onClick={() => navigate(`/products/${product.Slug}`)}
+          style={{ flex: 1 }}
         >
           Xem chi tiết
         </button>
         <button
-          className="primary"
+          className="icon-button"
           type="button"
-          onClick={() => {
+          aria-label="Thêm vào giỏ"
+          onClick={(e) => {
+            e.stopPropagation()
             showToast('Chọn biến thể', 'Vui lòng chọn biến thể tại trang chi tiết trước khi thêm vào giỏ.', 'info')
             navigate(`/products/${product.Slug}`)
           }}
+          style={{ flex: 'none' }}
         >
-          Thêm giỏ
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="8" cy="21" r="1" />
+            <circle cx="19" cy="21" r="1" />
+            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+          </svg>
         </button>
       </div>
     </article>
