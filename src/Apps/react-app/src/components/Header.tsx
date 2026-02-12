@@ -4,6 +4,7 @@ import CartDrawer from './CartDrawer'
 import AuthModal from './AuthModal'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import logo from '../assets/logo.png'
+import { useAuth } from '../hooks/useAuth'
 
 const BASE_THEME_KEY = 'gptcodex-theme-base'
 function Header() {
@@ -18,7 +19,25 @@ function Header() {
   const isMouseTop = useRef(false)
 
   const [cartSelectedCount, setCartSelectedCount] = useState(0)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { isAuthenticated, userInfo, logout } = useAuth()
+  const initials = useMemo(() => {
+    const displayName = userInfo?.displayName?.trim()
+    if (!displayName) {
+      return 'U'
+    }
+
+    const parts = displayName.split(/\s+/).filter(Boolean)
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase()
+    }
+
+    return `${parts[0][0] ?? ''}${parts[parts.length - 1][0] ?? ''}`.toUpperCase()
+  }, [userInfo?.displayName])
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
 
   // Controlled Dropdown State
   const [isProductsOpen, setIsProductsOpen] = useState(false)
@@ -265,7 +284,7 @@ function Header() {
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <button className="avatar-button" type="button" aria-label="Tài khoản">
-                    <div className="avatar-initials">HN</div>
+                    <div className="avatar-initials">{initials}</div>
                     <svg className="avatar-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m6 9 6 6 6-6" />
                     </svg>
@@ -285,7 +304,7 @@ function Header() {
                     <DropdownMenu.Separator className="dropdown-separator" />
                     <DropdownMenu.Item
                       className="dropdown-item danger"
-                      onSelect={() => setIsAuthenticated(false)}
+                      onSelect={() => { void handleLogout() }}
                     >
                       Đăng xuất
                     </DropdownMenu.Item>
@@ -295,7 +314,6 @@ function Header() {
             </>
           ) : (
             <AuthModal
-              onAuthenticated={() => setIsAuthenticated(true)}
               trigger={(
                 <button className="chip ghost" type="button">
                   Đăng nhập
