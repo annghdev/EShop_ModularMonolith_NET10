@@ -11,6 +11,7 @@ import OrderDetails from './pages/OrderDetails'
 import PersonalProfile from './pages/PersonalProfile'
 import SearchResult from './pages/SearchResult'
 import { AuthProvider } from './contexts/AuthContext'
+import { CartProvider } from './contexts/CartContext'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -18,27 +19,29 @@ function App() {
     <BrowserRouter>
       <ToastProvider>
         <AuthProvider>
-          <div className="app">
-            <div className="nebula" />
-            <div className="nebula" />
-            <div className="nebula" />
-            <div className="page">
-              <Header />
-              <main>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/products/:slug" element={<ProductDetails />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-                  <Route path="/history/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
-                  <Route path="/profile" element={<ProtectedRoute><PersonalProfile /></ProtectedRoute>} />
-                  <Route path="/search" element={<SearchResult />} />
-                </Routes>
-              </main>
-              <Footer />
+          <CartProvider>
+            <div className="app">
+              <div className="nebula" />
+              <div className="nebula" />
+              <div className="nebula" />
+              <div className="page">
+                <Header />
+                <main>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/products" element={<Products />} />
+                    <Route path="/products/:slug" element={<ProductDetails />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+                    <Route path="/history/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><PersonalProfile /></ProtectedRoute>} />
+                    <Route path="/search" element={<SearchResult />} />
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
             </div>
-          </div>
+          </CartProvider>
         </AuthProvider>
       </ToastProvider>
     </BrowserRouter>

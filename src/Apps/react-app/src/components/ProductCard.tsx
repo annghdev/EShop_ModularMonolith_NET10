@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
+import { useToast } from './Toast'
 
 type VariantDotValue = {
   Id: string
@@ -95,6 +96,7 @@ const getColorValues = (product: ProductCardData) => {
 
 function ProductCard({ product, imageUrl }: ProductCardProps) {
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const colorDots = useMemo(() => getColorValues(product), [product])
   const textDots = useMemo(() => {
     return (
@@ -214,7 +216,16 @@ function ProductCard({ product, imageUrl }: ProductCardProps) {
         >
           Xem chi tiết
         </button>
-        <button className="primary" type="button">Thêm giỏ</button>
+        <button
+          className="primary"
+          type="button"
+          onClick={() => {
+            showToast('Chọn biến thể', 'Vui lòng chọn biến thể tại trang chi tiết trước khi thêm vào giỏ.', 'info')
+            navigate(`/products/${product.Slug}`)
+          }}
+        >
+          Thêm giỏ
+        </button>
       </div>
     </article>
   )

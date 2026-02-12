@@ -11,6 +11,8 @@ export const API_PREFIX = '/eshop-api';
 // Always use relative path - proxies handle the routing
 // Vite proxy in dev, nginx in production
 export const API_BASE_URL = '';
+export const GUEST_ID_STORAGE_KEY = 'eshop_guest_id';
+export const GUEST_ID_HEADER = 'X-Guest-Id';
 
 export const api = axios.create({
     baseURL: API_BASE_URL,
@@ -35,6 +37,37 @@ type RetriableRequestConfig = InternalAxiosRequestConfig & {
     _retry?: boolean;
 };
 
+function createGuestId() {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+export function getOrCreateGuestId() {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    const current = localStorage.getItem(GUEST_ID_STORAGE_KEY)?.trim();
+    if (current) {
+        return current;
+    }
+
+    const created = createGuestId();
+    localStorage.setItem(GUEST_ID_STORAGE_KEY, created);
+    return created;
+}
+
+export function clearGuestId() {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    localStorage.removeItem(GUEST_ID_STORAGE_KEY);
+}
+
 function runRefreshTokenFlow(): Promise<string | null> {
     if (!refreshTokenHandler) {
         return Promise.resolve(null);
@@ -52,6 +85,12 @@ function runRefreshTokenFlow(): Promise<string | null> {
 api.interceptors.request.use((config) => {
     if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
+        delete config.headers[GUEST_ID_HEADER];
+    } else {
+        const guestId = getOrCreateGuestId();
+        if (guestId) {
+            config.headers[GUEST_ID_HEADER] = guestId;
+        }
     }
 
     return config;

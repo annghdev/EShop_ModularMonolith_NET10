@@ -21,12 +21,17 @@ public class GetProductVariantBySkuIntegrationQueryHandler(ICatalogUnitOfWork uo
         }
 
         var variant = product.Variants.First(v => v.Sku.Value == query.Sku);
+        var unitPrice = variant.GetPrice(product.Price);
 
         return new ProductVariantBySkuResponse(
             product.Id,
             product.Name,
             variant.Id,
+            variant.Name,
             variant.Sku.Value,
-            product.Thumbnail?.Path);
+            product.Thumbnail?.Path,
+            new MoneyDto(
+                unitPrice.Amount,
+                unitPrice.Currency));
     }
 }
