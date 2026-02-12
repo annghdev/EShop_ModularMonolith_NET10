@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { clearAccessToken, setAccessToken, setRefreshTokenHandler } from '../config/api'
+import { GUEST_ID_STORAGE_KEY, clearAccessToken, clearGuestId, setAccessToken, setRefreshTokenHandler } from '../config/api'
 import * as authApi from '../services/authApi'
+import * as cartApi from '../services/cartApi'
 import type { UserInfo } from '../services/authApi'
 
 type AuthContextValue = {
@@ -39,6 +40,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     applyToken(null)
     setUserInfo(null)
   }, [applyToken])
+
+  const mergeGuestCartAfterLogin = useCallback(async () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const guestId = localStorage.getItem(GUEST_ID_STORAGE_KEY)?.trim()
+    if (!guestId) {
+      return
+    }
+
+    try {
+      await cartApi.mergeGuestCart(guestId)
+      clearGuestId()
+      window.dispatchEvent(new CustomEvent('cart:refresh-requested'))
+    } catch {
+      // Ignore merge failures so login flow can continue.
+    }
+  }, [])
 
   const refreshAccessToken = useCallback(async (): Promise<string | null> => {
     try {
@@ -80,14 +100,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (username: string, password: string) => {
     const result = await authApi.login({ username, password })
     applyToken(result.accessToken)
+    await mergeGuestCartAfterLogin()
     setUserInfo(mapUserInfo(result.userInfo))
-  }, [applyToken])
+  }, [applyToken, mergeGuestCartAfterLogin])
 
   const register = useCallback(async (request: authApi.RegisterRequest) => {
     const result = await authApi.register(request)
     applyToken(result.accessToken)
+    await mergeGuestCartAfterLogin()
     setUserInfo(mapUserInfo(result.userInfo))
-  }, [applyToken])
+  }, [applyToken, mergeGuestCartAfterLogin])
 
   const logout = useCallback(async () => {
     try {

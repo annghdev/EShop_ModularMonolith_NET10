@@ -5,6 +5,7 @@ import AuthModal from './AuthModal'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import logo from '../assets/logo.png'
 import { useAuth } from '../hooks/useAuth'
+import { useCart } from '../hooks/useCart'
 
 const BASE_THEME_KEY = 'gptcodex-theme-base'
 function Header() {
@@ -18,8 +19,9 @@ function Header() {
   const scrollDirection = useRef<'up' | 'down'>('up')
   const isMouseTop = useRef(false)
 
-  const [cartSelectedCount, setCartSelectedCount] = useState(0)
   const { isAuthenticated, userInfo, logout } = useAuth()
+  const { summary } = useCart()
+  const cartSelectedCount = summary?.TotalQuantity ?? 0
   const initials = useMemo(() => {
     const displayName = userInfo?.displayName?.trim()
     if (!displayName) {
@@ -258,7 +260,6 @@ function Header() {
             </button>
           </div>
           <CartDrawer
-            onSelectedCountChange={setCartSelectedCount}
             trigger={(
               <button className="icon-button cart-button" type="button" aria-label="Giỏ hàng">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

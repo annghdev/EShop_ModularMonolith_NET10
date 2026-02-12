@@ -104,6 +104,7 @@ app.MapControllers();
 app.MapEndpoints(typeof(Catalog.DependencyInjection).Assembly);
 app.MapEndpoints(typeof(Auth.DependencyInjection).Assembly);
 app.MapEndpoints(typeof(Inventory.DependencyInjection).Assembly);
+app.MapEndpoints(typeof(ShoppingCart.DependencyInjection).Assembly);
 app.MapEndpoints(typeof(API.DependencyInjection).Assembly);
 
 // Apply migrations and seed data

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { api, API_PREFIX } from '../config/api'
+import { useCart } from '../hooks/useCart'
+import { useToast } from '../components/Toast'
 
 type Money = {
   Amount: number
@@ -175,6 +177,9 @@ const normalizeColor = (value: string) => {
 
 function ProductDetails() {
   const { slug } = useParams<{ slug: string }>()
+  const navigate = useNavigate()
+  const { addItem } = useCart()
+  const { showToast } = useToast()
   const [product, setProduct] = useState<Product | null>(null)
   const [variantQuantities, setVariantQuantities] = useState<VariantQuantity[]>([])
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
@@ -190,6 +195,7 @@ function ProductDetails() {
     bgHeight: 0,
   })
   const [loading, setLoading] = useState(false)
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const imageRef = useRef<HTMLDivElement | null>(null)
   const actionsWrapperRef = useRef<HTMLDivElement | null>(null)
@@ -618,6 +624,40 @@ function ProductDetails() {
     })
   }, [product, quantityMap])
 
+  const handleAddToCart = async () => {
+    if (!selectedVariant) {
+      showToast('Thiếu biến thể', 'Vui lòng chọn biến thể trước khi thêm vào giỏ.', 'warning')
+      return
+    }
+
+    setIsAddingToCart(true)
+    try {
+      await addItem(selectedVariant.Sku, 1)
+      showToast('Đã thêm vào giỏ', `${product?.Name ?? 'Sản phẩm'} đã được thêm vào giỏ hàng.`, 'success')
+    } catch {
+      showToast('Thêm vào giỏ thất bại', 'Vui lòng thử lại sau.', 'error')
+    } finally {
+      setIsAddingToCart(false)
+    }
+  }
+
+  const handleBuyNow = async () => {
+    if (!selectedVariant) {
+      showToast('Thiếu biến thể', 'Vui lòng chọn biến thể trước khi mua.', 'warning')
+      return
+    }
+
+    setIsAddingToCart(true)
+    try {
+      await addItem(selectedVariant.Sku, 1)
+      navigate('/checkout')
+    } catch {
+      showToast('Mua ngay thất bại', 'Vui lòng thử lại sau.', 'error')
+    } finally {
+      setIsAddingToCart(false)
+    }
+  }
+
   return (
     <section className="product-details">
       <nav className="breadcrumb product-details__breadcrumb">
@@ -828,10 +868,20 @@ function ProductDetails() {
                       }
                   }
                 >
-                  <button className="secondary" type="button" disabled={!isPurchasable}>
+                  <button
+                    className="secondary"
+                    type="button"
+                    disabled={!isPurchasable || isAddingToCart}
+                    onClick={() => { void handleAddToCart() }}
+                  >
                     Thêm vào giỏ
                   </button>
-                  <button className="primary" type="button" disabled={!isPurchasable}>
+                  <button
+                    className="primary"
+                    type="button"
+                    disabled={!isPurchasable || isAddingToCart}
+                    onClick={() => { void handleBuyNow() }}
+                  >
                     Mua ngay
                   </button>
                 </div>

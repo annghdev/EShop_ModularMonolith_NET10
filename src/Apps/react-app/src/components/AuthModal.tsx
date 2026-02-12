@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import axios from 'axios'
 import { useToast } from './Toast'
 import { useAuth } from '../hooks/useAuth'
+import { getOrCreateGuestId } from '../config/api'
 
 type AuthModalProps = {
   trigger: ReactNode
@@ -70,7 +71,7 @@ function AuthModal({ trigger }: AuthModalProps) {
           password,
           fullName: name.trim() || undefined,
           phoneNumber: phone.trim() || undefined,
-          guestId: undefined,
+          guestId: getOrCreateGuestId() ?? undefined,
         })
       }
 

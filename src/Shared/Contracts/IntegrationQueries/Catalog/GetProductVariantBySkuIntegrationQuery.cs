@@ -8,5 +8,7 @@ public record ProductVariantBySkuResponse(
     Guid ProductId,
     string ProductName,
     Guid VariantId,
+    string VariantName,
     string Sku,
-    string? Thumbnail);
+    string? Thumbnail,
+    MoneyDto UnitPrice);

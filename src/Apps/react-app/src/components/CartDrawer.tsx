@@ -1,42 +1,29 @@
 import { type ReactNode, useEffect, useMemo, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-
-type CartItem = {
-  id: string
-  name: string
-  price: number
-  quantity: number
-  image: string
-}
+import { useNavigate } from 'react-router'
+import { useCart } from '../hooks/useCart'
+import type { CartItemDto } from '../types/cart'
 
 type CartDrawerProps = {
   trigger: ReactNode
   onSelectedCountChange?: (count: number) => void
 }
 
-const CART_ITEMS: CartItem[] = [
-  {
-    id: 'cart-1',
-    name: 'Premium T-Shirt 16',
-    price: 237200,
-    quantity: 1,
-    image: 'https://picsum.photos/seed/shirt16/120/120.jpg',
-  },
-  {
-    id: 'cart-2',
-    name: 'DELL Laptop Pro 18',
-    price: 27292186,
-    quantity: 1,
-    image: 'https://picsum.photos/seed/laptop18/120/120.jpg',
-  },
-  {
-    id: 'cart-3',
-    name: 'Nebula Pods',
-    price: 2950000,
-    quantity: 2,
-    image: 'https://picsum.photos/seed/audio3/120/120.jpg',
-  },
-]
+const EMPTY_ITEMS: CartItemDto[] = []
+
+function areSetsEqual(left: Set<string>, right: Set<string>) {
+  if (left.size !== right.size) {
+    return false
+  }
+
+  for (const value of left) {
+    if (!right.has(value)) {
+      return false
+    }
+  }
+
+  return true
+}
 
 const formatCurrency = (value: number) => {
   try {
@@ -50,31 +37,52 @@ const formatCurrency = (value: number) => {
 }
 
 function CartDrawer({ trigger, onSelectedCountChange }: CartDrawerProps) {
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(
-    () => new Set(CART_ITEMS.map((item) => item.id)),
-  )
-  const [quantities, setQuantities] = useState<Record<string, number>>(
-    () => Object.fromEntries(CART_ITEMS.map((item) => [item.id, item.quantity])),
-  )
+  const navigate = useNavigate()
+  const { cart, isLoading, isMutating, updateQuantity, removeItem } = useCart()
+  const items = useMemo(() => cart?.Items ?? EMPTY_ITEMS, [cart?.Items])
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
-  const selectedCount = selectedIds.size
-  const allSelected = selectedCount === CART_ITEMS.length
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      const next = new Set<string>()
+      const itemIds = new Set(items.map((item) => item.VariantId))
+
+      prev.forEach((id) => {
+        if (itemIds.has(id)) {
+          next.add(id)
+        }
+      })
+
+      items.forEach((item) => {
+        if (!prev.has(item.VariantId)) {
+          next.add(item.VariantId)
+        }
+      })
+
+      return areSetsEqual(prev, next) ? prev : next
+    })
+  }, [items])
+
+  const selectedCount = useMemo(() => {
+    return items.reduce((count, item) => count + (selectedIds.has(item.VariantId) ? 1 : 0), 0)
+  }, [items, selectedIds])
+
+  const allSelected = items.length > 0 && selectedCount === items.length
 
   const totalAmount = useMemo(() => {
-    return CART_ITEMS.reduce((total, item) => {
-      if (!selectedIds.has(item.id)) return total
-      const qty = quantities[item.id] ?? item.quantity
-      return total + item.price * qty
+    return items.reduce((total, item) => {
+      if (!selectedIds.has(item.VariantId)) return total
+      return total + (item.LineTotal?.Amount ?? 0)
     }, 0)
-  }, [quantities, selectedIds])
+  }, [items, selectedIds])
 
-  const updateQuantity = (id: string, delta: number) => {
-    setQuantities((prev) => {
-      const next = { ...prev }
-      const current = next[id] ?? 1
-      next[id] = Math.max(1, current + delta)
-      return next
-    })
+  const handleUpdateQuantity = async (variantId: string, currentQuantity: number, delta: number) => {
+    const nextQuantity = Math.max(1, currentQuantity + delta)
+    await updateQuantity(variantId, nextQuantity)
+  }
+
+  const handleRemoveItem = async (variantId: string) => {
+    await removeItem(variantId)
   }
 
   useEffect(() => {
@@ -86,7 +94,7 @@ function CartDrawer({ trigger, onSelectedCountChange }: CartDrawerProps) {
       setSelectedIds(new Set())
       return
     }
-    setSelectedIds(new Set(CART_ITEMS.map((item) => item.id)))
+    setSelectedIds(new Set(items.map((item) => item.VariantId)))
   }
 
   const toggleItem = (id: string) => {
@@ -131,27 +139,35 @@ function CartDrawer({ trigger, onSelectedCountChange }: CartDrawerProps) {
           </div>
 
           <div className="drawer-items">
-            {CART_ITEMS.map((item) => (
-              <div className="cart-item" key={item.id}>
-                <img src={item.image} alt={item.name} />
+            {isLoading && (
+              <div className="empty-state">Đang tải giỏ hàng...</div>
+            )}
+            {!isLoading && items.length === 0 && (
+              <div className="empty-state">Giỏ hàng của bạn đang trống.</div>
+            )}
+            {!isLoading && items.map((item) => (
+              <div className="cart-item" key={item.ItemId}>
+                <img src={item.Thumbnail || 'https://picsum.photos/seed/cart-empty/120/120.jpg'} alt={item.ProductName} />
                 <div className="cart-item-info">
-                  <h4>{item.name}</h4>
-                  <p>{formatCurrency(item.price)}</p>
+                  <h4>{item.ProductName} - {item.VariantName}</h4>
+                  <p>{formatCurrency(item.UnitPrice?.Amount ?? 0)}</p>
                   <div className="cart-qty">
                     <span>Số lượng</span>
                     <div className="qty-controls">
                       <button
                         type="button"
                         aria-label="Giảm số lượng"
-                        onClick={() => updateQuantity(item.id, -1)}
+                        disabled={isMutating}
+                        onClick={() => { void handleUpdateQuantity(item.VariantId, item.Quantity, -1) }}
                       >
                         −
                       </button>
-                      <strong>{quantities[item.id] ?? item.quantity}</strong>
+                      <strong>{item.Quantity}</strong>
                       <button
                         type="button"
                         aria-label="Tăng số lượng"
-                        onClick={() => updateQuantity(item.id, 1)}
+                        disabled={isMutating}
+                        onClick={() => { void handleUpdateQuantity(item.VariantId, item.Quantity, 1) }}
                       >
                         +
                       </button>
@@ -161,11 +177,17 @@ function CartDrawer({ trigger, onSelectedCountChange }: CartDrawerProps) {
                 <label className="checkbox-line item-check">
                   <input
                     type="checkbox"
-                    checked={selectedIds.has(item.id)}
-                    onChange={() => toggleItem(item.id)}
+                    checked={selectedIds.has(item.VariantId)}
+                    onChange={() => toggleItem(item.VariantId)}
                   />
                 </label>
-                <button type="button" className="cart-item-remove" aria-label="Xóa sản phẩm">
+                <button
+                  type="button"
+                  className="cart-item-remove"
+                  aria-label="Xóa sản phẩm"
+                  disabled={isMutating}
+                  onClick={() => { void handleRemoveItem(item.VariantId) }}
+                >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
                 </button>
               </div>
@@ -177,7 +199,7 @@ function CartDrawer({ trigger, onSelectedCountChange }: CartDrawerProps) {
               <span>Tạm tính</span>
               <strong>{formatCurrency(totalAmount)}</strong>
             </div>
-            <button className="btn btn-primary" type="button">
+            <button className="btn btn-primary" type="button" onClick={() => navigate('/checkout')}>
               Thanh toán
             </button>
           </div>
