@@ -5,7 +5,7 @@ import { ToastProvider } from './components/Toast'
 import Products from './pages/Products'
 import Home from './pages/Home'
 import ProductDetails from './pages/ProductDetails'
-import Checkout from './pages/Checkout'
+import Order from './pages/Order'
 import History from './pages/History'
 import OrderDetails from './pages/OrderDetails'
 import PersonalProfile from './pages/PersonalProfile'
@@ -31,7 +31,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<Products />} />
                     <Route path="/products/:slug" element={<ProductDetails />} />
-                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/order" element={<Order />} />
                     <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
                     <Route path="/history/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><PersonalProfile /></ProtectedRoute>} />

@@ -21,6 +21,7 @@
 @import './pages/home.css';
 @import './pages/products.css';
 @import './pages/product-details.css';
+@import './pages/order.css';
 
 /* Responsive */
 @import './responsive.css';

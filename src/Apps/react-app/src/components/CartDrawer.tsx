@@ -41,6 +41,12 @@ function CartDrawer({ trigger, onSelectedCountChange }: CartDrawerProps) {
   const { cart, isLoading, isMutating, updateQuantity, removeItem } = useCart()
   const items = useMemo(() => cart?.Items ?? EMPTY_ITEMS, [cart?.Items])
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [open, setOpen] = useState(false)
+
+  const handleCheckout = () => {
+    setOpen(false)
+    navigate('/order')
+  }
 
   useEffect(() => {
     setSelectedIds((prev) => {
@@ -110,7 +116,7 @@ function CartDrawer({ trigger, onSelectedCountChange }: CartDrawerProps) {
   }
 
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="radix-overlay" />
@@ -199,7 +205,7 @@ function CartDrawer({ trigger, onSelectedCountChange }: CartDrawerProps) {
               <span>Tạm tính</span>
               <strong>{formatCurrency(totalAmount)}</strong>
             </div>
-            <button className="btn btn-primary" type="button" onClick={() => navigate('/checkout')}>
+            <button className="btn btn-primary" type="button" onClick={handleCheckout}>
               Thanh toán
             </button>
           </div>
