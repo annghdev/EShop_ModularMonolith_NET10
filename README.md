@@ -121,16 +121,16 @@ Each module follows **Clean Architecture** principles:
 
 ### Core Modules
 
-| Module | Responsibility | Database |
-|--------|----------------|----------|
-| **Catalog** | Product Management, Categories & Brands | CatalogDb |
-| **Inventory** | Stock Management | InventoryDb |
-| **Orders** | Order Process | OrderDb |
-| **Payment** | Payment transaction | PaymentDb |
-| **Shipping** | Delivery | ShippingDb |
-| **ShoppingCart** | Cart Management | ShoppingCartDb |
-| **Pricing** | Price change log, Promotion Campaigns, Coupon | PricingDb |
-| **Report** | Revenue report, Analysis | ReportDb |
+| Module | Responsibility |
+|--------|----------------|
+| **Catalog** | Product Management, Categories & Brands |
+| **Inventory** | Stock Management |
+| **Orders** | Order Process |
+| **Payment** | Payment transaction |
+| **Shipping** | Delivery |
+| **ShoppingCart** | Cart Management |
+| **Pricing** | Price change log, Promotion Campaigns, Coupon |
+| **Report** | Revenue report, Analysis |
 
 ### Shared Components
 
@@ -159,8 +159,8 @@ Diagrams reflect each module's domain (aggregates and entities). References to I
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/e-shop-modular-monolith.git
-cd e-shop-modular-monolith
+git clone https://github.com/annghdev/EShop_ModularMonolith_NET10.git
+cd EShop_ModularMonolith_NET10
 ```
 
 ### 2. Open Solution
