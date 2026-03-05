@@ -171,12 +171,23 @@ Open the **EShop_ModularMonolith.slnx** file
 
 Create `appsettings.Development.json` file in the `src/API/` directory, override the ApiKey and secrets
 
-### 4. Run Application
+### 4. Run Application (Backend)
 
 - Ensure Docker Desktop is running
 - Select Aspire.AppHost as the startup project and Run
 
-### 5. Access Aspire Dashboard
+### 5. Run Frontend React
+
+```bash
+cd src/Apps/react-app
+npm install
+npm run dev
+```
+
+### 6. Access Dashboards
+- **Aspire Dashboard**: [http://localhost:17170](http://localhost:17170)
+- **Backend API**: [http://localhost:5000/swagger](http://localhost:5000/swagger)
+- **Frontend React**: [http://localhost:5173](http://localhost:5173)
 
 ## Demo
 
@@ -186,22 +197,35 @@ Create `appsettings.Development.json` file in the `src/API/` directory, override
 ## Sample Images
 
 ### Aspire Dashboard
-![Aspire Dashboard](assets/aspire-dashboard.png)
-![Aspire Dashboard Table](assets/aspire-dashboard-table.png)
+| Overview | Resource Table |
+| :---: | :---: |
+| ![Aspire Dashboard](assets/aspire-dashboard.png) | ![Aspire Dashboard Table](assets/aspire-dashboard-table.png) |
+
+### Frontend React
+| Home Page | Product Listing |
+| :---: | :---: |
+| <img src="assets/frontend/home.png" width="400" /> | <img src="assets/frontend/products.png" width="400" /> |
+
+| Product Details | Shopping Cart |
+| :---: | :---: |
+| <img src="assets/frontend/product-details.png" width="400" /> | <img src="assets/frontend/cart.png" width="400" /> |
+
+| Checkout Order | Order Details | Order History |
+| :---: | :---: | :---: |
+| <img src="assets/frontend/order.png" /> | <img src="assets/frontend/order_details.png" /> | <img src="assets/frontend/history.png" /> |
 
 ### Blazor Admin Panel
-
-| Product table | Create Product (draft) |
+| Product Table | Create Product (draft) |
 | :---: | :---: |
-| <img src="assets/catalog/catalog-product-table.png" /> | <img src="assets/catalog/catalog-product-create-draft.png" /> |
+| <img src="assets/backend/catalog-product-table.png" /> | <img src="assets/backend/catalog-product-create-draft.png" /> |
 
-| Product details | Product details (scroll down) |
-| :---: | :---: |
-| <img src="assets/catalog/catalog-product-details.png" /> | <img src="assets/catalog/catalog-product-details-2.png" /> |
+| Category tree | Attribute Table | Product Details |
+| :---: | :---: | :---: |
+| <img src="assets/backend/catalog-category-table.png" /> | <img src="assets/backend/catalog-attribute-table.png" /> | <img src="assets/backend/catalog-product-details.png" /> |
 
-| Category tree | Attribute Table |
-| :---: | :---: |
-| <img src="assets/catalog/catalog-category-table.png" /> | <img src="assets/catalog/catalog-attribute-table.png" /> |
+| Inventory Item table | Warehouse table | Inventory Adjustment modal | Inventory History |
+| :---: | :---: | :---: | :---: |
+| <img src="assets/backend/inventory-items.png" /> | <img src="assets/backend/inventory-warehouses.png" /> | <img src="assets/backend/inventory-adjustment.png" /> | <img src="assets/backend/inventory-history.png" /> |
 
 
 ---
