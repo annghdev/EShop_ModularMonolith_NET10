@@ -68,7 +68,7 @@ https://youtu.be/C_imIiYUH44
 - **SDK**: .NET 10.0
 - **Framework**: ASP.NET Core Web API, Aspire
 - **Database**: PostgreSQL with Entity Framework Core
-- **Message Broker**: RabbitMQ with MassTransit
+- **Message Broker**: RabbitMQ
 - **Search Engine**: Elasticsearch
 - **Container**: Docker
 
