@@ -45,17 +45,13 @@ The **E-Shop Modular Monolith** project is a comprehensive e-commerce system des
 | **Entity Framework Core** | ORM and Database Access | 10.0+ |
 | **MediatR** | CQRS and Mediator Pattern | 12.5.0 |
 | **FluentValidation** | Validation Rules | 12.1.1 |
-| **AutoMapper** | Object Mapping | 14.0+ |
-| **MassTransit** | Message Broker | 8.0+ |
+| **AutoMapper** | Mapping | 14.0.0 |
+| **Wolverine** | Message Broker | 5.13.0 |
 | **Serilog** | Structured Logging | 3.0+ |
 | **Swagger/OpenAPI** | API Documentation | 10.0+ |
 | **xUnit** | Unit Testing | 2.9.3 |
 | **Moq** | Unit Testing | 4.20.72 |
 | **FluentAssertions** | Unit Testing | 7.2.0 |
-| **Aspire.Hosting.Docker** | Deployment Support | 13.0 |
-| **Aspire.Hosting.PostgreSQL** | Database Support | 13.0 |
-| **Aspire.Hosting.Elasticsearch** | ES Support | 13.0 |
-| **Aspire.Hosting.RabbitMQ** | RabbitMQ Support | 13.0 |
 
 ## Architecture & Design Patterns
 
@@ -176,7 +172,17 @@ Create `appsettings.Development.json` file in the `src/API/` directory, override
 - Ensure Docker Desktop is running
 - Select Aspire.AppHost as the startup project and Run
 
-### 5. Run Frontend React
+### 5. Access Dashboards
+- **Aspire Dashboard**: [http://localhost:17170](http://localhost:17170)
+- **Backend API**: [http://localhost:5000/swagger](http://localhost:5000/swagger)
+- **Blazor Admin**: [http://localhost:5033](http://localhost:5033)
+
+### 6. Access Blazor Admin
+- Login: admin - 123123
+- Seed Product data: go settings -> Seed Sample Data (maybe you will see timeout debug error because ElasticSearch sync data but it's ok)
+- Inventory Adjustment: Go "Tồn Kho" (Inventory) -> "Bảng lưu trữ" (Stocks) -> choose an item -> click "Điều chỉnh" (Adjust)
+
+### 7. Run Frontend React
 
 ```bash
 cd src/Apps/react-app
@@ -184,15 +190,10 @@ npm install
 npm run dev
 ```
 
-### 6. Access Dashboards
-- **Aspire Dashboard**: [http://localhost:17170](http://localhost:17170)
-- **Backend API**: [http://localhost:5000/swagger](http://localhost:5000/swagger)
-- **Frontend React**: [http://localhost:5173](http://localhost:5173)
-
 ## Demo
 
 - **Web Demo**: [https://annghdev.online](https://annghdev.online)
-- **Video Demo**: [YouTube](https://youtube.com/watch?v=...)
+- **Video Demo**: [YouTube](https://youtu.be/C_imIiYUH44)
 
 ## Sample Images
 

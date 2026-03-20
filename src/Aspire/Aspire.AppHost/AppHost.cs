@@ -1,5 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+builder.AddDockerComposeEnvironment("eshop");
+
 //var esPassword = builder.AddParameter("es-password", secret: true);
 //var elasticSearch = builder.AddElasticsearch("elasticsearch", esPassword);
 
@@ -62,12 +64,12 @@ builder.AddProject<Projects.BlazorAdmin>("eshop-admin")
     .WithReference(eshopApi)
     .WaitFor(eshopApi);
 
-builder.AddDockerfile("eshop-reactapp", "../../Apps/react-app")
-    .WithHttpEndpoint(port: 3002, targetPort: 80)
-    .WithExternalHttpEndpoints()
-    .WithHttpHealthCheck("/health")
-    .WithReference(eshopApi)
-    .WaitFor(eshopApi);
+//builder.AddDockerfile("eshop-reactapp", "../../Apps/react-app")
+//    .WithHttpEndpoint(port: 3002, targetPort: 80)
+//    .WithExternalHttpEndpoints()
+//    .WithHttpHealthCheck("/health")
+//    .WithReference(eshopApi)
+//    .WaitFor(eshopApi);
 
 
 builder.Build().Run();

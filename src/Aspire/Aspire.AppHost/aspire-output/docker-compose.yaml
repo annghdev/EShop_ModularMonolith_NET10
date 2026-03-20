@@ -1,5 +1,5 @@
 services:
-  eshop-dashboard:
+  shop-dashboard:
     image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
     ports:
       - "18888"
@@ -9,15 +9,6 @@ services:
     networks:
       - "aspire"
     restart: "always"
-  rabbitmq:
-    image: "docker.io/library/rabbitmq:4.2"
-    environment:
-      RABBITMQ_DEFAULT_USER: "guest"
-      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
-    expose:
-      - "5672"
-    networks:
-      - "aspire"
   elasticsearch:
     image: "docker.io/library/elasticsearch:8.17.3"
     environment:
@@ -27,6 +18,15 @@ services:
     expose:
       - "9200"
       - "9300"
+    networks:
+      - "aspire"
+  rabbitmq:
+    image: "docker.io/library/rabbitmq:4.2"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
+    expose:
+      - "5672"
     networks:
       - "aspire"
   postgres-eshop:
@@ -135,7 +135,7 @@ services:
       RABBITMQ_USERNAME: "guest"
       RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD}"
       RABBITMQ_URI: "amqp://guest:${RABBITMQ_PASSWORD}@rabbitmq:5672"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://eshop-dashboard:18889"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://shop-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "eshop-api"
     expose:
@@ -160,7 +160,7 @@ services:
       ESHOP_API_HTTP: "http://eshop-api:${ESHOP_API_PORT}"
       services__eshop-api__http__0: "http://eshop-api:${ESHOP_API_PORT}"
       ESHOP_API_HTTPS: "https://eshop-api:${ESHOP_API_PORT}"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://eshop-dashboard:18889"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://shop-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "eshop-admin"
     ports:
@@ -177,7 +177,7 @@ services:
       services__eshop-api__http__0: "http://eshop-api:${ESHOP_API_PORT}"
       ESHOP_API_HTTPS: "https://eshop-api:${ESHOP_API_PORT}"
     ports:
-      - "3000:80"
+      - "3002:80"
     depends_on:
       eshop-api:
         condition: "service_started"
