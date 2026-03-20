@@ -6,6 +6,40 @@
 
 The **E-Shop Modular Monolith** project is a comprehensive e-commerce system designed to sell all types of products with various variants and attributes. The project is built with modern **Modular Monolith** architecture, combined with **Domain Driven Design (DDD)** and **Event-Driven Architecture** to ensure scalability, maintainability, and readiness to upgrade necessary components to microservices.
 
+## Project Goal & Current Status
+
+> ⚠ **Important Note**  
+> This project is primarily a **learning and architectural exploration project**, not a production-ready system.
+
+### 🎯 Goal
+- Explore **Modular Monolith architecture**
+- Apply **Domain Driven Design (DDD)** in a real-world-like system
+- Experiment with **Event-Driven architecture (CQRS, messaging, eventual consistency)**
+- Serve as a **technical playground** for trying out patterns, not a finished product
+
+### Current Status
+- The project is **incomplete and under development (paused)**
+- Only some modules are functional:
+  - Catalog Management
+  - Inventory Adjustment
+- The following core features are **NOT fully implemented**:
+  - ❌ Order processing
+  - ❌ Payment integration
+  - ❌ Discount and Promotion Engine
+- Some flows are:
+  - ⚠️ Mocked at frontend level
+  - ⚠️ Contain known bugs or incomplete UI logic
+
+### 💡 Notes
+- There is **no more complete version** of this project beyond this repository
+- Development is currently **paused due to personal priorities**
+- The project may be continued in the future, but **no timeline is guaranteed**
+
+### 🎥 Demo
+A quick demo of the current state:
+https://youtu.be/C_imIiYUH44
+
+
 ## Table of Contents
 
 - [Key Features](#key-features)
@@ -150,6 +184,7 @@ Diagrams reflect each module's domain (aggregates and entities). References to I
 
 - [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - **Visual Studio 2022+**
+- **Aspire 13+**
 - **DockerDesktop** (for running dependent services like PostgreSQL, RabbitMQ, Elasticsearch)
 
 ### 1. Clone Repository
@@ -189,6 +224,12 @@ cd src/Apps/react-app
 npm install
 npm run dev
 ```
+
+### ⚠️ Notes
+
+- This project uses .NET Aspire (preview) features. If your local environment is not updated to Aspire version 13 (or compatible version), you may encounter issues when running the solution.
+- Please make sure you have the correct .NET SDK and Aspire tooling installed before running the project.
+- If you run into any startup or orchestration errors, double-check your Aspire version first.
 
 ## Demo
 
